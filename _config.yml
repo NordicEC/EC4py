@@ -9,7 +9,7 @@ description: "Great site about Jekyll on GH-Pages."
 #remote_theme: jekyll/minimal
 #theme: jekyll-theme-minimal
 source: ./docs
-#destination: ./docs/_site
+destination: ./docs/_site
 remote_theme: just-the-docs/just-the-docs
 
 url: https://nordicec.github.io
