@@ -1,5 +1,5 @@
 ---
-title: EC Data
+title: EC_Data
 parent: Examples
 nav_order: 1
 ---
