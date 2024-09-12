@@ -10,7 +10,7 @@ grand_parent: Examples
 
 Start by downloading a test file from github:
 
-[CV_144700_3.tdms](https://github.com/Guswib/EC4py/blob/0ac6f225816d6583b3aa6b8c62fd8a19de10dc17/test_data/CV/CV_144700_%203.tdms)
+[CV_144700_ 3.tdms](https://github.com/nordicec/EC4py/blob/d3e8f22b518bb23777ccfd42bf2175177df4b272/test_data/CV/CV_144700_%203.tdms)
 
 and save it an appropriate folder.
 
@@ -35,11 +35,9 @@ and save it an appropriate folder.
 ```
 
 ![Plot of CV](./cv_data_ex1_fig1.png)
-.. image:: cv_data_ex1_fig1.png
-  :width: 400
-  :alt: Alternative text
 
-## Visualize that a CV consists of two LSV;
+
+## Visualize that a CV consists of two LSV
 
 ```python
    line, p = data.plot(dir="pos")
