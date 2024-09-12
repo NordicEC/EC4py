@@ -15,8 +15,9 @@ description: "Great site about Jekyll on GH-Pages."
 # Build settings
 #remote_theme: jekyll/minima
 #remote_theme: pages-themes/minimal@v0.2.0
-remote_theme: just-the-docs/just-the-docs
 theme: jekyll-theme-minima
+remote_theme: just-the-docs/just-the-docs
+
 plugins:
   - jekyll-remote-theme
   - jekyll-paginate
