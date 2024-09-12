@@ -8,17 +8,18 @@ description: "Great site about Jekyll on GH-Pages."
 # Build settings
 #remote_theme: jekyll/minimal
 #theme: jekyll-theme-minimal
-source              : ./docs
+source: ./docs
+destination: ./docs/_site
 remote_theme: just-the-docs/just-the-docs
 
 url: https://nordicec.github.io
 baseurl: "/ec4py"
 
 aux_links:
-  Template Repository: https://github.com/just-the-docs/just-the-docs-template
+ Template Repository: https://github.com/just-the-docs/just-the-docs-template
 
 plugins:
-  - jekyll-remote-theme
-  - jekyll-paginate
-  - jekyll-sitemap
+ - jekyll-remote-theme
+ - jekyll-paginate
+ - jekyll-sitemap
 #  - jekyll-rst
