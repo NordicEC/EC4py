@@ -2,15 +2,10 @@
 
     This module contains the public facing API for reading TDMS files produced by EC4 DAQ.
 """
-from nptdms import TdmsFile
 import math
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.signal import savgol_filter 
-from . import util
 from .ec_data import EC_Data
 from .cv_data import CV_Data
-from .ec_setup import EC_Setup
 
 from pathlib import Path
 import copy
@@ -28,7 +23,7 @@ class CV_Datas:
     Class Functions:
     - .plot() - plot data    
     - .bg_corr() to back ground correct.
-    
+
     ### Analysis:
     - .Levich() - plot data    
     - .KouLev() - Koutechy-Levich analysis    
@@ -41,7 +36,7 @@ class CV_Datas:
     legend = "name"
     """
     def __init__(self, paths:list[Path] | Path, **kwargs):
-        
+
         if not isinstance(paths,list ):
             path_list = [paths]
         #if isinstance(paths,Path ):
@@ -59,7 +54,8 @@ class CV_Datas:
         #print(index)
         return
     #############################################################################
-    def __getitem__(self, item_index:slice|int) -> CV_Data: 
+    
+    def __getitem__(self, item_index:slice | int) -> CV_Data: 
 
         if isinstance(item_index, slice):
             step = 1
@@ -71,15 +67,17 @@ class CV_Datas:
                 start = item_index.start
             if item_index.stop:
                 stop = item_index.stop    
-            return [self.datas[i] for i in range(start,stop,step)  ]
+            return [self.datas[i] for i in range(start, stop, step)  ]
         else:
             return self.datas[item_index]
     #############################################################################
+    
     def __setitem__(self, item_index:int, new_CV:CV_Data):
         if not isinstance(item_index, int):
             raise TypeError("key must be an integer")
         self.datas[item_index] = new_CV
     #############################################################################
+    
     def __sub__(self, other: CV_Data):
         """_summary_
 
@@ -87,9 +85,9 @@ class CV_Datas:
             other (CV_Data): CV_Data to be added 
 
         Returns:
-            CV_Datas: returns a copy of the inital dataset. 
+            CV_Datas: returns a copy of the initial dataset. 
         """
-        
+
         if isinstance(other, CV_Data):
             new_CVs = copy.deepcopy(self)
             for new_cv in new_CVs:
@@ -101,8 +99,8 @@ class CV_Datas:
                 new_cv.i_p = new_cv.i_p - other.i_p
                 new_cv.i_n = new_cv.i_n - other.i_n
         return new_CVs
-    
-    
+
+
     #############################################################################
     def bg_corr(self, bg_cv: CV_Data|Path) -> CV_Data:
         """Background correct the data by subtracting the bg_cv. 
@@ -130,8 +128,9 @@ class CV_Datas:
             for cv in self.datas:
                 cv.sub(corr_cv)
         return copy.deepcopy(self)
-    
-################################################################    
+
+################################################################   
+
     def plot(self, *args, **kwargs):
         """Plot CVs.
             use args to normalize the data
@@ -166,11 +165,12 @@ class CV_Datas:
                 cv_kwargs["legend"] = cv.setup_data.name
             
             p = cv.plot(**cv_kwargs)
-         
+
         CV_plot.legend()
         return CV_plot
-    
+
     #################################################################################################    
+    
     def Levich(self, Epot:float, *args, **kwargs):
         """Levich analysis. Creates plot of the data and a Levich plot.
 
