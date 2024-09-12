@@ -1,5 +1,5 @@
 ---
-title: class CV_data() - example 1
+title: Example 1
 parent: CV_data
 grand_parent: Examples
 ---
