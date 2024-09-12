@@ -3,7 +3,7 @@ title: Example 1
 parent: CV_Data
 grand_parent: Examples
 ---
-
+# Example class CV_data - example 1
 
 ## Download dataset
 
