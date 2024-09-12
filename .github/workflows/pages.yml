@@ -46,22 +46,26 @@ jobs:
         env:
           JEKYLL_ENV: production
       - name: 'Tar files'
-        run: tar -cvf artifact.tar ./docs/_site/
+        run: |
+          echo ::group::Archive artifact
+          tar -cvf ./artifact.tar ./docs/_site/
+          echo ::endgroup::
 
       - name: Upload artifact
         # Automatically uploads an artifact from the './_site' directory by default
         uses: actions/upload-artifact@v4
         with:
         #  path: ./docs/_site/
-          path: artifact.tar
+          path: ./artifact.tar
           name: "github-pages"
 
-      - name: Upload artifact
+      - name: Creates a zip of the website
       # Automatically uploads an artifact from the './_site' directory by default
         uses: actions/upload-artifact@v4
         with:
           path: ./docs/_site/
           name: "website"
+          if-no-files-found: error
 
   # Deployment job
   deploy:
