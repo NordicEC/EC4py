@@ -12,9 +12,8 @@ plugins:
   - jekyll-paginate
   - jekyll-sitemap
   - jekyll-rst
-include:
-  - index.rst
-  - docs/index.rst
+include: [source] 
+#  - docs/index.rst
 
 defaults:
   -
