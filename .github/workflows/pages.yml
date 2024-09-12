@@ -48,7 +48,7 @@ jobs:
       - name: 'Tar files'
         run: |
           echo ::group::Archive artifact
-          tar --dereference --hard-dereference -cvf ./artifact.tar --directory="./docs/_site/" "."
+          tar --dereference --hard-dereference -cvf ./artifact.tar --directory="./_site/" "."
           echo ::endgroup::
 
       - name: Upload artifact

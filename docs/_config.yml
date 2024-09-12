@@ -1,7 +1,7 @@
 
 
 source      : ./docs/source
-destination: ./docs/_site
+destination: ./_site
 
 url: https://nordicec.github.io
 
