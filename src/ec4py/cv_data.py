@@ -37,22 +37,18 @@ class CV_Data(EC_Setup):
     ### Options keywords:
     legend = "name"
     """
-    
-    
+
+
     def __init__(self,*args, **kwargs):
         super().__init__()
-        #self._area=2
-        #self._area_unit="cm^2"
-        #self.rotation =0
-        #self.rotation_unit ="/min"
         self.E=[]
         self.i_p=[]
         self.i_n=[]
         self.i_label = "i"
         self.i_unit = "A"
-        
+
         self.rate_V_s = 1
-        
+
         """max voltage""" 
         self.E_min = -2.5
         """min voltage"""
@@ -147,7 +143,7 @@ class CV_Data(EC_Setup):
         finally:
             pass
         try:
-            self.i_n= self.i_n+subData.i_n
+            self.i_n = self.i_n+subData.i_n
         finally:
             pass
         return
@@ -159,10 +155,10 @@ class CV_Data(EC_Setup):
             self.i_n = savgol_filter(self.i_n, smooth_width, 1)     
         finally:
             return
-    
+
 
     #####################################################################################################
-    def set_area(self,value,unit):
+    def set_area(self, value,unit):
         self.setup_data._area = value
         self.setup_data._area_unit = unit
 
@@ -191,7 +187,7 @@ class CV_Data(EC_Setup):
             #print("CONVERTING_AAA",len(ec_data.Time), len(ec_data.E), len(ec_data.i))
             self.setup_data = copy.deepcopy(ec_data.setup_data)
             self.convert(ec_data.Time,ec_data.E,ec_data.i,**kwargs)
-           
+
         except ValueError:
             print("no_data")
         #self.setup = data.setup
@@ -212,7 +208,7 @@ class CV_Data(EC_Setup):
         """
         x= E
         y= i
-        
+
         #print("Convert", len(E))
         #print("SETP",self.setup)
         #Start_Delay, = extract_value_unit(self.setup_data._setup['Start_Delay'])
@@ -238,18 +234,18 @@ class CV_Data(EC_Setup):
         else:
             positive_start = V0 < V1
         #print("startDIR:", positive_start)
-        
+
         y = options.smooth_y(y)
-        
+
         self.xmin = x.min()
         self.xmax = x.max()
-        
+
         x_start = np.mean(x[0:3])
         index_min = np.argmin(x)
         index_max = np.argmax(x)
 
         #array of dx
-        
+
         x_div = np.gradient(savgol_filter(x, 10, 1))
         #dt:
         t_div = (time.max() - time.min()) / (time.size - 1)
@@ -269,20 +265,20 @@ class CV_Data(EC_Setup):
             up_end = zero_crossings[0]
             dn_start = zero_crossings[0]
             dn_end = x.size
-            
+
         else:
             up_start =zero_crossings[0]
             up_end = x.size
             dn_start = 0
             dn_end = zero_crossings[0]
             reversed=True
-        
+
         self.E_max = 2.5
         self.E_min = -2.5
         dE_range = int((self.E_max - self.E_min)*1000)
         x_sweep = np.linspace(self.E_min, self.E_max, dE_range) 
         self.E = x_sweep
-        
+
         if positive_start:
             x_u = x[0:zero_crossings[0]]
             y_u = y[0:zero_crossings[0]]
@@ -294,7 +290,7 @@ class CV_Data(EC_Setup):
             y_n = np.flipud(y[0:zero_crossings[0]])
             x_u = x[zero_crossings[0]:]
             y_u = y[zero_crossings[0]:]
-            
+
         y_pos=np.interp(x_sweep, x_u, y_u)
         y_neg=np.interp(x_sweep, x_n, y_n)
 
