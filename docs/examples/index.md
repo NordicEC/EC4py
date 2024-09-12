@@ -7,7 +7,7 @@ Examples
    :caption: Contents:
 
    
-   ex_ec_data
-   ex_ec_datas
-   cv_data_ex1
+   [ex_ec_data](ex_ec_data)
+   (ex_ec_datas)
+   [cv_data_ex1](cv_data_ex1)
    cv_datas_ex1

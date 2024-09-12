@@ -39,10 +39,11 @@ Plot file
 
 Visualize that a CV consists of two LSV;
 
-.. code-block:: python
+```ruby
    
    line, p = data.plot(dir="pos")
    data.plot(dir="neg", plot = p)
+```
 
 ![plot](./cv_data_ex1_fig1.png)
 
