@@ -20,4 +20,4 @@ plugins:
   - jekyll-remote-theme
   - jekyll-paginate
   - jekyll-sitemap
-  - jekyll-rst
+#  - jekyll-rst
