@@ -1,5 +1,9 @@
+
+
 source      : ./docs/source
 destination: ./docs/_site
+
+url: https://nordicec.github.io
 
 # Site settings
 title: EC4py Package
@@ -10,8 +14,8 @@ description: "Great site about Jekyll on GH-Pages."
 
 # Build settings
 #remote_theme: jekyll/minima
-remote_theme: pages-themes/minimal@v0.2.0
-#remote_theme: just-the-docs/just-the-docs
+#remote_theme: pages-themes/minimal@v0.2.0
+remote_theme: just-the-docs/just-the-docs
 #theme: jekyll-theme-minima
 plugins:
   - jekyll-remote-theme
@@ -20,9 +24,3 @@ plugins:
 
 #  - docs/index.rst
 
-defaults:
-  -
-    scope:
-      path:            "assets/**/*.pdf"
-    values:
-      sitemap:         false
