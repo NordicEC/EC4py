@@ -1,8 +1,8 @@
 # Site settings
 title: Great New Blog Title
 author:
-  name: Evan Will
-  email: your-email@domain.com
+  name: Gustav Wiberg
+  email: info@nordicec.com
 description: "Great site about Jekyll on GH-Pages."
 
 # Build settings
@@ -14,3 +14,11 @@ plugins:
   - jekyll-rst
 include:
   - index.rst
+  - docs/index.rst
+
+defaults:
+  -
+    scope:
+      path:            "assets/**/*.pdf"
+    values:
+      sitemap:         false
