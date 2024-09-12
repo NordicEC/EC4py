@@ -15,9 +15,9 @@ Start by downloading a test file from github:
 
 and save it an appropriate folder.
 
-Import the class:
+## Import the class:
 
-```python
+```Python
    from ec4py import CV_Datas
 ```
 # Load a file:

@@ -4,7 +4,7 @@ title: class CV_data() - example 1
 
 
 ## Download dataset
-================================================
+
 
 Start by downloading a test file from github:
 
