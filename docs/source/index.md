@@ -1,6 +1,4 @@
----
-title: EC4py documentation
----
+
 
 EC4py documentation
 ===================
