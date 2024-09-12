@@ -2,7 +2,6 @@
 title: class CV_datas() - example 1
 parent: CV_datas
 grand_parent: Examples
-nav_order: 1
 ---
 
 
