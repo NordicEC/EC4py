@@ -2,8 +2,6 @@ name: stats
 dependencies:
   - numpy
   - pandas
-  - tdms
-  - nptdms
   - matplotlib 
   - pathlib
   - scipy
