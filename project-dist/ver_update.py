@@ -8,7 +8,7 @@ def version_updated():
     # Opening JSON file
     pa = Path().cwd()
     file ="package.json"
-    for i in range(2):
+    for i in range(3):
         if not (pa / file).exists():
             pa= pa.parent
     print(pa / file)
