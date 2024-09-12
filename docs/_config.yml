@@ -26,3 +26,7 @@ plugins:
 #  - docs/index.rst
 
 enable_copy_code_button: true
+
+aux_links:
+  EC4py on GitHub:
+    - https://github.com/nordicec/ec4py

@@ -1,6 +1,8 @@
 ---
 title: Home
 nav_order: 1
+description: "EC4py documentation."
+permalink: /
 ---
 
 
