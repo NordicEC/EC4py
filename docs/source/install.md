@@ -1,4 +1,6 @@
-.. _installation:
+---
+title: EC4py Install
+---
 
 Installation
 ============
