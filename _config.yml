@@ -23,3 +23,6 @@ plugins:
  - jekyll-paginate
  - jekyll-sitemap
 #  - jekyll-rst
+
+verbose: BOOL
+
