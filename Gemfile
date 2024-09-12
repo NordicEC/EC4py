@@ -11,3 +11,5 @@ gem "just-the-docs"        # always download the latest release
 gem "jekyll-remote-theme"
 
 gem "jekyll-paginate"
+gem "jekyll-sitemap"
+gem "jekyll-rst"
