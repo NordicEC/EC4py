@@ -1,18 +1,15 @@
 
 import numpy as np
-
 from .util import Quantity_Value_Unit as Q_V
 from .util_graph import plot_options, quantity_plot_fix
 
-
-
 def Levich(rot, y_data, y_axis_unit, y_axis_title, STYLE_DL, line_title="", *args, **kwargs):
-        #Levich analysis
+#Levich analysis
         p = plot_options(kwargs)
         p.set_title("CVs")
         line, analyse_plot = p.exe()
         legend = p.legend
-        
+
         analyse_plot.plot(rot, y_data, STYLE_DL)
         x_qv = Q_V(1, "rpm^0.5", "w")
         x_qv = x_qv**0.5
@@ -29,7 +26,7 @@ def Levich(rot, y_data, y_axis_unit, y_axis_title, STYLE_DL, line_title="", *arg
         m , b = np.polyfit(rot, y_data, 1)
         y_pos= m * x_plot + b
         ##print("AAA",x_rot, "BBB", x_rot.quantity)
-       
+
         B_factor = Q_V(m , y_axis_unit, y_axis_title) #/ x_rot
         ##print("AAA",B_factor_pos, "BBB", B_factor_pos.quantity)
         STYLE_DL= STYLE_DL[0] + "-"
@@ -38,9 +35,9 @@ def Levich(rot, y_data, y_axis_unit, y_axis_title, STYLE_DL, line_title="", *arg
         #ax.xlim(left=0)
         analyse_plot.legend()
         analyse_plot.set_xlim(left=0, right =None)
-        
+
         return B_factor
-    
+
 def diffusion_limit_corr(current, idl:float):
     if idl == 0:
         with np.errstate(divide='ignore'):
