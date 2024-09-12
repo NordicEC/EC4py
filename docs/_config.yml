@@ -1,16 +1,18 @@
 source              : ./source
 
 # Site settings
-title: Great New Blog Title
+title: EC4py Package
 author:
   name: Gustav Wiberg
   email: info@nordicec.com
 description: "Great site about Jekyll on GH-Pages."
 
 # Build settings
-remote_theme: jekyll/minima
-theme: jekyll-theme-minima
+#remote_theme: jekyll/minima
+remote_theme: pages-themes/minimal@v0.2.0
+#theme: jekyll-theme-minima
 plugins:
+  - jekyll-remote-theme
   - jekyll-paginate
   - jekyll-sitemap
   - jekyll-rst
