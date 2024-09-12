@@ -38,10 +38,8 @@ Plot file
 .. code-block:: python
 
    datas.plot()
+![Plot of CV](./cv_datas_ex1_fig1.png)
 
-.. image:: cv_datas_ex1_fig1.png
-  :width: 400
-  :alt: Alternative text
 
 Visualize that a CV consists of two LSV;
 
@@ -50,6 +48,7 @@ Visualize that a CV consists of two LSV;
    line, p = data.plot(dir="pos")
    data.plot(dir="neg", plot = p)
 
+![Plot of CV](./cv_datas_ex1_fig2.png)
 
 .. image:: cv_datas_ex1_fig2.png
   :width: 400

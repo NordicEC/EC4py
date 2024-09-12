@@ -1,7 +1,7 @@
 
 
 
-Example class CV_data()
+# Example class CV_data()
 ================================================
 
 Start by downloading a test file from github:
@@ -10,28 +10,25 @@ Start by downloading a test file from github:
 
 and save it an approprite folder.
 
-Import the class:
+## Import the class:
 
-.. code-block:: python
-
+```python
    from ec4py import CV_Data
+```
+## Load a file:
 
-Load a file:
 
 
-
-.. code-block:: python
-
+```python
    data = CV_Data("CV_144700_3.tdms")
+```
 
 
+## Plot file
 
-
-Plot file
-
-.. code-block:: python
-
+```python
    data.plot()
+```
 
 .. image:: cv_data_ex1_fig1.png
   :width: 400
@@ -39,8 +36,7 @@ Plot file
 
 Visualize that a CV consists of two LSV;
 
-```ruby
-   
+```python
    line, p = data.plot(dir="pos")
    data.plot(dir="neg", plot = p)
 ```
