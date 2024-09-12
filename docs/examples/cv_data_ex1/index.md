@@ -45,7 +45,7 @@ Visualize that a CV consists of two LSV;
    data.plot(dir="neg", plot = p)
 ```
 
-![plot](./cv_data_ex1_fig1.png)
+![Plot of CV](./cv_data_ex1_fig1.png)
 
 .. image:: cv_data_ex1_fig2.png
   :width: 400
