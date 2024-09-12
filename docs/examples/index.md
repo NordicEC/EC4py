@@ -7,6 +7,12 @@ title: Examples
    :caption: Contents:
 
 
+## Class EC_data:
+   
+   [ec_data_ex1](ec_data_ex1)
+
+
+
 ## Class CV_data:
    
    [cv_data_ex1](cv_data_ex1)
