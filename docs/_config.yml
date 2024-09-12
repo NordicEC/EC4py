@@ -1,4 +1,5 @@
-source              : ./docs
+source      : ./docs
+destination: ./docs/_site
 
 # Site settings
 title: EC4py Package
