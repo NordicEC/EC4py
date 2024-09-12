@@ -1,4 +1,4 @@
-source      : ./docs
+source      : ./docs/source
 destination: ./docs/_site
 
 # Site settings
