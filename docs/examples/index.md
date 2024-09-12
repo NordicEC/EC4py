@@ -3,7 +3,6 @@ title: Examples
 ---
 
 
-
 ## Class EC_data:
    
 -   [example 1](ec_data_ex1)
