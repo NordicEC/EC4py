@@ -1,6 +1,5 @@
 ---
 title: class CV_data() - example 1
-layout: default
 ---
 
 
