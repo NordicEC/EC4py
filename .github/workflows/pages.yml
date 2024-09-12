@@ -45,11 +45,14 @@ jobs:
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}" --config docs/_config.yml
         env:
           JEKYLL_ENV: production
+      - name: 'Tar files'
+        run: tar -cvf website.tar ./docs/_site/
       - name: Upload artifact
         # Automatically uploads an artifact from the './_site' directory by default
         uses: actions/upload-artifact@v4
         with:
-          path: ./docs/_site/
+        #  path: ./docs/_site/
+          path: website.tar
           name: "github-pages"
 
   # Deployment job
