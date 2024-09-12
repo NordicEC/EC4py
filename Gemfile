@@ -9,3 +9,5 @@ gem "just-the-docs"        # always download the latest release
 # gem "jekyll-default-layout"
 
 gem "jekyll-remote-theme"
+
+gem "jekyll-paginate"
