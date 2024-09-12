@@ -1,7 +1,5 @@
-EC4py
-=====
-
-.. toctree::
-   :maxdepth: 4
-
-   ec4py
+---
+title: Data_
+parent: Examples
+nav_order: 1
+---

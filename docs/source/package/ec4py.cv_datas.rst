@@ -1,7 +1,7 @@
-ec4py.cv\_datas module
-======================
+---
+title: CV_Datas
+parent: Package
+nav_order: 1
+---
 
-.. automodule:: ec4py.cv_datas
-   :members:
-   :undoc-members:
-   :show-inheritance:
+#CV_Datas

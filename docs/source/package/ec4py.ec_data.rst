@@ -1,5 +1,8 @@
-ec4py.ec\_data module
-=====================
+---
+title: CV_Data
+parent: Examples
+nav_order: 1
+---
 
 .. automodule:: ec4py.ec_data
    :members:
