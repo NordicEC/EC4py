@@ -1,7 +1,6 @@
-.. EC4py documentation master file, created by
-   sphinx-quickstart on Fri Aug 23 13:16:37 2024.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+---
+title: EC4py documentation
+---
 
 EC4py documentation
 ===================
