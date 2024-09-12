@@ -1,7 +1,10 @@
+---
+title: class CV_data() - example 1
+layout: default
+---
 
 
-
-# Example class CV_data()
+# Example 1 class CV_data()
 ================================================
 
 Start by downloading a test file from github:
