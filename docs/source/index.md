@@ -8,8 +8,6 @@ permalink: /
 
 # EC4py documentation
 
-
-
    intro
    install
    package/modules
