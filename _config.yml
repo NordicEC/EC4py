@@ -1,14 +1,23 @@
 # Site settings
-title: Great New Blog Title
+title: EC4py
 author:
-  name: Evan Will
+  name: Gustav Wiberg
   email: your-email@domain.com
 description: "Great site about Jekyll on GH-Pages."
 
 # Build settings
-remote_theme: jekyll/minimal
-theme: jekyll-theme-minimal
+#remote_theme: jekyll/minimal
+#theme: jekyll-theme-minimal
+
+remote_theme: just-the-docs/just-the-docs
+
+url: https://electroec.github.io/ec4py
+
+aux_links:
+  Template Repository: https://github.com/just-the-docs/just-the-docs-template
+
 plugins:
+  - jekyll-remote-theme
   - jekyll-paginate
   - jekyll-sitemap
   - jekyll-rst
