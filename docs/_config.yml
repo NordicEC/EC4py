@@ -1,3 +1,5 @@
+source              : ./source
+
 # Site settings
 title: Great New Blog Title
 author:
