@@ -1,6 +1,6 @@
 ---
 title: Example 1
-parent: CV_datas
+parent: CV_Datas
 grand_parent: Examples
 ---
 
@@ -11,9 +11,9 @@ grand_parent: Examples
 
 Start by downloading a test file from github:
 
-[CV_144700_3.tdms](https://github.com/Guswib/EC4py/blob/0ac6f225816d6583b3aa6b8c62fd8a19de10dc17/test_data/CV/CV_144700_%203.tdms)
+[CV_144700_ 3.tdms](https://github.com/Guswib/EC4py/blob/0ac6f225816d6583b3aa6b8c62fd8a19de10dc17/test_data/CV/CV_144700_%203.tdms)
 
-[CV_144913_.tdms](https://github.com/Guswib/EC4py/blob/0ac6f225816d6583b3aa6b8c62fd8a19de10dc17/test_data/CV/CV_144913_%203.tdms.tdms)
+[CV_144913_ 3.tdms](https://github.com/Guswib/EC4py/blob/0ac6f225816d6583b3aa6b8c62fd8a19de10dc17/test_data/CV/CV_144913_%203.tdms)
 
 and save it an appropriate folder.
 
@@ -28,8 +28,8 @@ and save it an appropriate folder.
 
 ```python
    fileList= [
-               "CV_144700_3.tdms",
-               "CV_144913_.tdms"
+               "CV_144700_ 3.tdms",
+               "CV_144913_ 3.tdms"
    ]
 
    datas = CV_Datas(fileList)

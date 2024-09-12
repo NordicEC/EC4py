@@ -1,6 +1,6 @@
 ---
 title: Example 1
-parent: CV_data
+parent: CV_Data
 grand_parent: Examples
 ---
 

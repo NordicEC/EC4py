@@ -1,5 +1,5 @@
 ---
-title: CV_datas
+title: CV_Datas
 parent: Examples
 nav_order: 1
 ---
