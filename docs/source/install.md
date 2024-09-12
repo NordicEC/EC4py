@@ -1,5 +1,6 @@
 ---
 title: Install
+nav_order: 2
 ---
 
 Installation of EC4py

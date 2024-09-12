@@ -1,16 +1,12 @@
+---
+title: Home
+nav_order: 1
+---
 
 
-EC4py documentation
-===================
-
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
+# EC4py documentation
 
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
 
    intro
    install
