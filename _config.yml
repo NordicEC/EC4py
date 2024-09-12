@@ -11,7 +11,7 @@ description: "Great site about Jekyll on GH-Pages."
 
 remote_theme: just-the-docs/just-the-docs
 
-url: https://electroec.github.io/ec4py
+url: https://nordicec.github.io/ec4py
 
 aux_links:
   Template Repository: https://github.com/just-the-docs/just-the-docs-template
