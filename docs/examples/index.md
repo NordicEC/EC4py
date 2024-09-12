@@ -1,13 +1,17 @@
-
-Examples
-===================
+---
+title: Examples
+---
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+
+## Class CV_data:
    
-   [ex_ec_data](ex_ec_data)
-   (ex_ec_datas)
    [cv_data_ex1](cv_data_ex1)
+   (ex_ec_datas)
+
+## Class CV_datas:
+   [cv_datas_ex1](cv_datas_ex1)
    cv_datas_ex1
