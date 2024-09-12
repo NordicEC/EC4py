@@ -17,3 +17,4 @@ gem "logger"
 gem "csv"
 gem "base64"
 gem "ostruct"
+gem "github-pages", "~> 232", group: :jekyll_plugins
