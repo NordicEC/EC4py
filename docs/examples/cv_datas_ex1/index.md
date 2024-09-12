@@ -1,7 +1,7 @@
 
 
 
-Example class cv_datas
+# Example class cv_datas
 ================================================
 
 
@@ -13,41 +13,38 @@ and save it an approprite folder.
 
 Import the class:
 
-.. code-block:: python
-
+```python
    from ec4py import CV_Datas
+```
+# Load a file:
 
-Load a file:
 
 
-
-.. code-block:: python
-
+```python
    fileList= [
                "CV_144700_3.tdms",
                "CV_144700_3.tdms"
    ]
 
    datas = CV_Datas(fileList)
+```
 
 
 
+## Plot file
 
-Plot file
-
-.. code-block:: python
-
+```python
    datas.plot()
+```
 ![Plot of CV](./cv_datas_ex1_fig1.png)
 
 
-Visualize that a CV consists of two LSV;
+## Visualize that a CV consists of two LSV;
 
-.. code-block:: python
-
+```python
    line, p = data.plot(dir="pos")
    data.plot(dir="neg", plot = p)
-
+```
 ![Plot of CV](./cv_datas_ex1_fig2.png)
 
 .. image:: cv_datas_ex1_fig2.png
