@@ -15,8 +15,7 @@ plugins:
   - jekyll-remote-theme
   - jekyll-paginate
   - jekyll-sitemap
-  - jekyll-rst
-include: [source] 
+
 #  - docs/index.rst
 
 defaults:

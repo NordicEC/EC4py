@@ -8,7 +8,7 @@ description: "Great site about Jekyll on GH-Pages."
 # Build settings
 #remote_theme: jekyll/minimal
 #theme: jekyll-theme-minimal
-
+source              : ./docs
 remote_theme: just-the-docs/just-the-docs
 
 url: https://nordicec.github.io/ec4py
