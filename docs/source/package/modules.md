@@ -1,5 +1,5 @@
 ---
 title: Data_
-parent: Examples
+parent: Package
 nav_order: 1
 ---
