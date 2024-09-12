@@ -180,7 +180,7 @@ class CV_Datas:
         Returns:
             List : Slope of data based on positive and negative sweep.
         """
-  
+
         CV_plot, analyse_plot = make_plot_2x("Levich Analysis")
         #CV_plot, analyse_plot = fig.subplots(1,2)
         CV_plot.title.set_text('CVs')
@@ -191,15 +191,14 @@ class CV_Datas:
         ##Make plot
         cv_kwargs = kwargs
         cv_kwargs["plot"] = CV_plot
-       
 
-        rot,y,E,y_axis_title,y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **cv_kwargs)
-       # rot = np.array(rot)
-       # y = np.array(y)
+        rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **cv_kwargs)
+        # rot = np.array(rot)
+        # y = np.array(y)
         #rot_max = max(rot) 
         #Levich analysis
-        B_factor_pos= Levich(rot,y[:,0],y_axis_unit,y_axis_title,STYLE_POS_DL,"pos",plot=analyse_plot )
-        B_factor_neg = Levich(rot,y[:,1],y_axis_unit,y_axis_title,STYLE_NEG_DL,"neg",plot=analyse_plot )
+        B_factor_pos = Levich(rot, y[:,0], y_axis_unit, y_axis_title, STYLE_POS_DL, "pos", plot=analyse_plot )
+        B_factor_neg = Levich(rot, y[:,1], y_axis_unit, y_axis_title, STYLE_NEG_DL, "neg", plot=analyse_plot )
 
         print("Levich analysis" )
         print("dir","\tpos     ", "\tneg     " )
@@ -208,6 +207,7 @@ class CV_Datas:
         return B_factor_pos,B_factor_neg
 
     #######################################################################################################
+    
     def KouLev(self, Epot: float, *args,**kwargs):
         """Creates a Koutechy-Levich plot.
 
@@ -309,14 +309,15 @@ class CV_Datas:
     
     ##################################################################################################################
     
+    
     def Tafel2(self, lims=[-1,1], E_for_idl:float=None , *args, **kwargs):
         CV_plot, analyse_plot = make_plot_2x("Tafel Analysis")
         CV_plot.title.set_text('CVs')
 
         analyse_plot.title.set_text('Tafel Plot')   
         cv_kwargs = kwargs
-        cv_kwargs['cv_plot']=CV_plot
-        cv_kwargs['analyse_plot']=analyse_plot
+        cv_kwargs['cv_plot'] = CV_plot
+        cv_kwargs['analyse_plot'] = analyse_plot
         Tafel_pos =[]
         Tafel_neg =[]
         for cv in self.datas:
@@ -324,7 +325,9 @@ class CV_Datas:
             Tafel_pos.append(a)
             Tafel_neg.append(b)
         return Tafel_pos, Tafel_neg
-       ##################################################################################################################
+##################################################################################################################
+
+
     """
     def Tafel(self, lims=[-1,1], E_for_idl:float=None , *args, **kwargs):
         ""_summary_
@@ -427,15 +430,15 @@ class CV_Datas:
         #return m_pos,m_neg
         return Tafel_pos, Tafel_neg
         """
-    
-    
+
+
 def plots_for_rotations(datas: CV_Datas,Epot:float, *args, **kwargs):
-    rot=[]
+    rot = []
     y = []
     E = []
         #Epot=-0.5
-    y_axis_title =""
-    y_axis_unit =""
+    y_axis_title = ""
+    y_axis_unit = ""
     CVs = copy.deepcopy(datas)
     cv_kwargs = kwargs
     #x_qv = QV(1, "rpm^0.5","w")
@@ -447,15 +450,15 @@ def plots_for_rotations(datas: CV_Datas,Epot:float, *args, **kwargs):
             cv.norm(arg)
         cv_kwargs["legend"] = str(f"{float(cv.rotation):.0f}")
         #cv_kwargs["plot"] = CV_plot
-        l,ax = cv.plot(**cv_kwargs)
+        l, ax = cv.plot(**cv_kwargs)
         line.append(l)
         y.append(cv.get_i_at_E(Epot))
         E.append([Epot, Epot])
-        y_axis_title= str(cv.i_label)
-        y_axis_unit= str(cv.i_unit)
+        y_axis_title = str(cv.i_label)
+        y_axis_unit = str(cv.i_unit)
     rot = np.array(rot)
-    y = np.array(y) 
-    CV_plot =  cv_kwargs["plot"] 
-    CV_plot.plot(E,y[:,0], STYLE_POS_DL,E,y[:,1], STYLE_NEG_DL)
+    y = np.array(y)
+    CV_plot =  cv_kwargs["plot"]
+    CV_plot.plot(E, y[:, 0], STYLE_POS_DL, E, y[:, 1], STYLE_NEG_DL)
     CV_plot.legend()
-    return rot,y,E,y_axis_title,y_axis_unit
+    return rot, y, E, y_axis_title, y_axis_unit

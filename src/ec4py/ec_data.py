@@ -12,6 +12,7 @@ from .util_graph import plot_options
 from .ec_setup import EC_Setup
 from .util import Quantity_Value_Unit as Q
 
+
 class EC_Data(EC_Setup):
     """ Reads and stores data from a TDMS file in the format of EC4 DAQ.
 
@@ -20,19 +21,19 @@ class EC_Data(EC_Setup):
     def __init__(self, path = ""):
         
         super().__init__()
-        #self._area=1
-        #self._area_unit="cm^2"
-        #self.rotation =0
-        #self.rotation_unit ="/min"
-        self.Time=np.array([],dtype=np.float64) 
-        self.E=np.array([],dtype=np.float64)
-        self.i=np.array([],dtype=np.float64)
-        self.U=np.array([],dtype=np.float64)
-        self.Z_E=np.array([],dtype=np.float64)
-        self.Phase_E=np.array([],dtype=np.float64)
-        self.Z_U=np.array([],dtype=np.float64)
-        self.Phase_U=np.array([],dtype=np.float64)
-        self.path=""
+        # self._area=1
+        # self._area_unit="cm^2"
+        # self.rotation =0
+        # self.rotation_unit ="/min"
+        self.Time = np.array([], dtype=np.float64) 
+        self.E = np.array([], dtype=np.float64)
+        self.i = np.array([], dtype=np.float64)
+        self.U = np.array([], dtype=np.float64)
+        self.Z_E = np.array([], dtype=np.float64)
+        self.Phase_E = np.array([], dtype=np.float64)
+        self.Z_U = np.array([], dtype=np.float64)
+        self.Phase_U = np.array([], dtype=np.float64)
+        self.path = ""
         self.rawdata = None
         """All setup information given in the file.
         """
@@ -51,17 +52,17 @@ class EC_Data(EC_Setup):
                 self.E = tdms_file['EC']['E'].data
                 self.setup_data.name = tdms_file.properties['name']
                 try:
-                    self.Z_E = tdms_file['EC']['Z_E'].data #not all data file contains U channel
-                    self.Phase_E = tdms_file['EC']['Phase_E'].data #not all data file contains U channel
+                    self.Z_E = tdms_file['EC']['Z_E'].data  # not all data file contains U channel
+                    self.Phase_E = tdms_file['EC']['Phase_E'].data  # not all data file contains U channel
                 except KeyError:
                     pass
                 try:
-                    self.U = tdms_file['EC']['Ucell'].data #not all data file contains U channel
+                    self.U = tdms_file['EC']['Ucell'].data  # not all data file contains U channel
                 except KeyError:
                     pass
                 try:
-                    self.Z_U = tdms_file['EC']['Z_cell'].data #not all data file contains U channel
-                    self.Phase_U = tdms_file['EC']['Phase_cell'].data #not all data file contains U channel
+                    self.Z_U = tdms_file['EC']['Z_cell'].data  # not all data file contains U channel
+                    self.Phase_U = tdms_file['EC']['Phase_cell'].data  # not all data file contains U channel
                 except KeyError:
                     pass
                 try:
@@ -80,7 +81,7 @@ class EC_Data(EC_Setup):
             except KeyError as e: 
                 print(f"TDMS error: {e}") 
         
-    def set_area(self,value,unit):
+    def set_area(self, value, unit):
         self._area = value
         self._area_unit = unit
 
@@ -93,10 +94,10 @@ class EC_Data(EC_Setup):
         return f"{self.setup_data.name}"
 
 
-    def get_channel(self,datachannel:str) -> tuple[list,str,str] :
+    def get_channel(self, datachannel: str) -> tuple[list, str, str] :
         """
         Get the channel of the EC4 DAQ file.
-        
+
         Returns:
             tuple: [channel, quantity-name, unit name]
         
@@ -109,40 +110,40 @@ class EC_Data(EC_Setup):
         """
         match datachannel:
             case "Time":
-                return self.Time,"t","s"
-           # case "E":
+                return self.Time, "t", "s"
+            # case "E":
             #    return self.E, "E", "V"
             case "U":
-                return self.U,"U", "V"
+                return self.U, "U", "V"
             case "i":
-                return self.i,"i", "A"
+                return self.i, "i", "A"
             case "j":
                 return self.i/self._area, "j", f"A/{self._area_unit}"
             case "Z_E":
-                return self.Z_E,"Z_E", "Ohm"
+                return self.Z_E, "Z_E", "Ohm"
             case "Z_U":
-                return self.Z_U,"Z_U", "Ohm"
+                return self.Z_U, "Z_U", "Ohm"
             case "Phase_E":
-                return self.Phase_E,"Phase_E", "rad"
+                return self.Phase_E, "Phase_E", "rad"
             case "Phase_U":
-                return self.Phase_U,"Phase_U", "rad"
+                return self.Phase_U, "Phase_U", "rad"
             case "R_E":
                 #cosValue=self.Phase_E/self.Phase_E
                 #index=0
                 #for i in self.Phase_E:
                 #    cosValue[index] = math.cos(self.Phase_E[index])
                 #    index=index+1
-                return self.Z_E * self.cosVal(self.Phase_E),"R_WE", "Ohm"
+                return self.Z_E * self.cosVal(self.Phase_E), "R_WE", "Ohm"
             case "E-IZ":
-                return self.E - self.i*self.Z_E,"E-IZ", "V"
+                return self.E - self.i*self.Z_E, "E-IZ", "V"
             
             case "E-IR":
-                return self.E - self.i*self.Z_E,"E-IR", "V"
+                return self.E - self.i*self.Z_E, "E-IR", "V"
             case _:
                 #if datachannel in self.rawdata.channels():
                 try:
-                    unit = self.rawdata[datachannel].properties.get("unit_string","")
-                    quantity = self.rawdata[datachannel].properties.get("Quantity","")
+                    unit = self.rawdata[datachannel].properties.get("unit_string", "")
+                    quantity = self.rawdata[datachannel].properties.get("Quantity", "")
                     return self.rawdata[datachannel].data,str(quantity) ,str(unit)
                 except KeyError:
                     raise NameError("The channel name is not supported")
@@ -154,19 +155,18 @@ class EC_Data(EC_Setup):
         for i in range(max_index):
             cosValue[i] = math.cos(self.Phase_E[i])
         return cosValue          
-    
-    def index_at_time(self, time_s_:float):
+
+    def index_at_time(self, time_s_: float):
         return index_at_time(self.Time, time_s_)
 
-    
-    def plot(self, x_channel:str, y_channel:str, **kwargs):
+
+    def plot(self, x_channel: str, y_channel: str, **kwargs):
         '''
         plots y_channel vs x_channel.\n
         to add to a existing plot, add the argument: \n
         "plot = subplot"\n
         "x_smooth= number" - smoothing of the x-axis. \n
         "y_smooth= number" - smoothing of the y-axis. \n
-        
         '''
         #xlable ="wrong channel name"
         #xunit = "wrong channel name"
@@ -174,12 +174,11 @@ class EC_Data(EC_Setup):
         #yunit = "wrong channel name"
         
         range = {
-            'limit_min' : -1,
-            'limit_max' : -1   
+            'limit_min': -1,
+            'limit_max': -1   
         }
         range.update(kwargs)
-        #print(kwargs)
-        #print(range)
+
         options = plot_options(kwargs)
         index_min = 0
         if range["limit_min"] >0:
@@ -187,9 +186,7 @@ class EC_Data(EC_Setup):
         index_max = len(self.Time)-1
         if range["limit_max"] >0:
             index_max = self.index_at_time(range["limit_max"])
-        
-        #max_index = len(self.Time)-1
-        #print("index", index_min,index_max)
+
         try:
             x_data, options.x_label, options.x_unit = self.get_channel(x_channel)
             options.x_data = x_data[index_min:index_max]
@@ -205,16 +202,16 @@ class EC_Data(EC_Setup):
 
     def plot_rawdata(self):
         fig = plt.figure()
-        
+
         plt.suptitle(self.setup_data.name)
         nr_data = len(self.rawdata) -1 # The time channel should not be counted.
         print(self.setup_data.name, ": EC data sets: ", nr_data)
-        plot = fig.subplots(nr_data,1)
+        plot = fig.subplots(nr_data, 1)
         
         #ax = fig.subplots()
-        index=0
+        index = 0
         for ch_name in self.rawdata:
-            if( ch_name != 'Time'):
+            if(ch_name != 'Time'):
                 try:
                     #time = channel.time_track()
                     plot[index].plot(self.rawdata[ch_name].time_track(),self.rawdata[ch_name].data)
