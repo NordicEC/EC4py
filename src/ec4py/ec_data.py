@@ -16,16 +16,15 @@ from .util import Quantity_Value_Unit as Q
 class EC_Data(EC_Setup):
     """ Reads and stores data from a TDMS file in the format of EC4 DAQ.
 
-     
     """
-    def __init__(self, path = ""):
+    def __init__(self, path=""):
         
         super().__init__()
         # self._area=1
         # self._area_unit="cm^2"
         # self.rotation =0
         # self.rotation_unit ="/min"
-        self.Time = np.array([], dtype=np.float64) 
+        self.Time = np.array([], dtype=np.float64)
         self.E = np.array([], dtype=np.float64)
         self.i = np.array([], dtype=np.float64)
         self.U = np.array([], dtype=np.float64)
@@ -37,9 +36,9 @@ class EC_Data(EC_Setup):
         self.rawdata = None
         """All setup information given in the file.
         """
-        
+
         if path == "":
-            #print("no path")
+            # print("no path")
             return
         else:
             try:
@@ -75,10 +74,10 @@ class EC_Data(EC_Setup):
                     pass
                 [self.area, self.setup_data._area_unit] = util.extract_value_unit(self.setup["Electrode.Area"])
                 [self.rotation, self.setup_data.rotation_unit] = util.extract_value_unit(self.setup["Inst.Convection.Speed"])
-                
-            except FileNotFoundError :
+
+            except FileNotFoundError:
                 print(f"TDMS file was not found: {path}")
-            except KeyError as e: 
+            except KeyError as e:
                 print(f"TDMS error: {e}") 
         
     def set_area(self, value, unit):
@@ -100,8 +99,8 @@ class EC_Data(EC_Setup):
 
         Returns:
             tuple: [channel, quantity-name, unit name]
-        
-        
+
+
         - Time
         - E,U , E-IZ,E-IR
         - i, j
@@ -128,9 +127,9 @@ class EC_Data(EC_Setup):
             case "Phase_U":
                 return self.Phase_U, "Phase_U", "rad"
             case "R_E":
-                #cosValue=self.Phase_E/self.Phase_E
-                #index=0
-                #for i in self.Phase_E:
+                # cosValue=self.Phase_E/self.Phase_E
+                # index=0
+                # for i in self.Phase_E:
                 #    cosValue[index] = math.cos(self.Phase_E[index])
                 #    index=index+1
                 return self.Z_E * self.cosVal(self.Phase_E), "R_WE", "Ohm"
@@ -140,18 +139,18 @@ class EC_Data(EC_Setup):
             case "E-IR":
                 return self.E - self.i*self.Z_E, "E-IR", "V"
             case _:
-                #if datachannel in self.rawdata.channels():
+                # if datachannel in self.rawdata.channels():
                 try:
                     unit = self.rawdata[datachannel].properties.get("unit_string", "")
                     quantity = self.rawdata[datachannel].properties.get("Quantity", "")
-                    return self.rawdata[datachannel].data,str(quantity) ,str(unit)
+                    return self.rawdata[datachannel].data, str(quantity) , str(unit)
                 except KeyError:
                     raise NameError("The channel name is not supported")
-                #return np.array([2]), "No channel", "No channel"
+                # return np.array([2]), "No channel", "No channel"
 
-    def cosVal(self,phase: float):
-        cosValue=phase/phase
-        max_index=len(phase)
+    def cosVal(self, phase: float):
+        cosValue = phase/phase
+        max_index = len(phase)
         for i in range(max_index):
             cosValue[i] = math.cos(self.Phase_E[i])
         return cosValue          
@@ -168,20 +167,20 @@ class EC_Data(EC_Setup):
         "x_smooth= number" - smoothing of the x-axis. \n
         "y_smooth= number" - smoothing of the y-axis. \n
         '''
-        #xlable ="wrong channel name"
-        #xunit = "wrong channel name"
-        #ylable ="wrong channel name"
-        #yunit = "wrong channel name"
+        # xlable ="wrong channel name"
+        # xunit = "wrong channel name"
+        # ylable ="wrong channel name"
+        # yunit = "wrong channel name"
         
         range = {
             'limit_min': -1,
-            'limit_max': -1   
+            'limit_max': -1
         }
         range.update(kwargs)
 
         options = plot_options(kwargs)
         index_min = 0
-        if range["limit_min"] >0:
+        if range["limit_min"] > 0:
             index_min = self.index_at_time(range["limit_min"])
         index_max = len(self.Time)-1
         if range["limit_max"] >0:
@@ -204,26 +203,26 @@ class EC_Data(EC_Setup):
         fig = plt.figure()
 
         plt.suptitle(self.setup_data.name)
-        nr_data = len(self.rawdata) -1 # The time channel should not be counted.
+        nr_data = len(self.rawdata) -1  # The time channel should not be counted.
         print(self.setup_data.name, ": EC data sets: ", nr_data)
         plot = fig.subplots(nr_data, 1)
         
-        #ax = fig.subplots()
+        # ax = fig.subplots()
         index = 0
         for ch_name in self.rawdata:
             if(ch_name != 'Time'):
                 try:
-                    #time = channel.time_track()
+                    # time = channel.time_track()
                     plot[index].plot(self.rawdata[ch_name].time_track(),self.rawdata[ch_name].data)
                     yunit = self.rawdata[ch_name].properties["unit_string"]
                     plot[index].set_ylabel(f'{ch_name} / {yunit}')
                     plot[index].set_xlabel('Time / s')
                 finally:
                     index +=1                    
-        
+
         return
     
-    def integrate(self,t_start,t_end,y_channel:str="i"):
+    def integrate(self, t_start, t_end, y_channel: str = "i"):
         """_summary_
 
         Args:

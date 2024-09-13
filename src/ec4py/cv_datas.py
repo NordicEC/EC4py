@@ -163,7 +163,7 @@ class CV_Datas:
             cv_kwargs["name"] = cv.setup_data.name
             if legend == "_" :
                 cv_kwargs["legend"] = cv.setup_data.name
-            
+
             p = cv.plot(**cv_kwargs)
 
         CV_plot.legend()
@@ -182,29 +182,29 @@ class CV_Datas:
         """
 
         CV_plot, analyse_plot = make_plot_2x("Levich Analysis")
-        #CV_plot, analyse_plot = fig.subplots(1,2)
+        # CV_plot, analyse_plot = fig.subplots(1,2)
         CV_plot.title.set_text('CVs')
 
         analyse_plot.title.set_text('Levich Plot')
-        
+
         #########################################################
-        ##Make plot
+        # Make plot
         cv_kwargs = kwargs
         cv_kwargs["plot"] = CV_plot
 
         rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **cv_kwargs)
         # rot = np.array(rot)
         # y = np.array(y)
-        #rot_max = max(rot) 
-        #Levich analysis
+        # rot_max = max(rot) 
+        # Levich analysis
         B_factor_pos = Levich(rot, y[:,0], y_axis_unit, y_axis_title, STYLE_POS_DL, "pos", plot=analyse_plot )
         B_factor_neg = Levich(rot, y[:,1], y_axis_unit, y_axis_title, STYLE_NEG_DL, "neg", plot=analyse_plot )
 
         print("Levich analysis" )
-        print("dir","\tpos     ", "\tneg     " )
+        print("dir", "\tpos     ", "\tneg     " )
         print(" :    ",f"\t{y_axis_unit} / rpm^0.5",f"\t{y_axis_unit} / rpm^0.5")
-        print("slope:","\t{:.2e}".format(B_factor_pos.value) ,"\t{:.2e}".format(B_factor_neg.value))
-        return B_factor_pos,B_factor_neg
+        print("slope:", "\t{:.2e}".format(B_factor_pos.value) , "\t{:.2e}".format(B_factor_neg.value))
+        return B_factor_pos, B_factor_neg
 
     #######################################################################################################
     
@@ -219,9 +219,9 @@ class CV_Datas:
         Returns:
             _type_: _description_
         """
-        
+
         CV_plot, analyse_plot = make_plot_2x("Koutechy-Levich Analysis")
-        
+
         CV_plot.title.set_text('CVs')
 
         analyse_plot.title.set_text('Koutechy-Levich Plot')
@@ -233,8 +233,6 @@ class CV_Datas:
         y_axis_title =""
         y_axis_unit =""
         CVs = copy.deepcopy(self.datas)
-        
-       
         for cv in CVs:
             x_qv = cv.rotation
             rot.append( math.sqrt(cv.rotation))
@@ -251,60 +249,60 @@ class CV_Datas:
         
         """
 
-        #CV_plot.plot(E,y_values[:,0], STYLE_POS_DL, E,y_values[:,1],STYLE_NEG_DL)
-        #CV_plot.legend()
+        # CV_plot.plot(E,y_values[:,0], STYLE_POS_DL, E,y_values[:,1],STYLE_NEG_DL)
+        # CV_plot.legend()
         cv_kwargs = kwargs
         cv_kwargs["plot"] = CV_plot
-        rot,y,E,y_axis_title,y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **cv_kwargs)
-        
-        #rot = np.array(rot)
-        
+        rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas, Epot, *args, **cv_kwargs)
+
+        # rot = np.array(rot)
+
         rot = 1 / rot 
-        x_plot = np.insert(rot,0,0)  
+        x_plot = np.insert(rot, 0, 0)  
         x_qv = QV(1, "rpm^0.5","w")
         x_u =  QV(1, x_qv.unit,x_qv.quantity)** -0.5
-        #print(x_plot) 
+        # print(x_plot) 
         y_values = np.array(y)
         y_inv = 1/ y_values
-        
-        y_qv = QV(1, y_axis_unit.strip(),y_axis_title.strip())**-1
-        #print(rot)
-        #print(y[:,0])
 
-        analyse_plot.plot(rot,y_inv[:,0],STYLE_POS_DL,rot,y_inv[:,1],STYLE_NEG_DL)
-        #print("AAAA", x_qv.quantity,x_qv)
-        #print("AAAA", x_u.quantity, x_u)
+        y_qv = QV(1, y_axis_unit.strip(), y_axis_title.strip())**-1
+        # print(rot)
+        # print(y[:,0])
+
+        analyse_plot.plot(rot, y_inv[:, 0], STYLE_POS_DL, rot, y_inv[:,1], STYLE_NEG_DL)
+        # print("AAAA", x_qv.quantity,x_qv)
+        # print("AAAA", x_u.quantity, x_u)
 #        analyse_plot.set_xlabel(str("$\omega^{-0.5}$" + "("+ "rpm$^{-0.5}$" +")"))
         analyse_plot.set_xlabel(f"{quantity_plot_fix(x_u.quantity)} ( {quantity_plot_fix(x_u.unit)} )")
-        
+
         analyse_plot.set_ylabel(str( f"(1 / ({quantity_plot_fix(y_axis_title)}) ({quantity_plot_fix(y_qv.unit)})"))
-        
-        #FIT pos
-        
+
+        # FIT pos
+
         dydx_qv = y_qv / x_u
         m_pos, b = np.polyfit(rot, y_inv[:,0], 1)
-        
-        y_pos= m_pos*x_plot+b
-        slope_pos = QV(m_pos,dydx_qv.unit,dydx_qv.quantity)
-        
-        B_pos = 1/m_pos
-        line,=analyse_plot.plot(x_plot,y_pos,'b-' )
+
+        y_pos= m_pos * x_plot + b
+        slope_pos = QV(m_pos, dydx_qv.unit, dydx_qv.quantity)
+
+        B_pos = 1 / m_pos
+        line, = analyse_plot.plot(x_plot, y_pos, 'b-' )
         line.set_label(f"pos: m={B_pos:3.3e}")
-        #FIT neg
+        # FIT neg
         m_neg, b = np.polyfit(rot, y_inv[:,1], 1)
         slope_neg = QV(m_neg,dydx_qv.unit,dydx_qv.quantity)
-        y_neg= m_neg*x_plot+b
+        y_neg= m_neg * x_plot + b
         B_neg = 1/m_neg
-        line,=analyse_plot.plot(x_plot,y_neg,'r-' )
+        line,=analyse_plot.plot(x_plot,y_neg, 'r-' )
         line.set_label(f"neg: m={B_neg:3.3e}")
-        
-        
+
+
         analyse_plot.legend()
-        analyse_plot.set_xlim(left=0,right =None)
+        analyse_plot.set_xlim(left=0, right=None)
         print("KouLev analysis" )
         print("dir","\tpos     ", "\tneg     " )
-        print(" :",f"\trpm^0.5 /{y_axis_unit}",f"\trpm^0.5 /{y_axis_unit}")
-        print("slope:","\t{:.2e}".format(B_pos) ,"\t{:.2e}".format(B_neg))
+        print(" :", f"\trpm^0.5 /{y_axis_unit}", f"\trpm^0.5 /{y_axis_unit}")
+        print("slope:", "\t{:.2e}".format(B_pos) , "\t{:.2e}".format(B_neg))
         return slope_pos,slope_neg
     
     ##################################################################################################################
@@ -321,7 +319,7 @@ class CV_Datas:
         Tafel_pos =[]
         Tafel_neg =[]
         for cv in self.datas:
-            a,b = cv.Tafel(lims, E_for_idl,  **cv_kwargs)
+            a, b = cv.Tafel(lims, E_for_idl, **cv_kwargs)
             Tafel_pos.append(a)
             Tafel_neg.append(b)
         return Tafel_pos, Tafel_neg
@@ -341,7 +339,7 @@ class CV_Datas:
         CV_plot.title.set_text('CVs')
 
         analyse_plot.title.set_text('Tafel Plot')
-        
+
         rot=[]
         y = []
         E = []
@@ -355,7 +353,7 @@ class CV_Datas:
         plot_color2= []
         for cv in CVs:
             rot.append( math.sqrt(cv.rotation))
-        
+
             for arg in args:
                 #if arg == "area":
                 cv.norm(arg)
@@ -411,10 +409,10 @@ class CV_Datas:
         if E_for_idl != None:
             CV_plot.plot(E,y_values[:,0], STYLE_POS_DL, E,y_values[:,1],STYLE_NEG_DL)
         CV_plot.legend()
-    
+
 
         analyse_plot.set_xlim(lims[0]-0.1,lims[1]+0.1)
-        
+
         analyse_plot.set_xlabel("E ( V )")
         analyse_plot.set_ylabel(f"log( {y_axis_title} / {y_axis_unit} )" )
         #m_pos, b = np.polyfit(rot, y_inv[:,0], 1)
@@ -432,24 +430,24 @@ class CV_Datas:
         """
 
 
-def plots_for_rotations(datas: CV_Datas,Epot:float, *args, **kwargs):
+def plots_for_rotations(datas: CV_Datas, Epot: float, *args, **kwargs):
     rot = []
     y = []
     E = []
-        #Epot=-0.5
+    # Epot=-0.5
     y_axis_title = ""
     y_axis_unit = ""
     CVs = copy.deepcopy(datas)
     cv_kwargs = kwargs
-    #x_qv = QV(1, "rpm^0.5","w")
+    # x_qv = QV(1, "rpm^0.5","w")
     line=[]
     for cv in CVs:
-        #x_qv = cv.rotation
+        # x_qv = cv.rotation
         rot.append(math.sqrt(cv.rotation))
         for arg in args:
             cv.norm(arg)
         cv_kwargs["legend"] = str(f"{float(cv.rotation):.0f}")
-        #cv_kwargs["plot"] = CV_plot
+        # cv_kwargs["plot"] = CV_plot
         l, ax = cv.plot(**cv_kwargs)
         line.append(l)
         y.append(cv.get_i_at_E(Epot))
@@ -458,7 +456,7 @@ def plots_for_rotations(datas: CV_Datas,Epot:float, *args, **kwargs):
         y_axis_unit = str(cv.i_unit)
     rot = np.array(rot)
     y = np.array(y)
-    CV_plot =  cv_kwargs["plot"]
+    CV_plot = cv_kwargs["plot"]
     CV_plot.plot(E, y[:, 0], STYLE_POS_DL, E, y[:, 1], STYLE_NEG_DL)
     CV_plot.legend()
     return rot, y, E, y_axis_title, y_axis_unit
