@@ -18,7 +18,7 @@ class EC_Data(EC_Setup):
 
     """
     def __init__(self, path=""):
-        
+
         super().__init__()
         # self._area=1
         # self._area_unit="cm^2"
@@ -78,7 +78,7 @@ class EC_Data(EC_Setup):
             except FileNotFoundError:
                 print(f"TDMS file was not found: {path}")
             except KeyError as e:
-                print(f"TDMS error: {e}") 
+                print(f"TDMS error: {e}")
         
     def set_area(self, value, unit):
         self._area = value
@@ -92,8 +92,7 @@ class EC_Data(EC_Setup):
         """
         return f"{self.setup_data.name}"
 
-
-    def get_channel(self, datachannel: str) -> tuple[list, str, str] :
+    def get_channel(self, datachannel: str) -> tuple[list, str, str]:
         """
         Get the channel of the EC4 DAQ file.
 
@@ -105,7 +104,7 @@ class EC_Data(EC_Setup):
         - E,U , E-IZ,E-IR
         - i, j
         - Z_E. Z_U
-        
+
         """
         match datachannel:
             case "Time":
@@ -135,7 +134,7 @@ class EC_Data(EC_Setup):
                 return self.Z_E * self.cosVal(self.Phase_E), "R_WE", "Ohm"
             case "E-IZ":
                 return self.E - self.i*self.Z_E, "E-IZ", "V"
-            
+
             case "E-IR":
                 return self.E - self.i*self.Z_E, "E-IR", "V"
             case _:
@@ -171,7 +170,7 @@ class EC_Data(EC_Setup):
         # xunit = "wrong channel name"
         # ylable ="wrong channel name"
         # yunit = "wrong channel name"
-        
+
         range = {
             'limit_min': -1,
             'limit_max': -1
@@ -239,9 +238,8 @@ class EC_Data(EC_Setup):
         array_Q = integrate.cumulative_simpson(y[idxmin:idxmax], x=self.Time[idxmin:idxmax], initial=0)
         Charge = Q(array_Q[len(array_Q)-1]-array_Q[0],unit,quantity)*Q(1,"s","t")
         return Charge        
-            
-            
-    
+
+
 def index_at_time(Time, time_s_:float):
     max_index = len(Time)
     index = -1
@@ -249,5 +247,5 @@ def index_at_time(Time, time_s_:float):
         if time_s_ < Time[i]:
             index = i
             break
-    if index < 0: index = len(Time)-1
+    if index < 0 : index = len(Time)-1
     return index
