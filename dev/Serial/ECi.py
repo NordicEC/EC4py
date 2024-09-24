@@ -3,7 +3,7 @@ import codecs
 import numpy as np
 from ec4py import Step_Data
 from ec4py import CV_Data, CV_Datas
-from ec4py import LSV_Data
+from ec4py import LSV_Data, LSV_Datas
 
 def start_potentiostat(port: str):
     ser = serial.Serial()
@@ -139,7 +139,7 @@ class ECipot():
                     print("-",end ="")
             
             data = Step_Data()
-            data.Time = tdata.Time()
+            data.Time = tdata.Time() /1000. # time is given in ms
             data.Time = data.Time - data.Time[0]
             data.E = tdata.E()
             data.i = tdata.i()
@@ -150,6 +150,8 @@ class ECipot():
     def ramp(self,start:float,v1:float,v2:float,rate:float, nr):
         if self.ser.is_open:
             string = f'ramp {start} {v1} {v2} {rate} {nr}\n' 
+            start = start/1000
+            v1 = v1/1000
             b_string = codecs.encode(string, 'utf-8')
             print(b_string)
             self.ser.write(b_string) 
@@ -187,13 +189,14 @@ class ECipot():
             #print(line)
             LSV  = []
             dirs = [""]
-            LSV_Datas =[]
+            datas = LSV_Datas()
             newDir = ""
             for lsv_nr in range(nr+2):
                 tdata = tempData()
                 newlsv = LSV_Data()
-                newlsv.setup_data._setup['Start'] = str(start)
-                newlsv=dirs[lsv_nr]
+                newlsv.setup_data._setup['Start'] = str(f"{start} V")
+                newlsv.setup_data._setup['V1'] = str(f"{v1} V")
+                newlsv.dir = dirs[lsv_nr]
                 tdata.append(lastLine)
                 for x in range(2000):  
                     line = None
@@ -211,14 +214,15 @@ class ECipot():
                         print("-", end ="")
                 LSV.append(tdata.end())
                 
-                newlsv.E = tdata.E()
-                newlsv.i = tdata.i()
-                LSV_Datas.append(newlsv)
+                #newlsv.E = tdata.E()
+                #newlsv.i = tdata.i()
+                newlsv.convert(tdata.Time(),tdata.E(),tdata.i() )
+                datas.append(newlsv)
                 lastLine = tdata.lastLine
                 if line[0:4] == "Done":
                     break 
             print(dirs)         
-            return LSV, ini_data, LSV_Datas
+            return LSV, ini_data, datas
 
 
 
@@ -234,7 +238,7 @@ class tempData:
             self.lastLine = line
             data = line.split("\t")
             #print(data)
-            self.temp_data[self.index,0] = float(data[1])
+            self.temp_data[self.index,0] = float(data[1]) 
             self.temp_data[self.index,1] = float(data[2])
             self.temp_data[self.index,2] = float(data[3])
             self.index = self.index + 1

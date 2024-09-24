@@ -35,8 +35,10 @@ class LSV_Datas:
     ### Options keywords:
     legend = "name"
     """
-    def __init__(self, paths:list[Path] | Path, **kwargs):
-
+    def __init__(self, paths:list[Path] | Path = None, **kwargs):
+        self.datas = []
+        if paths is None:
+            return
         if not isinstance(paths,list ):
             path_list = [paths]
         #if isinstance(paths,Path ):

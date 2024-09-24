@@ -210,7 +210,6 @@ class LSV_Data(EC_Setup):
         #print("V1", self.setup['V1'])
         V1, V1_str = extract_value_unit(self.setup['V1'])
         #print("V2", self.setup['V2'])
-        V2, V2_str = extract_value_unit(self.setup['V2'])
         #print("CV", V0,V1,V2)
         options = plot_options(kwargs)
         #print("CONVERTING",len(time), len(E), len(i))
@@ -221,10 +220,7 @@ class LSV_Data(EC_Setup):
         #finally:
         #    pass
         positive_start = False
-        if V0 == V1:
-            positive_start = (V1 < V2)
-        else:
-            positive_start = V0 < V1
+        positive_start = V0 < V1
         #print("startDIR:", positive_start)
 
         y = options.smooth_y(y)
