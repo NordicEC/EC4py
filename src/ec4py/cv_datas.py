@@ -102,6 +102,10 @@ class CV_Datas:
 
 
     #############################################################################
+    
+    def append(self,CV = CV_Data):
+        self.datas.append(CV)
+    
     def bg_corr(self, bg_cv: CV_Data|Path) -> CV_Data:
         """Background correct the data by subtracting the bg_cv. 
 
