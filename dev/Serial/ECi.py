@@ -5,6 +5,10 @@ from ec4py import Step_Data
 from ec4py import CV_Data, CV_Datas
 from ec4py import LSV_Data, LSV_Datas
 
+from ECi_pot_serial_tech_step import tech_step
+from ECi_pot_serial_tech import tempData
+from ECi_pot_serial_tech_ramp import tech_ramp
+
 def start_potentiostat(port: str):
     ser = serial.Serial()
     ser.baudrate = 115200
@@ -113,12 +117,12 @@ class ECipot():
             string = string + "\n"
             b_string = codecs.encode(string, 'utf-8')
             print(b_string)
-            tdata = tempData()
+            #tdata = tempData()
             self.reads()
             ini_data = line2data(self.read_wait())
             self.ser.write(b_string) 
+            """
             for x in range(50):
-                line = None
                 line = self.read_wait()
                 print(line)
                 if line[0:3] == "INI":
@@ -138,20 +142,40 @@ class ECipot():
                     tdata.append(line)
                     print("-",end ="")
             
+            tdata = tech_step(self.read_wait)
             data = Step_Data()
             data.Time = tdata.Time() /1000. # time is given in ms
             data.Time = data.Time - data.Time[0]
             data.E = tdata.E()
             data.i = tdata.i()
+            """
+            data = tech_step(self.read_wait)
             ##ini 
             return data
-                
-    
-    def ramp(self,start:float,v1:float,v2:float,rate:float, nr):
+    def ramp_test(self,start:float,v1:float,v2:float,rate_mV_s:float, nr):
         if self.ser.is_open:
-            string = f'ramp {start} {v1} {v2} {rate} {nr}\n' 
+            string = f'ramp {start} {v1} {v2} {rate_mV_s} {nr}\n' 
+            b_string = codecs.encode(string, 'utf-8')
+            print(b_string)
+            self.ser.write(b_string) 
+            for x in range(100):
+                line = self.read_wait()
+                print(line)
+                           
+    def ramp2(self,start_V:float,v1_V:float,v2_V:float,rate_V_s:float, nr_of_ramps):
+        if self.ser.is_open:
+            string = f'ramp {start_V*1000:n} {v1_V*1000:n} {v2_V*1000:n} {rate_V_s*1000:n} {nr_of_ramps}\n' 
+            b_string = codecs.encode(string, 'utf-8')
+            print(b_string)
+            self.ser.write(b_string) 
+            tech_ramp(self.read_wait(), start_V,v1_V,v2_V,rate_V_s, nr_of_ramps)
+    
+    def ramp(self,start:float,v1:float,v2:float,rate_mV_s:float, nr):
+        if self.ser.is_open:
+            string = f'ramp {start} {v1} {v2} {rate_mV_s} {nr}\n' 
             start = start/1000
             v1 = v1/1000
+            rate_V_s = rate_mV_s /1000
             b_string = codecs.encode(string, 'utf-8')
             print(b_string)
             self.ser.write(b_string) 
@@ -191,6 +215,7 @@ class ECipot():
             dirs = [""]
             datas = LSV_Datas()
             newDir = ""
+            v_range = [start]
             for lsv_nr in range(nr+2):
                 tdata = tempData()
                 newlsv = LSV_Data()
@@ -216,7 +241,15 @@ class ECipot():
                 
                 #newlsv.E = tdata.E()
                 #newlsv.i = tdata.i()
-                newlsv.convert(tdata.Time(),tdata.E(),tdata.i() )
+                if(lsv_nr%2 == 0):
+                    V_start = v2
+                    if lsv_nr == 0:
+                        V_start = start
+                    V_end = v1
+                else:
+                    V_start = v1
+                    V_end = v2
+                newlsv.convert(tdata.Time(),tdata.E(),tdata.i(), V_start,V_end, rate_V_s )
                 datas.append(newlsv)
                 lastLine = tdata.lastLine
                 if line[0:4] == "Done":
@@ -227,33 +260,7 @@ class ECipot():
 
 
 
-class tempData:
-    def __init__(self):
-        self.temp_data = np.empty([1000,3])
-        self.index = 0
-        self.lastLine = ""
-        
-    def append(self, line):
-        if line[0:1] == "\t":
-            self.lastLine = line
-            data = line.split("\t")
-            #print(data)
-            self.temp_data[self.index,0] = float(data[1]) 
-            self.temp_data[self.index,1] = float(data[2])
-            self.temp_data[self.index,2] = float(data[3])
-            self.index = self.index + 1
-    
-    def end(self):
-        return np.resize(self.temp_data,(self.index,3)) 
-    
-    def Time(self):
-        return self.temp_data[0:self.index,0]
-    
-    def E(self):
-        return self.temp_data[0:self.index,1]
-    
-    def i(self):
-        return self.temp_data[0:self.index,2]
+
            
     
 

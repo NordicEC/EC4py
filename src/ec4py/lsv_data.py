@@ -189,8 +189,8 @@ class LSV_Data(EC_Setup):
         return
 
     #####################################################################################################    
-    def convert(self, time, E, i, **kwargs):
-        """Converts data to CV data
+    def convert(self, time, E, i, V0= None, V1 = None, Rate_V_s_ = None, **kwargs):
+        """Converts data to a voltammogram, i.e. resampling the data to a evently spaced E.
 
         Args:
             time (_type_): time
@@ -201,24 +201,14 @@ class LSV_Data(EC_Setup):
         x= E
         y= i
 
-        #print("Convert", len(E))
-        #print("SETP",self.setup)
-        #Start_Delay, = extract_value_unit(self.setup_data._setup['Start_Delay'])
-        #print("Start", self.setup['Start'])
-        #print("V1", self.setup['V1'])
-        V0, V0_str = extract_value_unit(self.setup['Start'])
-        #print("V1", self.setup['V1'])
-        V1, V1_str = extract_value_unit(self.setup['V1'])
-        #print("V2", self.setup['V2'])
-        #print("CV", V0,V1,V2)
+        if V0 is None:
+            V0, V0_str = extract_value_unit(self.setup['Start'])
+
+        if V1 is None:
+            V1, V1_str = extract_value_unit(self.setup['V1'])
+
         options = plot_options(kwargs)
-        #print("CONVERTING",len(time), len(E), len(i))
-        #try:
-        #    y_smooth = int(options['y_smooth'])
-        #    if(y_smooth > 0):
-        #        y = savgol_filter(y, y_smooth, 1)
-        #finally:
-        #    pass
+
         positive_start = False
         positive_start = V0 < V1
         #print("startDIR:", positive_start)
@@ -228,81 +218,50 @@ class LSV_Data(EC_Setup):
         self.xmin = x.min()
         self.xmax = x.max()
         #array of dx
-
-        x_div = np.gradient(savgol_filter(x, 10, 1))
+        if(len(x)>10):
+            x_div = np.gradient(savgol_filter(x, 10, 1))
+        else:
+            x_div = np.gradient(x)
         #dt:
         t_div = (time.max() - time.min()) / (time.size - 1)
         zero_crossings = np.where(np.diff(np.signbit(x_div)))[0]
         #print("ZERO:",zero_crossings)
-        self.rate_V_s = np.mean(np.abs(x_div)) / t_div
-        #print(f"Rate: {self.rate_V_s}")
-        up_start =0
-        up_end = 0
-
-
-
-        #print(f"ZeroCrossings: {zero_crossings}")
-        #print(zero_crossings)
-        if x[0]<x[zero_crossings[0]]:
-            up_start =0
-            up_end = zero_crossings[0]
-            dn_start = zero_crossings[0]
-            dn_end = x.size
-
+        if Rate_V_s_ is None:
+            self.rate_V_s = np.mean(np.abs(x_div)) / t_div
         else:
-            up_start =zero_crossings[0]
-            up_end = x.size
-            dn_start = 0
-            dn_end = zero_crossings[0]
-            reversed=True
-
+            self.rate_V_s = Rate_V_s_
+        #print(f"Rate: {self.rate_V_s}")
+        if(len(zero_crossings)==0):
+            zero_crossings =[len(time)-1]
+            print("APPEN DING")
         self.E_max = 2.5
         self.E_min = -2.5
         dE_range = int((self.E_max - self.E_min)*1000)
         x_sweep = np.linspace(self.E_min, self.E_max, dE_range) 
         self.E = x_sweep
-
+        print("zero_crossings",zero_crossings)
         if positive_start:
             x_u = x[0:zero_crossings[0]]
             y_u = y[0:zero_crossings[0]]
-            x_n = np.flipud(x[zero_crossings[0]:])
-            y_n = np.flipud(y[zero_crossings[0]:])
         else:
-            #print("neg first sweep")
-            x_n = np.flipud(x[0:zero_crossings[0]])
-            y_n = np.flipud(y[0:zero_crossings[0]])
             x_u = x[zero_crossings[0]:]
             y_u = y[zero_crossings[0]:]
 
         y_pos=np.interp(x_sweep, x_u, y_u)
-        y_neg=np.interp(x_sweep, x_n, y_n)
 
-        for i in range(1,y_pos.size):
-            if y_pos[i-1] == y_pos[i]:
-                y_pos[i-1] = math.nan
+        for index in range(1,y_pos.size):
+            if y_pos[index-1] == y_pos[index]:
+                y_pos[index-1] = math.nan
             else :
                 break
             
-        for i in range(y_pos.size-2,0,-1):
-            if y_pos[i] == y_pos[i+1]:
-                y_pos[i+1] = math.nan
+        for index in range(y_pos.size-2,0,-1):
+            if y_pos[index] == y_pos[index+1]:
+                y_pos[index+1] = math.nan
             else :
                 break
             
-        for i in range(1,y_neg.size):
-            if y_neg[i-1] == y_neg[i]:
-                y_neg[i-1] = math.nan
-            else :
-                break
-            
-        for i in range(y_neg.size-2,0,-1):
-            if y_neg[i] == y_neg[i+1]:
-                y_neg[i+1] = math.nan
-            else :
-                break
-            
-        self.i_p = y_pos     
-        self.i_n = y_neg
+        self.i = y_pos     
     
    ######################################################################################### 
     def norm(self, norm_to:str):
