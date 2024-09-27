@@ -1,8 +1,6 @@
 import numpy as np
-
 from enum import Enum
-
-    
+ 
 
 class loopCtrl(Enum):
     run = 0

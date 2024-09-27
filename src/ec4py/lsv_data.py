@@ -74,7 +74,7 @@ class LSV_Data(EC_Setup):
             other (float): factor to div. the data.
 
         Returns:
-            CV_Data: a copy of the original data
+            LSV_Data: a copy of the original data
         """
         new_lsv = copy.deepcopy(self)
         new_lsv.i = new_lsv.i * other
@@ -87,7 +87,7 @@ class LSV_Data(EC_Setup):
             other (float): factor to div. the data.
 
         Returns:
-            CV_Data: a copy of the original data
+            LSV_Data: a copy of the original data
         """
         new_lsv = copy.deepcopy(self)
         
@@ -110,10 +110,10 @@ class LSV_Data(EC_Setup):
         """_summary_
 
         Args:
-            other (CV_Data): CV_Data to be added 
+            other (LSV_Data): LSV_Data to be added 
 
         Returns:
-            CV_Data: returns a copy of the inital dataset. 
+            LSV_Data: returns a copy of the inital dataset. 
         """
         new_lsv = copy.deepcopy(self)
         new_lsv.i = new_lsv.i + other.i
@@ -124,10 +124,10 @@ class LSV_Data(EC_Setup):
         """_summary_
 
         Args:
-            other (CV_Data): CV_Data to be added 
+            other (LSV_Data): LSV_Data to be added 
 
         Returns:
-            CV_Data: returns a copy of the inital dataset. 
+            LSV_Data: returns a copy of the inital dataset. 
         """
         new_lsv = copy.deepcopy(self)
         new_lsv.i = (new_lsv.i - other.i).copy()
@@ -157,7 +157,7 @@ class LSV_Data(EC_Setup):
 
     ######################################################################################################
     def conv(self, ec_data: EC_Data, *args, ** kwargs):
-        """Converts EC_Data to a CV
+        """Converts EC_Data to a LSV
 
         Args:
             ec_data (EC_Data): the data that should be converted.
@@ -241,13 +241,13 @@ class LSV_Data(EC_Setup):
         self.E = x_sweep
         print("zero_crossings",zero_crossings)
         if positive_start:
-            x_u = x[0:zero_crossings[0]]
-            y_u = y[0:zero_crossings[0]]
+            x_sub = x[0:zero_crossings[0]]
+            y_sub = y[0:zero_crossings[0]]
         else:
-            x_u = x[zero_crossings[0]:]
-            y_u = y[zero_crossings[0]:]
+            x_sub = np.flipud(x[0:zero_crossings[0]])
+            y_sub = np.flipud(y[0:zero_crossings[0]])
 
-        y_pos=np.interp(x_sweep, x_u, y_u)
+        y_pos=np.interp(x_sweep, x_sub, y_sub)
 
         for index in range(1,y_pos.size):
             if y_pos[index-1] == y_pos[index]:
@@ -355,10 +355,10 @@ class LSV_Data(EC_Setup):
         y = [np.max(i), np.min(i)]
         x1 = [self.E[imin],self.E[imin]]
         x2 = [self.E[imax+1],self.E[imax+1]]  
-        cv_kwargs = kwargs  
+        dataPlot_kwargs = kwargs  
         if show_plot:
-            cv_kwargs["dir"] = dir
-            line, ax = self.plot(**cv_kwargs)
+            dataPlot_kwargs["dir"] = dir
+            line, ax = self.plot(**dataPlot_kwargs)
             ax.plot(x1,y,'r',x2,y,'r')
            
             ax.fill_between(self.E[imin:imax+1],i,color='C0',alpha=0.2)

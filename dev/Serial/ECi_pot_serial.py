@@ -152,6 +152,7 @@ class ECipot():
             data = tech_step(self.read_wait)
             ##ini 
             return data
+        
     def ramp_test(self,start:float,v1:float,v2:float,rate_mV_s:float, nr):
         if self.ser.is_open:
             string = f'ramp {start} {v1} {v2} {rate_mV_s} {nr}\n' 
@@ -163,12 +164,15 @@ class ECipot():
                 print(line)
                            
     def ramp2(self,start_V:float,v1_V:float,v2_V:float,rate_V_s:float, nr_of_ramps):
+        datas = LSV_Datas()
         if self.ser.is_open:
             string = f'ramp {start_V*1000:n} {v1_V*1000:n} {v2_V*1000:n} {rate_V_s*1000:n} {nr_of_ramps}\n' 
             b_string = codecs.encode(string, 'utf-8')
             print(b_string)
             self.ser.write(b_string) 
-            tech_ramp(self.read_wait(), start_V,v1_V,v2_V,rate_V_s, nr_of_ramps)
+            datas= tech_ramp(self.read_wait(), start_V,v1_V,v2_V,rate_V_s, nr_of_ramps)
+        return datas
+            
     
     def ramp(self,start:float,v1:float,v2:float,rate_mV_s:float, nr):
         if self.ser.is_open:

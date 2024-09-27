@@ -84,10 +84,10 @@ class LSV_Datas:
         """_summary_
 
         Args:
-            other (CV_Data): CV_Data to be added 
+            other (LSV_Data): LSV_Data to be added 
 
         Returns:
-            CV_Datas: returns a copy of the initial dataset. 
+            LSV_Datas: returns a copy of the initial dataset. 
         """
 
         if isinstance(other, LSV_Data):
@@ -107,8 +107,8 @@ class LSV_Datas:
     def append(self,LSV = LSV_Data):
         self.datas.append(LSV)
     
-    def bg_corr(self, bg_cv: LSV_Data|Path) -> LSV_Data:
-        """Background correct the data by subtracting the bg_cv. 
+    def bg_corr(self, bg: LSV_Data|Path) -> LSV_Data:
+        """Background correct the data by subtracting the bg. 
 
         Args:
             bg_cv (CV_Datas, CV_Data or Path):
@@ -117,27 +117,26 @@ class LSV_Datas:
             CV_Data: copy of the data.
         
         """
-        if isinstance(bg_cv, LSV_Datas):
-            if len(bg_cv.datas) == len(self.datas):
+        if isinstance(bg, LSV_Datas):
+            if len(bg.datas) == len(self.datas):
                 for i in range(0,len(self.datas)):
-                    self.datas[i].sub(bg_cv[i])
+                    self.datas[i].sub(bg[i])
             else:
                 raise ValueError('The data sets are not of the same length.')
 
         else:         
-            if isinstance(bg_cv, LSV_Data):
-                corr_cv =bg_cv    
+            if isinstance(bg, LSV_Data):
+                corr_lsv =bg    
             else:
-                corr_cv =LSV_Data(bg_cv)
-                #print(bg_cv)
-            for cv in self.datas:
-                cv.sub(corr_cv)
+                corr_lsv =LSV_Data(bg)
+            for data in self.datas:
+                data.sub(corr_lsv)
         return copy.deepcopy(self)
 
 ################################################################   
 
     def plot(self, *args, **kwargs):
-        """Plot CVs.
+        """Plot LSVs.
             use args to normalize the data
             - area or area_cm
             - rotation
@@ -153,26 +152,26 @@ class LSV_Datas:
         """
         #CV_plot = make_plot_1x("CVs")
         p = plot_options(kwargs)
-        p.set_title("CVs")
-        line, CV_plot = p.exe()
+        p.set_title("LVs")
+        line, data_plot = p.exe()
         legend = p.legend
         
-        CVs = copy.deepcopy(self.datas)
-        cv_kwargs = kwargs
-        for cv in CVs:
+        datas = copy.deepcopy(self.datas)
+        data_plot_kwargs = kwargs
+        for data in datas:
             #rot.append(math.sqrt(cv.rotation))
             for arg in args:
-                cv.norm(arg)
+                data.norm(arg)
 
-            cv_kwargs["plot"] = CV_plot
-            cv_kwargs["name"] = cv.setup_data.name
+            data_plot_kwargs["plot"] = data_plot
+            data_plot_kwargs["name"] = data.setup_data.name
             if legend == "_" :
-                cv_kwargs["legend"] = cv.setup_data.name
+                data_plot_kwargs["legend"] = data.setup_data.name
 
-            p = cv.plot(**cv_kwargs)
+            p = data.plot(**data_plot_kwargs)
 
-        CV_plot.legend()
-        return CV_plot
+        data_plot.legend()
+        return data_plot
 
     #################################################################################################    
     
@@ -186,18 +185,18 @@ class LSV_Datas:
             List : Slope of data based on positive and negative sweep.
         """
 
-        CV_plot, analyse_plot = make_plot_2x("Levich Analysis")
+        data_plot, analyse_plot = make_plot_2x("Levich Analysis")
         # CV_plot, analyse_plot = fig.subplots(1,2)
-        CV_plot.title.set_text('CVs')
+        data_plot.title.set_text('CVs')
 
         analyse_plot.title.set_text('Levich Plot')
 
         #########################################################
         # Make plot
-        cv_kwargs = kwargs
-        cv_kwargs["plot"] = CV_plot
+        dataPlot_kwargs = kwargs
+        dataPlot_kwargs["plot"] = data_plot
 
-        rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **cv_kwargs)
+        rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **dataPlot_kwargs)
         # rot = np.array(rot)
         # y = np.array(y)
         # rot_max = max(rot) 
@@ -225,40 +224,17 @@ class LSV_Datas:
             _type_: _description_
         """
 
-        CV_plot, analyse_plot = make_plot_2x("Koutechy-Levich Analysis")
+        data_plot, analyse_plot = make_plot_2x("Koutechy-Levich Analysis")
 
-        CV_plot.title.set_text('CVs')
+        data_plot.title.set_text('CVs')
 
         analyse_plot.title.set_text('Koutechy-Levich Plot')
-        """
-        rot=[]
-        y = []
-        E = []
-        #Epot=-0.5
-        y_axis_title =""
-        y_axis_unit =""
-        CVs = copy.deepcopy(self.datas)
-        for cv in CVs:
-            x_qv = cv.rotation
-            rot.append( math.sqrt(cv.rotation))
-            for arg in args:
-                cv.norm(arg)
-            cv_kwargs["legend"] = str(f"{float(cv.rotation):.0f}")
-            cv.plot(plot = CV_plot, **cv_kwargs)
-            y.append(cv.get_i_at_E(Epot))
-            E.append([Epot, Epot])
-            y_axis_title= cv.i_label
-            y_axis_unit= cv.i_unit
-            #print(cv.setup)
-        #print(rot)
         
-        """
-
         # CV_plot.plot(E,y_values[:,0], STYLE_POS_DL, E,y_values[:,1],STYLE_NEG_DL)
         # CV_plot.legend()
-        cv_kwargs = kwargs
-        cv_kwargs["plot"] = CV_plot
-        rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas, Epot, *args, **cv_kwargs)
+        dataPlot_kwargs = kwargs
+        dataPlot_kwargs["plot"] = data_plot
+        rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas, Epot, *args, **dataPlot_kwargs)
 
         # rot = np.array(rot)
 
@@ -314,20 +290,18 @@ class LSV_Datas:
     
     
     def Tafel2(self, lims=[-1,1], E_for_idl:float=None , *args, **kwargs):
-        CV_plot, analyse_plot = make_plot_2x("Tafel Analysis")
-        CV_plot.title.set_text('CVs')
+        data_plot, analyse_plot = make_plot_2x("Tafel Analysis")
+        data_plot.title.set_text('LSV')
 
         analyse_plot.title.set_text('Tafel Plot')   
-        cv_kwargs = kwargs
-        cv_kwargs['cv_plot'] = CV_plot
-        cv_kwargs['analyse_plot'] = analyse_plot
+        dataPlot_kwargs = kwargs
+        dataPlot_kwargs['cv_plot'] = data_plot
+        dataPlot_kwargs['analyse_plot'] = analyse_plot
         Tafel_pos =[]
-        Tafel_neg =[]
-        for cv in self.datas:
-            a, b = cv.Tafel(lims, E_for_idl, **cv_kwargs)
+        for data in self.datas:
+            a, b = data.Tafel(lims, E_for_idl, **dataPlot_kwargs)
             Tafel_pos.append(a)
-            Tafel_neg.append(b)
-        return Tafel_pos, Tafel_neg
+        return Tafel_pos
 ##################################################################################################################
 
 
