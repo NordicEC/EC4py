@@ -24,7 +24,7 @@ class tempData:
             data = line.split("\t")
             #print(data)
             self.temp_data[self.index,0] = float(data[1]) 
-            self.temp_data[self.index,1] = float(data[2])
+            self.temp_data[self.index,1] = float(data[2]) /1000.0
             self.temp_data[self.index,2] = float(data[3])
             self.index = self.index + 1
     

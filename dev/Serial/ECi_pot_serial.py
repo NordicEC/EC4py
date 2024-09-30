@@ -91,21 +91,54 @@ class ECipot():
                 line = tline
         return line
     
+    def abort(self):
+        self.ser.write(b"ABORT\n")
+    
     def read(self):
-        line = None
-        sline = None
-        if self.ser.in_waiting > 0:
-            line = self.ser.readline()
-            self.info(line)
-            sline = str(line, encoding='utf-8').rstrip()
-            return sline
+        if self.ser.is_open:
+            line = None
+            sline = None
+            if self.ser.in_waiting > 0:
+                line = self.ser.readline()
+                self.info(line)
+                sline = str(line, encoding='utf-8').rstrip()
+                return sline
+            else:
+                return None
         else:
-            return None
+            print("COM not open")
+            return
         
     def read_wait(self):
         line = self.ser.readline()
         sline = str(line, encoding='utf-8').rstrip()
         return sline
+    
+    def write(self, line: str):
+        line = line.rstrip()
+        line = line + "\n"
+        b_string = codecs.encode(line, 'utf-8')
+        print(b_string)  
+        self.ser.write(b_string)   
+    ###############################################################
+    def steps_raw(self,t0,v0,t1= None,v1 = None,t2= None,v2 = None): 
+        if self.ser.is_open:
+            string = f'step {t0} {v0}'
+            if v1 is not None and t1 is not None:
+                string = string + f' {t1} {v1}'
+            if v2 is not None and t2 is not None:
+                string = string + f' {t2} {v2}'  
+            self.write(string)
+              
+            for x in range(500):
+                line = self.read_wait()
+                ##print(line)
+                if line[0:4].casefold() == "Done".casefold():
+                        print("\nDone")
+                        break
+                #elif line[0:4].casefold() == "Step".casefold():
+                print(line)
+                #print line
         
     def steps(self,t0,v0,t1= None,v1 = None,t2= None,v2 = None):
         if self.ser.is_open:
@@ -114,13 +147,10 @@ class ECipot():
                 string = string + f' {t1} {v1}'
             if v2 is not None and t2 is not None:
                 string = string + f' {t2} {v2}'
-            string = string + "\n"
-            b_string = codecs.encode(string, 'utf-8')
-            print(b_string)
-            #tdata = tempData()
+
             self.reads()
             ini_data = line2data(self.read_wait())
-            self.ser.write(b_string) 
+            self.write(string)
             """
             for x in range(50):
                 line = self.read_wait()
@@ -156,21 +186,20 @@ class ECipot():
     def ramp_test(self,start:float,v1:float,v2:float,rate_mV_s:float, nr):
         if self.ser.is_open:
             string = f'ramp {start} {v1} {v2} {rate_mV_s} {nr}\n' 
-            b_string = codecs.encode(string, 'utf-8')
-            print(b_string)
-            self.ser.write(b_string) 
+            self.write(string)
             for x in range(100):
                 line = self.read_wait()
                 print(line)
+                if line[0:4].casefold() == "DONE".casefold():
+                    break
+        return
                            
     def ramp2(self,start_V:float,v1_V:float,v2_V:float,rate_V_s:float, nr_of_ramps):
         datas = LSV_Datas()
         if self.ser.is_open:
             string = f'ramp {start_V*1000:n} {v1_V*1000:n} {v2_V*1000:n} {rate_V_s*1000:n} {nr_of_ramps}\n' 
-            b_string = codecs.encode(string, 'utf-8')
-            print(b_string)
-            self.ser.write(b_string) 
-            datas= tech_ramp(self.read_wait(), start_V,v1_V,v2_V,rate_V_s, nr_of_ramps)
+            self.write(string)
+            datas= tech_ramp(self.read_wait, start_V,v1_V,v2_V,rate_V_s, nr_of_ramps)
         return datas
             
     

@@ -31,7 +31,7 @@ def tech_ramp_aquire(comFx,  start,v1,v2,rate_V_s,nr_of_ramps):
         else:
             V_start = v1
             V_end = v2
-        if len(tdata.Time())> 0:   
+        if len(tdata.Time()) > 0:   
             print("LEN",len(tdata.Time()), V_start,V_end,rate_V_s )
             newlsv.convert(tdata.Time(),tdata.E(),tdata.i(), V_start,V_end, rate_V_s )
             datas.append(newlsv)
@@ -40,7 +40,7 @@ def tech_ramp_aquire(comFx,  start,v1,v2,rate_V_s,nr_of_ramps):
             break
         if nextRamp is None:
             break
-        if len(nextRamp) ==0:
+        if len(nextRamp) == 0:
             break
         
         print("AAA",lsv_nr,nextRamp)
@@ -59,11 +59,13 @@ def tech_ramp_aquire_ini(comFx):
             inidata.append(line)
             print("x", end ="")
     print(" indexData",inidata.index)
-    print("start") 
+    print("START") 
     for x in range(4):
         line = comFx()
         nextRamp = change_to(line)
         if len(nextRamp) > 0:
+            break
+        if line[0] == "\t":
             break
     #nextRamp = comFx()
     #print(f"{nextRamp}0: ",end ="")
@@ -75,6 +77,8 @@ def tech_ramp_aquire_single_ramp(comFx):
     nextRamp = ""
     for x in range(2000):  
         line = comFx()
+        if line[0:4].casefold() == "Ramp".casefold():
+            break
         if line[0:9].casefold() == "change to".casefold():
             print(f"\n{line}: ",end ="")
             nextRamp = line[10:13]

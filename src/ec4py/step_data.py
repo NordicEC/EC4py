@@ -16,6 +16,7 @@ from .ec_setup import EC_Setup
 from .util_graph import plot_options
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
+from .analysis_tafel import Tafel
 #from .step_datas import Step_Datas
 
 class Step_Data(EC_Setup):
@@ -165,8 +166,9 @@ class Step_Data(EC_Setup):
     def index_at_time(self, time_s_:float):
         return index_at_time(self.Time, time_s_)
        ##################################################################################################################
- 
-    def get_step(self,step_index:int):
+    
+    
+    def get_step(self,step_index:int, steprange:int = 1):
         singleStep = Step_Data()
         singleStep.setup_data = copy.deepcopy(self.setup_data)
         singleStep.setup_data.name =str(self.setup_data.name)  + '#' + str(step_index)
@@ -185,7 +187,7 @@ class Step_Data(EC_Setup):
         extra = s[total_nr_steps]*multi
       #  print("extra", extra)
         startT = s[idx]
-        endT = s[idx+1]
+        endT = s[idx+steprange]
          
      #   print("startT",startT)
       #  print("endT",endT)
@@ -211,12 +213,11 @@ class Step_Data(EC_Setup):
         """_summary_
 
         Args:
-            t_start (_type_): _description_
-            t_end (_type_): _description_
-            y_channel (str, optional): _description_. Defaults to "i".
+            t_start (_type_): start time for integration
+            t_end (_type_): end time for the integration
 
         Returns:
-            _type_: _description_
+            Quantity_Value_Unit: Integrated charge including the unit.
         """
         idxmin=self.index_at_time(t_start)
         idxmax=self.index_at_time(t_end)+1
@@ -227,9 +228,18 @@ class Step_Data(EC_Setup):
     
     
     def Tafel(self, lims=[-1,1], *args, **kwargs):
-        return
-        
-        
+        x_data =np.empty(self.nr_of_steps)
+        y_data =np.empty(self.nr_of_steps)
+        for i in self.nr_of_steps:
+            singleStep = self.get_step[i]
+            maxIndex = len(singleStep.Time)-1
+            x_data[i] = singleStep.E[maxIndex]
+            y_data[i] = singleStep.i[maxIndex]
+        return Tafel(x_data, y_data, self.i_unit, "Tafel",  **kwargs)
+##END OF CLASS
+########################################################################################## 
+
+##HELP FUNCTIONS       
 def List_Str2float(list_str:str):
     LIST = list_str.split(";",-1)
     length = len(LIST)

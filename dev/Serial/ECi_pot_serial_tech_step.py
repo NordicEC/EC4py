@@ -35,18 +35,18 @@ def tech_step_aquire(comFx):
     for x in range(50):
         line = comFx()
         print(line)
-        if line[0:3] == "INI":
+        if line[0:3].casefold() == "INI".casefold():
             break
-        elif line[0:5] == "Start":
+        elif line[0:5].casefold() == "Start".casefold():
             break
     #########################    
     for x in range(500):
         line = comFx()
         ##print(line)
-        if line[0:4] == "Done":
+        if line[0:4].casefold() == "Done".casefold():
                 print("\nDone")
                 break
-        elif line[0:4] == "Step":
+        elif line[0:4].casefold() == "Step".casefold():
                 print(f"\n{line}: ",end ="")
         else:
             tdata.append(line)
