@@ -7,7 +7,7 @@ from .util_graph import plot_options, quantity_plot_fix
 def Levich(rot, y_data, y_axis_unit, y_axis_title, STYLE_DL, line_title="", *args, **kwargs):
         #Levich analysis
         p = plot_options(kwargs)
-        p.set_title("CVs")
+        p.set_title("Levich")
         line, analyse_plot = p.exe()
         legend = p.legend
 

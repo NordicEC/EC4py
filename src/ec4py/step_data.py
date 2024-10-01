@@ -13,10 +13,12 @@ import copy
 from .ec_data import EC_Data,index_at_time
 
 from .ec_setup import EC_Setup
-from .util_graph import plot_options
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
 from .analysis_tafel import Tafel
+
+
 #from .step_datas import Step_Datas
 
 class Step_Data(EC_Setup):
@@ -166,6 +168,17 @@ class Step_Data(EC_Setup):
     def index_at_time(self, time_s_:float):
         return index_at_time(self.Time, time_s_)
        ##################################################################################################################
+    def get_current_at_time(self, time_s_:float, dt_s_:float = 0):
+        current = 0.0
+        if dt_s_ == 0:
+            index = self.index_at_time(time_s_)
+            current = self.i[index]
+        else:
+            index_low = self.index_at_time(time_s_-dt_s_ /2)
+            index_high = self.index_at_time(time_s_+ dt_s_ /2)
+            current = np.average(current[index_low, index_high])
+        return current
+       ##################################################################################################################
     
     
     def get_step(self,step_index:int, steprange:int = 1):
@@ -196,20 +209,20 @@ class Step_Data(EC_Setup):
         end_index =   self.index_at_time(endT+extra)-1
       #  print("startT",start_index)
      #   print("endT",end_index)
-        aSize=end_index-start_index+1
+        aSize=end_index-start_index #+1
         singleStep.E = np.empty(aSize) 
         singleStep.i = np.empty(aSize) 
         singleStep.Time = np.empty(aSize)    
-        np.copyto(singleStep.E, self.E[start_index:end_index+1])
-        np.copyto(singleStep.i, self.i[start_index:end_index+1])
-        np.copyto(singleStep.Time, self.Time[start_index:end_index+1]-self.Time[start_index])
+        np.copyto(singleStep.E, self.E[start_index:end_index])
+        np.copyto(singleStep.i, self.i[start_index:end_index])
+        np.copyto(singleStep.Time, self.Time[start_index:end_index]-self.Time[start_index])
         #print(idx)
         singleStep.step_Time =[singleStep.Time.max()]
         singleStep.step_E =[self.step_E[idx]]
         singleStep.step_Type =[self.step_Type[idx]]
         return singleStep
     
-    def integrate(self,t_start,t_end):
+    def integrate(self,t_start,t_end, *args, **kwargs):
         """_summary_
 
         Args:
@@ -219,11 +232,43 @@ class Step_Data(EC_Setup):
         Returns:
             Quantity_Value_Unit: Integrated charge including the unit.
         """
+        
         idxmin=self.index_at_time(t_start)
         idxmax=self.index_at_time(t_end)+1
+        
+        data_kwargs = kwargs
+        #print(kwargs)
+        if 'plot_i' in data_kwargs:
+            data_plot_i = data_kwargs["plot_i"]
+            data_plot_E = data_kwargs["plot_E"]
+            analyse_plot = data_kwargs["analyse_plot"]
+            # print("plots are there")
+        else:
+            data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1("Integrate Analysis")
+            #########################################################
+            # Make plot
+            data_kwargs = kwargs
+            data_kwargs["plot_i"] = data_plot_i
+            data_kwargs["plot_E"] = data_plot_E
+            data_plot_i.axvspan(self.Time[idxmin], self.Time[idxmax], color='C0', alpha=0.2)
+        
+        l_i, ax1 = self.plot("Time", "i", plot=data_plot_i,**data_kwargs)
+        l_E, ax2 = self.plot("Time", "E", plot=data_plot_E,**data_kwargs)
+        
+
         #y,quantity,unit = self.get_channel(y_channel)
         array_Q = integrate.cumulative_simpson(self.i[idxmin:idxmax], x=self.Time[idxmin:idxmax], initial=0)
         Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],self.i_unit,self.i_label)* QV(1,"s","t")
+
+        options = plot_options(kwargs)
+        options.options["plot"] = analyse_plot
+        options.x_data = self.Time[idxmin:idxmax]
+        options.x_label, options.x_unit = "t", "s"
+        options.y_label, options.y_unit = "Charge", Charge.unit
+        options.y_data = array_Q
+        #analyse_plot.plot(self.Time[idxmin:idxmax], array_Q)
+        #Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],self.i_unit,self.i_label)* QV(1,"s","t")
+        options.exe()
         return Charge
     
     

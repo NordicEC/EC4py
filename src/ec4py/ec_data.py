@@ -243,9 +243,13 @@ class EC_Data(EC_Setup):
 def index_at_time(Time, time_s_:float):
     max_index = len(Time)
     index = -1
-    for i in range(max_index):
-        if time_s_ < Time[i]:
-            index = i
-            break
-    if index < 0 : index = len(Time)-1
+    if time_s_ < 0:
+        index = len(Time)-1
+    else: 
+        for i in range(max_index):
+            if time_s_ < Time[i]:
+                index = i
+                break
+    if index < 0 : 
+        index = len(Time)-1
     return index

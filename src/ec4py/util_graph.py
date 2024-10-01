@@ -30,7 +30,17 @@ def make_plot_2x(Title:str):
         plot1,plot2 = fig.subplots(1,2)
         return plot1, plot2
     
-    
+def make_plot_2x_1(Title:str):
+        fig = plt.figure()
+        fig.set_figheight(5)
+        fig.set_figwidth(13)
+        plt.suptitle(Title)
+        plot1 = fig.add_subplot(122)
+        plot2 = fig.add_subplot(221)
+        plot3 = fig.add_subplot(223)
+        #plot1,plot2 = fig.subplots(1,2)
+        return plot2, plot3, plot1
+
 
 def quantity_plot_fix(s:str):
     list_of_quantities = str(s).strip().split(" ", 100)
