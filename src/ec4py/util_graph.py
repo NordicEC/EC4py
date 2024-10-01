@@ -38,6 +38,7 @@ def make_plot_2x_1(Title:str):
         plot1 = fig.add_subplot(122)
         plot2 = fig.add_subplot(221)
         plot3 = fig.add_subplot(223)
+        fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=.5, hspace=0.2)
         #plot1,plot2 = fig.subplots(1,2)
         return plot2, plot3, plot1
 
@@ -219,7 +220,7 @@ class plot_options:
             
         except:  # noqa: E722
             pass
-        ax.set_xlabel(f'{quantity_plot_fix(self.x_label)} ( {quantity_plot_fix(self.x_unit)})')
+        ax.set_xlabel(f'{quantity_plot_fix(self.x_label)} ({quantity_plot_fix(self.x_unit)})')
         ylabel = quantity_plot_fix(self.y_label) + " (" + quantity_plot_fix(self.y_unit)+ ")"
         #ax.set_ylabel(f'{quantity_plot_fix(self.y_label)}    {quantity_plot_fix(self.y_unit)}')
         ax.set_ylabel(f'{ylabel}')

@@ -121,9 +121,11 @@ class Step_Datas:
     #################################################################################################    
    
     def integrate(self,t_start,t_end,step_nr:int = -1, **kwargs):
+        s = "Integrate Analysis"
+        if(step_nr>-1):
+            s = s + f" of step #{step_nr}"
         
-        
-        data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1("Integrate Analysis")
+        data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1(s)
         #########################################################
             # Make plot
         data_kwargs = kwargs
@@ -134,11 +136,11 @@ class Step_Datas:
         charge = [QV()] * len(self.datas)
         #print(data_kwargs)
         for i in range(len(self.datas)):
-            if(step_nr>-1):
-                step = self.datas[i].get_step(step_nr)
-            else:
-                step = self.datas[i]
-            charge[i] = (step.integrate(t_start,t_end,**data_kwargs))
+            #if(step_nr>-1):
+            #    step = self.datas[i].get_step(step_nr)
+            #else:
+            #    step = self.datas[i]
+            charge[i] = (self.datas[i].integrate(t_start,t_end,step_nr,**data_kwargs))
         return charge
     
     ##################################################################################################################
@@ -148,15 +150,29 @@ class Step_Datas:
     
     
     def Levich(self, Time_s_:float=-1, step_nr:int = -1, *args, **kwargs):
+        """_summary_
+
+        Args:
+            Time_s_ (float, optional): _description_. Defaults to -1.
+            step_nr (int, optional): _description_. Defaults to -1.
+
+        Returns:
+            _type_: _description_
+        """
         
-        data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1("Levich Analysis")
-        # CV_plot, analyse_plot = fig.subplots(1,2)
+
+        
+        s = "Levich Analysis"
+        if(step_nr>-1):
+            s = s + f" of step #{step_nr}"
+        
+        data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1(s)
         s = "Steps_i"
         if(step_nr>-1):
             s = s + f" #{step_nr}"
-        data_plot_i.title.set_text(s)
+        data_plot_i.title.set_text("")
         
-        data_plot_E.title.set_text('Steps_E')
+        data_plot_E.title.set_text('')
         analyse_plot.title.set_text('Levich Plot')
 
         #########################################################
@@ -183,6 +199,10 @@ def plots_for_rotations(step_datas: Step_Datas, time_s_: float,step_nr: int =-1,
     y = []
     t = []
     E = []
+    
+    rot_kwarge = {"dt" :None, "t_end" : None}
+    rot_kwarge.update(kwargs)
+    
     # Epot=-0.5
     y_axis_title = ""
     y_axis_unit = ""
@@ -192,6 +212,8 @@ def plots_for_rotations(step_datas: Step_Datas, time_s_: float,step_nr: int =-1,
     plot_i = data_kwargs["plot_i"]
     plot_E = data_kwargs["plot_E"]
     line=[]
+    t_min = time_s_
+    t_max = None
     for data in datas:
         # x_qv = cv.rotation
         rot.append(math.sqrt(data.rotation))
@@ -202,18 +224,35 @@ def plots_for_rotations(step_datas: Step_Datas, time_s_: float,step_nr: int =-1,
             data = data[step_nr]
         # l, ax = data.plot(**data_kwargs)
         l_i, ax1 = data.plot("Time", "i", plot=plot_i,**data_kwargs)
+        ax1.label_outer()
         l_E, ax2 = data.plot("Time", "E", plot=plot_E,**data_kwargs)
+        ax2.label_outer()
         line.append([l_i,l_E])
         index = data.index_at_time(time_s_)
+        index_end = None
+        if rot_kwarge["t_end"] is not None:
+            index_end = data.index_at_time(float(rot_kwarge["t_end"]))
+        if rot_kwarge["dt"] is not None:
+            index = data.index_at_time(time_s_- float(rot_kwarge["dt"])/2)
+            index_end = data.index_at_time(time_s_ + float(rot_kwarge["dt"])/2)
+        if index_end is None:
         # print("INDEX",index)
-        t.append(data.Time[index])
-        E.append(data.E[index])
-        y.append(data.get_current_at_time(time_s_))
+            t.append(data.Time[index])
+            E.append(data.E[index])
+            y.append(data.get_current_at_time(time_s_))
+        else:
+            t_min =data.Time[index]
+            t_max =data.Time[index_end]
+            t.append(np.average(data.Time[index:index_end]))
+            E.append(np.average(data.E[index:index_end]))
+            y.append(np.average(data.i[index:index_end]))
+           
         y_axis_title = str(data.i_label)
         y_axis_unit = str(data.i_unit)
     rot = np.array(rot)
     y = np.array(y)
-    
+    if t_max is not None:
+         plot_i.axvspan(t_min, t_max, color='C0', alpha=0.2)
     plot_i.plot(t, y, STYLE_POS_DL)
     plot_i.legend()
     plot_E.plot(t, E, STYLE_POS_DL)

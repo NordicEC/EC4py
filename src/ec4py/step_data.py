@@ -222,7 +222,7 @@ class Step_Data(EC_Setup):
         singleStep.step_Type =[self.step_Type[idx]]
         return singleStep
     
-    def integrate(self,t_start,t_end, *args, **kwargs):
+    def integrate(self,t_start:float,t_end:float, step_nr:int = -1, *args, **kwargs):
         """_summary_
 
         Args:
@@ -252,17 +252,23 @@ class Step_Data(EC_Setup):
             data_kwargs["plot_E"] = data_plot_E
             data_plot_i.axvspan(self.Time[idxmin], self.Time[idxmax], color='C0', alpha=0.2)
         
-        l_i, ax1 = self.plot("Time", "i", plot=data_plot_i,**data_kwargs)
-        l_E, ax2 = self.plot("Time", "E", plot=data_plot_E,**data_kwargs)
+        if(step_nr>-1):
+                step = self.get_step(step_nr)
+        else:
+                step= copy.deepcopy(self)     
         
-
+        l_i, ax1 = step.plot("Time", "i", plot=data_plot_i,**data_kwargs)
+        l_E, ax2 = step.plot("Time", "E", plot=data_plot_E,**data_kwargs)
+        
+        ax1.label_outer()
+        ax2.label_outer()
         #y,quantity,unit = self.get_channel(y_channel)
-        array_Q = integrate.cumulative_simpson(self.i[idxmin:idxmax], x=self.Time[idxmin:idxmax], initial=0)
-        Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],self.i_unit,self.i_label)* QV(1,"s","t")
+        array_Q = integrate.cumulative_simpson(step.i[idxmin:idxmax], x=step.Time[idxmin:idxmax], initial=0)
+        Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],step.i_unit,self.i_label)* QV(1,"s","t")
 
         options = plot_options(kwargs)
         options.options["plot"] = analyse_plot
-        options.x_data = self.Time[idxmin:idxmax]
+        options.x_data = step.Time[idxmin:idxmax]
         options.x_label, options.x_unit = "t", "s"
         options.y_label, options.y_unit = "Charge", Charge.unit
         options.y_data = array_Q
