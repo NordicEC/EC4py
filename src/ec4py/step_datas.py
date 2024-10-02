@@ -83,7 +83,7 @@ class Step_Datas:
     
 ################################################################    
     def plot(self, *args, **kwargs):
-        """Plot CVs.
+        """Plot Stepss.
             use args to normalize the data
             - area or area_cm
             - rotation
@@ -106,21 +106,21 @@ class Step_Datas:
         data_kwargs = kwargs
         for data in datas:
             #rot.append(math.sqrt(cv.rotation))
-            for arg in args:
-                data.norm(arg)
+            #for arg in args:
+            #    data.norm(arg)
 
             data_kwargs["plot"] = data_plot
             data_kwargs["name"] = data.setup_data.name
             if legend == "_" :
                 data_kwargs["legend"] = data.setup_data.name
-            p = data.plot(**data_kwargs)
+            p = data.plot(*args, **data_kwargs)
          
         data_plot.legend()
         return data_kwargs
     
     #################################################################################################    
    
-    def integrate(self,t_start,t_end,step_nr:int = -1, **kwargs):
+    def integrate(self,t_start,t_end,step_nr:int = -1, *args, **kwargs):
         s = "Integrate Analysis"
         if(step_nr>-1):
             s = s + f" of step #{step_nr}"
@@ -140,7 +140,9 @@ class Step_Datas:
             #    step = self.datas[i].get_step(step_nr)
             #else:
             #    step = self.datas[i]
-            charge[i] = (self.datas[i].integrate(t_start,t_end,step_nr,**data_kwargs))
+            charge[i] = (self.datas[i].integrate(t_start,t_end,step_nr,*args, **data_kwargs))
+        data_plot_i.axvspan(t_start, t_end, color='C0', alpha=0.2)
+        p.close(*args)
         return charge
     
     ##################################################################################################################
@@ -167,12 +169,8 @@ class Step_Datas:
             s = s + f" of step #{step_nr}"
         
         data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1(s)
-        s = "Steps_i"
-        if(step_nr>-1):
-            s = s + f" #{step_nr}"
-        data_plot_i.title.set_text("")
-        
-        data_plot_E.title.set_text('')
+        #data_plot_i.title.set_text("")
+        #data_plot_E.title.set_text('')
         analyse_plot.title.set_text('Levich Plot')
 
         #########################################################
@@ -190,6 +188,7 @@ class Step_Datas:
         #print("dir", "\tpos     ", "\tneg     " )
         print(" :    ",f"\t{y_axis_unit} / rpm^0.5")
         print("slope:", "\t{:.2e}".format(B_factor.value))
+        plot_options(kwargs).close(*args)
         return B_factor
  
  
@@ -217,19 +216,23 @@ def plots_for_rotations(step_datas: Step_Datas, time_s_: float,step_nr: int =-1,
     for data in datas:
         # x_qv = cv.rotation
         rot.append(math.sqrt(data.rotation))
-        for arg in args:
-            data.norm(arg)
+        #for arg in args:
+        #    data.norm(arg)
         data_kwargs["legend"] = str(f"{float(data.rotation):.0f}")
         if step_nr>-1:
             data = data[step_nr]
         # l, ax = data.plot(**data_kwargs)
-        l_i, ax1 = data.plot("Time", "i", plot=plot_i,**data_kwargs)
+        l_i, ax1 = data.plot("Time", "i", plot=plot_i, *args, **data_kwargs)
         ax1.label_outer()
-        l_E, ax2 = data.plot("Time", "E", plot=plot_E,**data_kwargs)
+        l_E, ax2 = data.plot("Time", "E", plot=plot_E, *args, **data_kwargs)
         ax2.label_outer()
         line.append([l_i,l_E])
         index = data.index_at_time(time_s_)
         index_end = None
+        
+        data.norm(args)
+        data.pot_shift(args)
+        #print("AAAAAAAAAAA", str(data.i_unit))
         if rot_kwarge["t_end"] is not None:
             index_end = data.index_at_time(float(rot_kwarge["t_end"]))
         if rot_kwarge["dt"] is not None:

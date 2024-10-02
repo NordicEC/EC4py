@@ -35,12 +35,14 @@ def make_plot_2x_1(Title:str):
         fig.set_figheight(5)
         fig.set_figwidth(13)
         plt.suptitle(Title)
-        plot1 = fig.add_subplot(122)
-        plot2 = fig.add_subplot(221)
-        plot3 = fig.add_subplot(223)
+        ax_right = fig.add_subplot(122)
+        ax_left_top = fig.add_subplot(221)
+        ax_left_bottom = fig.add_subplot(223)
+        ax_left_bottom.label_outer()
+        ax_left_top.label_outer()
         fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=.5, hspace=0.2)
         #plot1,plot2 = fig.subplots(1,2)
-        return plot2, plot3, plot1
+        return ax_left_top, ax_left_bottom, ax_right
 
 
 def quantity_plot_fix(s:str):
@@ -226,3 +228,14 @@ class plot_options:
         ax.set_ylabel(f'{ylabel}')
         
         return line, ax
+    
+    def close(self, *args):
+        # print("CLOSE:", args)
+        for item in args:
+            s = str(item).casefold()    
+            if s == "noshow".casefold():
+                # print("CLOSING")
+                plt.close('all')
+                break
+        return
+            

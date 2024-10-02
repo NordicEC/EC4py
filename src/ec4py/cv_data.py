@@ -328,7 +328,7 @@ class CV_Data(EC_Setup):
         #print(norm_factor)
         if norm_factor:
             self.i_n = self.i_n / float(norm_factor)
-            self.i_p = self.i_p /   float(norm_factor)
+            self.i_p = self.i_p / float(norm_factor)
         #norm_factor_inv = norm_factor ** -1
             current = Q_V(1,self.i_unit, self.i_label) / norm_factor
          

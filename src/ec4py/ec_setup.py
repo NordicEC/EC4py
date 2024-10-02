@@ -10,6 +10,8 @@ class ec_setup_data:
             self._rotation = 0.0
             self._rotation_unit ="/min"
             self.name =""
+            self._RHE = None
+            self._SHE = None
             return
 
 class EC_Setup:
@@ -38,6 +40,9 @@ class EC_Setup:
         if 'Inst.Convection.Speed' in self.setup_data._setup:
             v,u = extract_value_unit(self.setup_data._setup['Inst.Convection.Speed'])
             self.set_rotation(v,u)
+        #if 'Inst.Convection.Speed' in self.setup_data._setup:
+        #    v,u = extract_value_unit(self.setup_data._setup['Inst.Convection.Speed'])
+        #    self.set_rotation(v,u)
             #self.setup_data._area_unit = u
     
     
@@ -173,6 +178,15 @@ class EC_Setup:
         else:
             self.setup_data._rotation_unit = unit
         return
+    
+    def set_RHE(self, V_RHE_vs_refereceElectrode):
+        self.setup_data._RHE = str(V_RHE_vs_refereceElectrode)
+        return
+    
+    def set_SHE(self, V_SHE_vs_refereceElectrode):
+        self.setup_data._SHE = str(V_SHE_vs_refereceElectrode)
+        return
+        
     #########################################################################
 
     
@@ -203,33 +217,55 @@ class EC_Setup:
         
     def get_norm_factor(self, norm_to:str):
         norm_factor = QV(1)
-         
-        if norm_to == "area" :
+        norm_to = str(norm_to).casefold()
+        if norm_to.casefold() == "area".casefold() :
            
            norm_factor = self.area
            
-        elif norm_to == "area_cm":
+        elif norm_to.casefold() == "area_cm".casefold():
             norm_factor = self.area
-            if norm_factor.unit == "m^2":
+            if norm_factor.unit.casefold() == "m^2".casefold():
                 norm_factor = norm_factor*QV(1e4,"cm^2 m^-2")
 
-        elif norm_to == "rate" :
+        elif norm_to.casefold() == "rate".casefold() :
            norm_factor = self.rate
            
-        elif norm_to == "sqrt_rate":
+        elif norm_to.casefold() == "sqrt_rate".casefold():
     
            norm_factor = self.rate ** 0.5
-        elif norm_to == "rot_rate" or norm_to == "rotation"or norm_to == "rot":
+        elif norm_to.casefold() == "rot_rate".casefold() or norm_to.casefold() == "rotation".casefold() or norm_to.casefold() == "rot".casefold():
            
             norm_factor = self.rotation
           
-        elif norm_to == "sqrt_rot_rate" or norm_to == "sqrt_rot" :
+        elif norm_to == "sqrt_rot_rate".casefold() or norm_to == "sqrt_rot".casefold() :
            
            norm_factor = self.rotation ** 0.5    
         else:
             return
         return norm_factor
 
+    def get_pot_offset(self, shift_to:str):
+        shift = str(shift_to).casefold()
+        shift_value = QV(0,"V","E")
+        if shift == "RHE".casefold():
+            if self.setup_data._RHE is not None:
+                s = self.setup_data._RHE
+                v, u = extract_value_unit(s+" V")
+                # print("AAAAAAAAA")
+                shift_value = QV(v,"V","E vs RHE")
+            else:   
+                print("RHE vs reference electrode has not been defined")
+            return shift_value
+        if shift == "SHE".casefold():
+            if self.setup_data._SHE is not None:
+                s = self.setup_data._SHE
+                v, u = extract_value_unit(s)
+                # print("AAAAAAAAA")
+                shift_value = QV(v,"V","E vs SHE")
+            else:
+                print("SHE vs reference electrode has not been defined")
+            return shift_value
+        
 
 
     

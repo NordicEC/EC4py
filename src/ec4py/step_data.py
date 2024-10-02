@@ -34,6 +34,8 @@ class Step_Data(EC_Setup):
         self.i=np.array([],dtype=np.float64)
         self.i_label = "i"
         self.i_unit = "A"
+        self.E_label = "E"
+        self.E_unit = "V"
         self.step_Time =[]
         self.step_E =[]
         self.step_Type =[]
@@ -109,6 +111,7 @@ class Step_Data(EC_Setup):
             self.step_Time = List_Str2float(self.setup["Step.Time"])
             self.step_E =List_Str2float(self.setup["Step.E"])
             self.step_Type = List_Str2Str(self.setup["Step.Type"])
+            self.E_label = "E vs " + self.setup.get("Ref.Electrode","")
         except ValueError:
             print("no_data")
         #self.setup = data.setup
@@ -117,7 +120,7 @@ class Step_Data(EC_Setup):
         #self.name = data.name
         return
     
-    def plot(self, x_channel:str="Time", y_channel:str="i", **kwargs):
+    def plot(self, x_channel:str="Time", y_channel:str="i", *args, **kwargs):
         '''
         plots y_channel vs x_channel.\n
         to add to a existing plot, add the argument: \n
@@ -139,25 +142,31 @@ class Step_Data(EC_Setup):
         #print(kwargs)
         #print(range)
         options = plot_options(kwargs)
+        data = copy.deepcopy(self)
+        
+        # print("plotARGS",args)
+        data.norm(args)
+        data.pot_shift(args)
+        # print("QQQQ",data.E_label)
         index_min = 0
         if range["limit_min"] >0:
-            index_min = self.index_at_time(range["limit_min"])
-        index_max = len(self.Time)-1
+            index_min = data.index_at_time(range["limit_min"])
+        index_max = len(data.Time)-1
         if range["limit_max"] >0:
-            index_max = self.index_at_time(range["limit_max"])
+            index_max = data.index_at_time(range["limit_max"])
         
         #max_index = len(self.Time)-1
         #print("index", index_min,index_max)
         try:
-            x_data, options.x_label, options.x_unit = self.Time,"t","s"
+            x_data, options.x_label, options.x_unit = data.Time,"t","s"
             options.x_data = x_data[index_min:index_max]
         except NameError:
             print(f"xchannel {x_channel} not supported")
         try:
             if y_channel =='E':
-                y_data, options.y_label, options.y_unit = self.E,"E","V"
+                y_data, options.y_label, options.y_unit = data.E,data.E_label,data.E_unit
             else:
-                y_data, options.y_label, options.y_unit = self.i,self.i_label,self.i_unit
+                y_data, options.y_label, options.y_unit = data.i,data.i_label,data.i_unit
             options.y_data = y_data[index_min:index_max]
         except NameError:
             print(f"ychannel {y_channel} not supported")
@@ -220,7 +229,66 @@ class Step_Data(EC_Setup):
         singleStep.step_Time =[singleStep.Time.max()]
         singleStep.step_E =[self.step_E[idx]]
         singleStep.step_Type =[self.step_Type[idx]]
+        
+        singleStep.E_label=self.E_label
+        singleStep.E_unit =self.E_unit
+        singleStep.i_label=self.i_label
+        singleStep.i_unit =self.i_unit
         return singleStep
+    
+       ######################################################################################### 
+    def norm(self, norm_to:str|tuple):
+        end_norm_factor = 1
+        current = QV(1,self.i_unit, self.i_label)
+        # print("argeLIST", type(norm_to))
+        if isinstance(norm_to, tuple):
+           
+            for item in norm_to:
+                # print("ITTTT",item)
+                norm_factor = self.get_norm_factor(item)
+                if norm_factor:
+                    end_norm_factor= end_norm_factor/ float(norm_factor)
+                    current = current / norm_factor
+            if end_norm_factor != 1:
+                
+                self.i = self.i / float(end_norm_factor)
+        else:
+            norm_factor = self.get_norm_factor(norm_to)
+            #print(norm_factor)
+            if norm_factor:
+                self.i = self.i / float(norm_factor)
+            #norm_factor_inv = norm_factor ** -1
+                current = QV(1,self.i_unit, self.i_label) / norm_factor
+            
+        self.i_label = current.quantity
+        self.i_unit = current.unit
+        
+        return 
+    
+    def pot_shift(self,shift_to:str|tuple):
+        end_norm_factor = None
+        # print("argeLIST", type(norm_to))
+        
+        if isinstance(shift_to, tuple):
+           
+            for item in shift_to:
+                # print("ITTTT",item)
+                shift_factor = self.get_pot_offset(item)
+                if shift_factor:
+                    end_norm_factor=  shift_factor
+                    break
+        else:
+            shift_factor = self.get_pot_offset(shift_to)
+            #print(norm_factor)
+            if shift_factor:
+                end_norm_factor = shift_factor
+                
+        if end_norm_factor is not None:
+            self.E = self.E + end_norm_factor.value
+            self.E_label = end_norm_factor.quantity
+            self.E_unit = end_norm_factor.unit
+            # print("SHIFT:",end_norm_factor)
+        return 
     
     def integrate(self,t_start:float,t_end:float, step_nr:int = -1, *args, **kwargs):
         """_summary_
@@ -257,12 +325,19 @@ class Step_Data(EC_Setup):
         else:
                 step= copy.deepcopy(self)     
         
-        l_i, ax1 = step.plot("Time", "i", plot=data_plot_i,**data_kwargs)
-        l_E, ax2 = step.plot("Time", "E", plot=data_plot_E,**data_kwargs)
+        l_i, ax1 = step.plot("Time", "i", plot=data_plot_i, *args, **data_kwargs)
+        l_E, ax2 = step.plot("Time", "E", plot=data_plot_E, *args, **data_kwargs)
         
-        ax1.label_outer()
-        ax2.label_outer()
+        #ax1.label_outer()
+        #ax2.label_outer()
+       # for arg in args:
+            #if arg == "area":
+       #     cv.norm(arg)
         #y,quantity,unit = self.get_channel(y_channel)
+        #print("befre",step.i_unit)
+        step.norm(args)
+        step.pot_shift(args)
+        #print(step.i_unit,args)
         array_Q = integrate.cumulative_simpson(step.i[idxmin:idxmax], x=step.Time[idxmin:idxmax], initial=0)
         Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],step.i_unit,self.i_label)* QV(1,"s","t")
 
@@ -270,7 +345,7 @@ class Step_Data(EC_Setup):
         options.options["plot"] = analyse_plot
         options.x_data = step.Time[idxmin:idxmax]
         options.x_label, options.x_unit = "t", "s"
-        options.y_label, options.y_unit = "Charge", Charge.unit
+        options.y_label, options.y_unit = "Q", Charge.unit
         options.y_data = array_Q
         #analyse_plot.plot(self.Time[idxmin:idxmax], array_Q)
         #Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],self.i_unit,self.i_label)* QV(1,"s","t")
