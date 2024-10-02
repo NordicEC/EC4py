@@ -336,6 +336,32 @@ class CV_Data(EC_Setup):
             self.i_unit = current.unit
         
         return 
+    ###############################
+    ###under deve
+    def pot_shift(self,shift_to:str|tuple):
+        end_norm_factor = None
+        # print("argeLIST", type(norm_to))
+        
+        if isinstance(shift_to, tuple):
+           
+            for item in shift_to:
+                # print("ITTTT",item)
+                shift_factor = self.get_pot_offset(item)
+                if shift_factor:
+                    end_norm_factor=  shift_factor
+                    break
+        else:
+            shift_factor = self.get_pot_offset(shift_to)
+            #print(norm_factor)
+            if shift_factor:
+                end_norm_factor = shift_factor
+                
+        if end_norm_factor is not None:
+            self.E = self.E + end_norm_factor.value
+            self.E_label = end_norm_factor.quantity
+            self.E_unit = end_norm_factor.unit
+            # print("SHIFT:",end_norm_factor)
+        return 
     
     ############################################################################        
     def plot(self,**kwargs):
