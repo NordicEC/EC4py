@@ -8,7 +8,7 @@ import unittest   # The test framework
 
 class test_cv_data( unittest.TestCase ):
     
-    def Test_aa(self):
+    def test_load(self):
         
         paths = []
         path_to_dataSetFolder = Path(".").cwd().parent.parent / "test_data" /"CV"
