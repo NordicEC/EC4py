@@ -19,7 +19,7 @@ paths.append( path_to_dataSetFolder / "CV_151300_ 3.tdms")
 paths.append( path_to_dataSetFolder / "CV_151725_ 3.tdms")
 paths.append( path_to_dataSetFolder / "CV_151512_ 3.tdms")
 
-class Test_CV_Datas(unittest.TestCase):
+class test_CV_Datas(unittest.TestCase):
     
     def load_files(self):
         for path in paths:
