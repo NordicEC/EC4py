@@ -10,7 +10,7 @@ from pathlib import Path
 
 class Test_CV_Datas(unittest.TestCase):
     
-    def load_files(self):
+    def tewt_load_files(self):
         
         E =np.array([1,2,3])
         paths = []
