@@ -21,7 +21,7 @@ paths.append( path_to_dataSetFolder / "CV_151512_ 3.tdms")
 
 class test_CV_Datas(unittest.TestCase):
     
-    def load_files(self):
+    def test_load_files(self):
         for path in paths:
             Path(".").exists
             self.assertEqual(path.exists, True)
