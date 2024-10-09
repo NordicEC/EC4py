@@ -1,4 +1,4 @@
-The intenetion
+The intention
 ---------------
 This is a package to treat electrochemical data in order to extract key values such as ECSA and Tafel slopes. Specifically, its aim is to make the data analysis as quick and easy as possible. 
 
