@@ -4,12 +4,17 @@ from .util import Quantity_Value_Unit as QV
 
 class ec_setup_data:
         def __init__(self):
+            self.name =""
             self._setup = {"Current Range" : "", "Control Mode" : "", "Cell Switch": 0}
             self._area= 1.0
             self._area_unit="cm^2"
             self._rotation = 0.0
             self._rotation_unit ="/min"
-            self.name =""
+            self._rate_V_s = 1
+            #self._loading = None
+            #self._loading_unit ="g/m^2"
+            self._weight = None
+            self._weight_unit ="g"
             self._RHE = None
             self._SHE = None
             return
@@ -24,7 +29,7 @@ class EC_Setup:
     - rotation
     -loading
     """
-    def __init__(self):
+    def __init__(self,*args, **kwargs):
         #self._setup.setup = {"Current Range" : "", "Control Mode" : "", "Cell Switch": 0}
         #self._setup._area= 1.0
         #self._setup._area_unit="cm^2"
@@ -63,15 +68,28 @@ class EC_Setup:
     ##AREA        
     @property 
     def area(self):
-        """
+        """Area:
+            value (float | str): area value as a number, or a string with the unit.
+
         Returns:
             area value and unit.
         """
         return QV(self.setup_data._area,self.setup_data._area_unit,"A")
         
     @area.setter
-    def area(self, value:float):
-        self.setup_data._area = value
+    def area(self, value:float| str):
+        """setting the area
+
+        Args:
+            value (float | str): area value as a number, or a string with the unit.
+        """
+        if isinstance(value,str):
+            val = QV(value)
+            self.setup_data._area = val.value
+            self.setup_data._area_unit = val.unit
+
+        else:
+            self.setup_data._area = value
         
     @property 
     def area_unit(self):
@@ -88,13 +106,18 @@ class EC_Setup:
         return QV(self.setup_data._rotation,self.setup_data._rotation_unit,"\u03C9") #using GREEK SMALL LETTER OMEGA
 
     @rotation.setter
-    def rotation(self, value:float):
+    def rotation(self, value:float|str):
         """set the rotation rate
 
         Args:
             value (float): rotation rate
         """
-        self.setup_data._rotation = value
+        if isinstance(value,str):
+            val = QV(value)
+            self.setup_data._rotation = val.value
+            self.setup_data._rotation_unit = val.unit
+        else:
+            self.setup_data._rotation = value
 
     @property
     def rotation_unit(self):
@@ -117,7 +140,12 @@ class EC_Setup:
         Returns:
             float: sweep rate in V/s
         """
-        v,u = extract_value_unit(self.setup_data._setup['Rate'])
+        r = self.setup_data._setup.get('Rate',None)
+        if r is None:
+            v = self.setup_data._rate_V_s
+            u = "V/s"
+        else:
+            v,u = extract_value_unit(self.setup_data._setup['Rate'])
         return QV(v,u,"v")
     ###########################################################
     
@@ -130,7 +158,8 @@ class EC_Setup:
         """
         v,u = extract_value_unit(self.setup_data._setup['Electrode.Cat.Weight'])
         return QV(v,u,"m")
-    
+    #####################################################
+    ###loading
     @property
     def loading(self):
         """returns the catalyst loading in g m^-2
@@ -216,6 +245,15 @@ class EC_Setup:
         return "_"
         
     def get_norm_factor(self, norm_to:str):
+        """Get normalization factor
+        Args:norm_to (str): 
+            - "area", "area_cm", 
+            - "rate", "sqrt_rate", 
+            - "rotation", "sqrt_rotation" 
+
+        Returns:
+            _type_: _description_
+        """
         norm_factor = QV(1)
         norm_to = str(norm_to).casefold()
         if norm_to.casefold() == "area".casefold() :
@@ -237,7 +275,7 @@ class EC_Setup:
            
             norm_factor = self.rotation
           
-        elif norm_to == "sqrt_rot_rate".casefold() or norm_to == "sqrt_rot".casefold() :
+        elif norm_to == "sqrt_rot_rate".casefold() or norm_to == "sqrt_rotation".casefold()or norm_to == "sqrt_rot".casefold() :
            
            norm_factor = self.rotation ** 0.5    
         else:

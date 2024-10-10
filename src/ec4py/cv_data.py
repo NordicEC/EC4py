@@ -15,6 +15,8 @@ from .ec_data import EC_Data
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as Q_V
+from .util_voltammetry import Voltammetry
+
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x
 from .analysis_tafel import Tafel
 from .analysis_levich import diffusion_limit_corr
@@ -22,7 +24,7 @@ from .analysis_levich import diffusion_limit_corr
 STYLE_POS_DL = "bo"
 STYLE_NEG_DL = "ro"
 
-class CV_Data(EC_Setup):
+class CV_Data(Voltammetry):
     """# Class to analyze a single CV data. 
     Class Functions:
     - .plot() - plot data    
@@ -40,27 +42,45 @@ class CV_Data(EC_Setup):
 
 
     def __init__(self,*args, **kwargs):
-        super().__init__()
-        self.E=[]
+        #EC_Setup.__init__(self,*args, **kwargs)
+        Voltammetry.__init__(self, *args, **kwargs)
+        # self.E=[]
         self.i_p=[]
         self.i_n=[]
-        self.i_label = "i"
-        self.i_unit = "A"
-
-        self.rate_V_s = 1
 
         """max voltage""" 
-        self.E_min = -2.5
+        # self.E_max = -2.5
         """min voltage"""
-        ##self.name="CV" name is given in the setup.
-        self.xmin = -2.5
-        self.xmax = 2.5
+        # self.E_min = -2.5
+        """self.E_axis = {
+                    "E_min" : -2.5,
+                    "E_max" :  2.5 
+                    }
+                    
+        self.E_axis.update(kwargs)
+        """
+        # self.xmin = -2.5 # View range
+        # self.xmax = 2.5  # view renage
+        
         if not args:
             return
         else:
             #print(kwargs)
             self.conv(EC_Data(args[0]),**kwargs)
-    #############################################################################   
+    #############################################################################
+    """
+    def make_E_axis(self, Emin = None, Emax = None):
+        if Emin is not None:
+            self.E_axis["E_min"] = Emin
+        if Emax is not None:
+            self.E_axis["E_max"] = Emax
+        maxE = self.E_axis["E_max"]
+        minE = self.E_axis["E_min"]    
+        dE_range = int((maxE - minE)*1000)
+        E_sweep = np.linspace(minE, maxE, dE_range+1)
+        return E_sweep 
+    """
+    #########################################   
     def sub(self, subData: CV_Data) -> None:
         try:
             self.i_p = self.i_p-subData.i_p
@@ -273,11 +293,16 @@ class CV_Data(EC_Setup):
             dn_end = zero_crossings[0]
             reversed=True
 
+        """
         self.E_max = 2.5
         self.E_min = -2.5
         dE_range = int((self.E_max - self.E_min)*1000)
         x_sweep = np.linspace(self.E_min, self.E_max, dE_range) 
+        
         self.E = x_sweep
+        """
+        # make E axis.
+        self.E = self.make_E_axis()
 
         if positive_start:
             x_u = x[0:zero_crossings[0]]
@@ -291,36 +316,13 @@ class CV_Data(EC_Setup):
             x_u = x[zero_crossings[0]:]
             y_u = y[zero_crossings[0]:]
 
-        y_pos=np.interp(x_sweep, x_u, y_u)
-        y_neg=np.interp(x_sweep, x_n, y_n)
-
-        for i in range(1,y_pos.size):
-            if y_pos[i-1] == y_pos[i]:
-                y_pos[i-1] = math.nan
-            else :
-                break
-            
-        for i in range(y_pos.size-2,0,-1):
-            if y_pos[i] == y_pos[i+1]:
-                y_pos[i+1] = math.nan
-            else :
-                break
-            
-        for i in range(1,y_neg.size):
-            if y_neg[i-1] == y_neg[i]:
-                y_neg[i-1] = math.nan
-            else :
-                break
-            
-        for i in range(y_neg.size-2,0,-1):
-            if y_neg[i] == y_neg[i+1]:
-                y_neg[i+1] = math.nan
-            else :
-                break
-            
-        self.i_p = y_pos     
-        self.i_n = y_neg
-    
+        #y_pos=np.interp(x_sweep, x_u, y_u)
+        #y_neg=np.interp(x_sweep, x_n, y_n)
+        y_pos=self.interpolate(x_u, y_u)
+        y_neg=self.interpolate(x_n, y_n)
+        self.i_p = self.clean_up_edges(y_pos)
+        self.i_n = self.clean_up_edges(y_neg)
+        
    ######################################################################################### 
     def norm(self, norm_to:str):
          
@@ -396,7 +398,7 @@ class CV_Data(EC_Setup):
         return options.exe()
     
     ####################################################################################################
-    def get_index_of_E(self, E:float):
+    """def get_index_of_E(self, E:float):
         index = 0
         for x in self.E:
             if x > E:
@@ -404,7 +406,7 @@ class CV_Data(EC_Setup):
             else:
                 index = index + 1
         return index
-    
+    """
     ########################################################################################################
     def get_i_at_E(self, E:float, dir:str = "all"):
         """Get the current at a specific voltage.
@@ -415,6 +417,7 @@ class CV_Data(EC_Setup):
         Returns:
             _type_: _description_
         """
+        
         index = self.get_index_of_E(E)
                 
         if dir == "pos":
@@ -450,12 +453,14 @@ class CV_Data(EC_Setup):
         array_Q_p = integrate.cumulative_simpson(i_p, x=self.E[imin:imax+1], initial=0) / float(self.rate)
         array_Q_n = integrate.cumulative_simpson(i_n, x=self.E[imin:imax+1], initial=0)/ float(self.rate)
         
-        
+        Q_p, d_p  =  self._integrate(  start_E, end_E, self.i_p, show_plot, *args, **kwargs)
+        Q_n, d_n  =  self._integrate(  start_E, end_E, self.i_n, show_plot, *args, **kwargs)
+
         
         Q_unit =self.i_unit.replace("A","C")
         #yn= np.concatenate(i_p,i_n,axis=0)
         
-        y = [max(np.max(i_p),np.max(i_n)), min(np.min(i_p),np.min(i_n))]
+        y = [max(np.max(d_p[1]),np.max(d_n[1])), min(np.min(i_p),np.min(i_n))]
         x1 = [self.E[imin],self.E[imin]]
         x2 = [self.E[imax+1],self.E[imax+1]]  
         cv_kwargs = kwargs  
@@ -464,17 +469,23 @@ class CV_Data(EC_Setup):
             line, ax = self.plot(**cv_kwargs)
             ax.plot(x1,y,'r',x2,y,'r')
             if dir != "neg":
-                ax.fill_between(self.E[imin:imax+1],i_p,color='C0',alpha=0.2)
+                ax.fill_between(d_p[0],d_p[1],color='C0',alpha=0.2)
+                #ax.fill_between(self.E[imin:imax+1],i_p,color='C0',alpha=0.2)
             if dir != "pos":
-                ax.fill_between(self.E[imin:imax+1],i_n,color='C1',alpha=0.2)
+                ax.fill_between(d_n[0],d_n[1],color='C1',alpha=0.2)
+
+                #ax.fill_between(self.E[imin:imax+1],i_n,color='C1',alpha=0.2)
             
         #except ValueError as e:
         #    print("the integration did not work on this dataset")
         #    return None
+        print(Q_p)
+
         end = len(array_Q_p)-1
         Q_p = Q_V(array_Q_p[end]-array_Q_p[0],Q_unit,"Q")        
         Q_n = Q_V(array_Q_n[end]-array_Q_n[0],Q_unit,"Q")
         print(Q_p)
+        
         if dir == "pos":
             return Q_p#[Q_p[end]-Q_p[0],Q_unit] 
         elif dir == "neg":
@@ -535,12 +546,13 @@ class CV_Data(EC_Setup):
             i_dl_p,i_dl_n = cv.get_i_at_E(E_for_idl)
             y.append(cv.get_i_at_E(E_for_idl))
             E.append(E_for_idl)
-            with np.errstate(divide='ignore'):
-                y_data_p = [math.log10(abs(1/(1/i-1/i_dl_p))) for i in cv.i_p]
-                y_data_n = [math.log10(abs(1/(1/i-1/i_dl_n))) for i in cv.i_n]
+            
+            y_data_p =(np.abs(diffusion_limit_corr(cv.i_p,i_dl_p)))
+            y_data_n =(np.abs(diffusion_limit_corr(cv.i_n,i_dl_n)))
+
         else:
-            y_data_p = [math.log10(abs(i)) for i in cv.i_p]
-            y_data_n = [math.log10(abs(i)) for i in cv.i_n]
+            y_data_p = cv.i_p
+            y_data_n = cv.i_n 
                 
         Tafel_pos = Tafel(cv.E[xmin:xmax],y_data_p[xmin:xmax],cv.i_unit,cv.i_label,plot_color,"Pos",cv.E, y_data_p,plot=analyse_plot)
         Tafel_neg = Tafel(cv.E[xmin:xmax],y_data_n[xmin:xmax],cv.i_unit,cv.i_label,plot_color,"Neg",cv.E, y_data_n, plot=analyse_plot)

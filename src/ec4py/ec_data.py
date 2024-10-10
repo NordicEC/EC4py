@@ -247,7 +247,7 @@ def index_at_time(Time, time_s_:float):
         index = len(Time)-1
     else: 
         for i in range(max_index):
-            if time_s_ < Time[i]:
+            if time_s_ <= Time[i]:
                 index = i
                 break
     if index < 0 : 

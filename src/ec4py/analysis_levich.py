@@ -55,7 +55,7 @@ def Levich(rot, y_data, y_axis_unit, y_axis_title, STYLE_DL="bo", line_title="",
         return B_factor
 
 def diffusion_limit_corr(current, idl:float):
-    if idl == 0:
+    if idl is not None:
         with np.errstate(divide='ignore'):
                 y_data_corr = [1/(1/i-1/idl) for i in current]      
     else:

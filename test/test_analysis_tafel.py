@@ -6,18 +6,17 @@ from ec4py.util import Quantity_Value_Unit as QVU
 import unittest   # The test framework
 import numpy as np
 
-E =np.array([1,2,3])
+E =np.array([1,2,3,4])
 
-class Test_Tafel(unittest.TestCase):
+class test_Tafel(unittest.TestCase):
     
-    def linear_slope(self):
-        
-        y_data = np.exp(E)
+    def test_linear_slope(self):
+        y_data = np.power(10,E)
         unit = "AAA"
-        result = Tafel(E, y_data, unit, "", "bo")
+        result = Tafel(E, y_data, unit, "", "b")
         self.assertEqual(result.value, 1.0)
         y_data = 2*y_data
-        result =  Tafel(E, y_data, unit, "", "bo")
+        result =  Tafel(E, y_data, unit, "", "b")
         self.assertEqual(result.value, 2.0)
        
         
@@ -25,7 +24,7 @@ class Test_Tafel(unittest.TestCase):
         y_data = np.exp(E)
 
         unit = "AAA"
-        result = Tafel(E, y_data, unit, "", "bo")
+        result = Tafel(E, y_data, unit, "", "b")
         self.assertEqual(result.unit, "V^-1")
         # self.assertEqual(result.unit, "m")
     
