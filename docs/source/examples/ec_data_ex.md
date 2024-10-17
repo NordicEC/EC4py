@@ -5,8 +5,8 @@ nav_order: 1
 ---
 
 
-## Class EC_data:
-   
--   [example 1](ec_data_ex1)
-
-
+## Class EC_Data:
+### Import the class:
+```python
+   from ec4py import EC_Data
+```

@@ -1,9 +1,9 @@
 ---
-title: Example 2
+title: Example 2 - Tafel Analysis
 parent: CV_Data
 grand_parent: Examples
 ---
-# Example class CV_data - example 2 - Tafel Analysis
+# Example 2: class CV_Data - Tafel Analysis
 
 ## Download dataset
 
