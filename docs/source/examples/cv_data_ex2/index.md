@@ -1,9 +1,9 @@
 ---
-title: Example 1
+title: Example 2
 parent: CV_Data
 grand_parent: Examples
 ---
-# Example class CV_data - example 1
+# Example class CV_data - example 2 - Tafel Analysis
 
 ## Download dataset
 
@@ -47,7 +47,7 @@ and save it an appropriate folder.
    print(slopes[1] )
 ```
 
-![Plot of CVs](./cv_data_ex1_fig2.png)
+![Plot of CVs](./cv_data_ex2_fig2.png)
 
 ## Tafel Analysis using diffusion limit correction
 
@@ -60,4 +60,4 @@ and save it an appropriate folder.
    print(slopes[1] )
 ```
 
-![Plot of CVs](./cv_data_ex1_fig3.png)
+![Plot of CVs](./cv_data_ex2_fig3.png)
