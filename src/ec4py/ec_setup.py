@@ -230,12 +230,18 @@ class EC_Setup:
         s = str()
         #print(kwargs)
         if 'legend' in kwargs:
-            item = kwargs['legend']
+            item = kwargs.get('legend',"").casefold()
             if item == '?':
                 #print(self.setup_data._setup)
                 return "_"
-            elif item == "name":
+            elif item == "name".casefold():
                 return self.setup_data.name
+            elif item == "rate".casefold():
+                return str(self.rate)
+            elif item == "rot_rate".casefold() or item == "rotation".casefold() or item == "rot".casefold():
+                return str(self.rotation)
+            elif item.casefold() == "area".casefold():
+                return str(self.area)
             elif item in self.setup_data._setup:
                 #print("items was found", item)
                 s = self.setup_data._setup[item]
@@ -257,9 +263,7 @@ class EC_Setup:
         norm_factor = QV(1)
         norm_to = str(norm_to).casefold()
         if norm_to.casefold() == "area".casefold() :
-           
            norm_factor = self.area
-           
         elif norm_to.casefold() == "area_cm".casefold():
             norm_factor = self.area
             if norm_factor.unit.casefold() == "m^2".casefold():

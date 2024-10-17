@@ -154,8 +154,8 @@ class CV_Datas:
         
         p = plot_options(kwargs)
         p.set_title("CVs")
-        line, CV_plot, fig = p.exe()
-        legend = p.legend
+        line, CV_plot = p.exe()
+        # legend = p.legend
         
         CVs = copy.deepcopy(self.datas)
         cv_kwargs = kwargs
@@ -166,13 +166,11 @@ class CV_Datas:
 
             cv_kwargs["plot"] = CV_plot
             cv_kwargs["name"] = cv.setup_data.name
-            if legend == "_" :
-                cv_kwargs["legend"] = cv.setup_data.name
 
-            p = cv.plot(**cv_kwargs)
+            plot = cv.plot(**cv_kwargs)
 
         CV_plot.legend()
-        saveFig(fig,)
+        p.saveFig(**kwargs)
         return CV_plot
 
     #################################################################################################    

@@ -377,6 +377,7 @@ class CV_Data(Voltammetry):
         '''
         
         options = plot_options(kwargs)
+        # print(options.get_legend(),self.legend(**kwargs))
         options.set_title(self.setup_data.name)
         options.name = self.setup_data.name
         options.legend = self.legend(**kwargs)
@@ -394,7 +395,7 @@ class CV_Data(Voltammetry):
         
         options.set_x_txt("E", "V")
         options.set_y_txt(self.i_label, self.i_unit) 
-        
+        # print(options.get_legend())
         return options.exe()
     
     ####################################################################################################

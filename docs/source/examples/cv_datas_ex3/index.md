@@ -39,28 +39,42 @@ and save it an appropriate folder.
    datas = CV_Datas(paths)
 ```
 
+## Datas
 
+```python
+   datas.plot(legend="rot")
+```
+
+![Plot of CVs](./cv_datas_ex3_fig1.png)
+
+## Plot of data normalized to the square root of rotation.
+
+```python
+   datas.plot("sqrt_rot",legend="rot")
+```
+
+![Plot of CVs](./cv_datas_ex3_fig2.png)
 
 
 ## Levich Analysis
 
 ```python
    Epot = -0.5
-   slopes = datas.Levich(Epot, savefig="cv_datas_ex3_fig1.png")
+   slopes = datas.Levich(Epot)
    print(slopes[0] )
    print(slopes[1] )
 ```
 
-![Plot of CVs](./cv_datas_ex3_fig1.png)
+![Plot of CVs](./cv_datas_ex3_fig3.png)
 
 ## Levich Analysis when normalizing the current to area
 
 
 ```python
    Epot = -0.5
-   slopes = datas.Levich(Epot, "area_cm", savefig="cv_data_ex3_fig2.png")
+   slopes = datas.Levich(Epot, "area_cm")
    print(slopes[0] )
    print(slopes[1] )
 ```
 
-![Plot of CVs](./cv_datas_ex3_fig2.png)
+![Plot of CVs](./cv_datas_ex3_fig4.png)

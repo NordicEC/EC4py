@@ -195,8 +195,8 @@ class plot_options:
         if ax == NEWPLOT:
            # fig = plt.figure()
            # plt.suptitle(self.name)
-            fig = make_plot_1x(self.options['title'])
-            ax = fig.plots[0]
+            self.fig = make_plot_1x(self.options['title'])
+            ax = self.fig.plots[0]
             if self.options['yscale']:
                 ax.set_yscale(self.options['yscale'])
             if self.options['xscale']:
@@ -233,7 +233,8 @@ class plot_options:
         try:
             line, = ax.plot(self.x_data, self.y_data, self.options['style'])
             #line,=analyse_plot.plot(rot,y_pos,'-' )
-            line.set_label( self.get_legend() )
+            if self.x_data is not None:
+                line.set_label( self.get_legend() )
             
         except:  # noqa: E722
             pass
@@ -243,7 +244,7 @@ class plot_options:
         #print(f'{ylabel}')
         ax.set_ylabel(f'{ylabel}')
         
-        return line, ax, fig
+        return line, ax
     
     def close(self, *args):
         # print("CLOSE:", args)
@@ -256,10 +257,8 @@ class plot_options:
         return
     
     def saveFig(self,**kwargs):
-        if self.fig is not None:
-            name = kwargs.get("savefig",None)
-            if name is not None:
-                self.fig.fig.savefig(name, dpi='figure', format=None)
+        #print("fig")
+        saveFig(self.fig,**kwargs)
             
 
 
@@ -268,3 +267,6 @@ def saveFig(fig:Figure,**kwargs):
             name = kwargs.get("savefig",None)
             if name is not None:
                 fig.fig.savefig(name, dpi='figure', format=None)
+    else:
+        # print("fig is non")
+        pass
