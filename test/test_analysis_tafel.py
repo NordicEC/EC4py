@@ -8,16 +8,24 @@ import numpy as np
 
 E =np.array([1,2,3,4])
 
+def  rn(value):
+    return round(value*1000000)/1000000
 class test_Tafel(unittest.TestCase):
     
     def test_linear_slope(self):
         y_data = np.power(10,E)
         unit = "AAA"
         result = Tafel(E, y_data, unit, "", "b")
-        self.assertEqual(result.value, 1.0)
+        self.assertEqual(rn(result.value), 1.0)
         y_data = 2*y_data
         result =  Tafel(E, y_data, unit, "", "b")
-        self.assertEqual(result.value, 2.0)
+        self.assertEqual(rn(result.value), 1.0)
+        slope = 0.120
+        y_data = np.power(10,E/slope)
+        unit = "BBB"
+        result = Tafel(E, y_data, unit, "", "b")
+        self.assertEqual(rn(result.value), slope)
+        
        
         
     def test_units_slope(self):
@@ -25,7 +33,7 @@ class test_Tafel(unittest.TestCase):
 
         unit = "AAA"
         result = Tafel(E, y_data, unit, "", "b")
-        self.assertEqual(result.unit, "V^-1")
+        self.assertEqual(result.unit, "V/dec")
         # self.assertEqual(result.unit, "m")
     
     def test_quantity_slope(self):

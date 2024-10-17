@@ -184,8 +184,10 @@ class LSV_Datas:
         Returns:
             List : Slope of data based on positive and negative sweep.
         """
-
-        data_plot, analyse_plot = make_plot_2x("Levich Analysis")
+        fig = make_plot_2x("Levich Analysis")
+        data_plot = fig.plots[0]
+        analyse_plot =  fig.plots[1]
+        
         # CV_plot, analyse_plot = fig.subplots(1,2)
         data_plot.title.set_text('CVs')
 
@@ -223,8 +225,10 @@ class LSV_Datas:
         Returns:
             _type_: _description_
         """
+        fig = make_plot_2x("Koutechy-Levich Analysis")
+        data_plot = fig.plots[0]
+        analyse_plot =  fig.plots[1]
 
-        data_plot, analyse_plot = make_plot_2x("Koutechy-Levich Analysis")
 
         data_plot.title.set_text('CVs')
 
@@ -290,7 +294,9 @@ class LSV_Datas:
     
     
     def Tafel2(self, lims=[-1,1], E_for_idl:float=None , *args, **kwargs):
-        data_plot, analyse_plot = make_plot_2x("Tafel Analysis")
+        fig = make_plot_2x("Tafel Analysis")
+        data_plot = fig.plots[0]
+        analyse_plot =  fig.plots[1]
         data_plot.title.set_text('LSV')
 
         analyse_plot.title.set_text('Tafel Plot')   

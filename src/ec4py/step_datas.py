@@ -125,7 +125,11 @@ class Step_Datas:
         if(step_nr>-1):
             s = s + f" of step #{step_nr}"
         
-        data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1(s)
+        fig = make_plot_2x_1(s)
+        data_plot_i = fig.plots[0]
+        data_plot_E = fig.plots[1]
+        analyse_plot =  fig.plots[2]
+        #data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1(s)
         #########################################################
             # Make plot
         data_kwargs = kwargs
@@ -168,7 +172,11 @@ class Step_Datas:
         if(step_nr>-1):
             s = s + f" of step #{step_nr}"
         
-        data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1(s)
+        fig = make_plot_2x_1(s)
+        data_plot_i = fig.plots[0]
+        data_plot_E = fig.plots[1]
+        analyse_plot =  fig.plots[2]
+        # data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1(s)
         #data_plot_i.title.set_text("")
         #data_plot_E.title.set_text('')
         analyse_plot.title.set_text('Levich Plot')

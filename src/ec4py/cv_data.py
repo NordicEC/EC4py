@@ -17,7 +17,7 @@ from .util import extract_value_unit
 from .util import Quantity_Value_Unit as Q_V
 from .util_voltammetry import Voltammetry
 
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig
 from .analysis_tafel import Tafel
 from .analysis_levich import diffusion_limit_corr
 
@@ -507,10 +507,14 @@ class CV_Data(Voltammetry):
         Tafel_op.update(kwargs)
         CV_plot = Tafel_op["cv_plot"]
         analyse_plot = Tafel_op["analyse_plot"]
+        fig = None
         if Tafel_op["cv_plot"] is None and Tafel_op["analyse_plot"] is None:
-            CV_plot, analyse_plot = make_plot_2x("Tafel Analysis")
+            fig = make_plot_2x("Tafel Analysis")
+            CV_plot = fig.plots[0] 
+            analyse_plot = fig.plots[1]
             CV_plot.title.set_text('CV')
             analyse_plot.title.set_text('Tafel Plot')
+           
             
         
         rot=[]
@@ -561,5 +565,10 @@ class CV_Data(Voltammetry):
         if E_for_idl is not None:
             CV_plot.plot(E,y_values[:,0], STYLE_POS_DL, E,y_values[:,1],STYLE_NEG_DL)
         CV_plot.legend()
-    
+
+        saveFig(fig,**kwargs)
+
+        
         return Tafel_pos, Tafel_neg
+    
+

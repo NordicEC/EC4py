@@ -312,7 +312,11 @@ class Step_Data(EC_Setup):
             analyse_plot = data_kwargs["analyse_plot"]
             # print("plots are there")
         else:
-            data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1("Integrate Analysis")
+            fig = make_plot_2x_1("Integrate Analysis")
+            data_plot_i = fig.plots[0]
+            data_plot_E = fig.plots[1]
+            analyse_plot =  fig.plots[2]
+            #data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1("Integrate Analysis")
             #########################################################
             # Make plot
             data_kwargs = kwargs
@@ -339,8 +343,8 @@ class Step_Data(EC_Setup):
         step.pot_shift(args)
         #print(step.i_unit,args)
         array_Q = integrate.cumulative_simpson(step.i[idxmin:idxmax], x=step.Time[idxmin:idxmax], initial=0)
-        Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],step.i_unit,self.i_label)* QV(1,"s","t")
-
+        Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],step.i_unit.self.i_label.replace("A","C"),self.i_label.replace("i","Q")) #* QV(1,"s","t")
+        
         options = plot_options(kwargs)
         options.options["plot"] = analyse_plot
         options.x_data = step.Time[idxmin:idxmax]
@@ -361,7 +365,7 @@ class Step_Data(EC_Setup):
             maxIndex = len(singleStep.Time)-1
             x_data[i] = singleStep.E[maxIndex]
             y_data[i] = singleStep.i[maxIndex]
-        return Tafel(x_data, y_data, self.i_unit, "Tafel",  **kwargs)
+        return Tafel(x_data, y_data, self.i_unit, self.i_label,  **kwargs)
 ##END OF CLASS
 ########################################################################################## 
 

@@ -184,8 +184,9 @@ class CV_Datas:
         Returns:
             List : Slope of data based on positive and negative sweep.
         """
-
-        CV_plot, analyse_plot = make_plot_2x("Levich Analysis")
+        fig = make_plot_2x("Levich Analysis")
+        CV_plot = fig.plots[0] 
+        analyse_plot = fig.plots[1]
         # CV_plot, analyse_plot = fig.subplots(1,2)
         CV_plot.title.set_text('CVs')
 
@@ -224,10 +225,10 @@ class CV_Datas:
             _type_: _description_
         """
 
-        CV_plot, analyse_plot = make_plot_2x("Koutechy-Levich Analysis")
-
+        fig = make_plot_2x("Koutechy-Levich Analysis")
+        CV_plot = fig.plots[0] 
+        analyse_plot = fig.plots[1]
         CV_plot.title.set_text('CVs')
-
         analyse_plot.title.set_text('Koutechy-Levich Plot')
         """
         rot=[]
@@ -313,9 +314,11 @@ class CV_Datas:
     
     
     def Tafel2(self, lims=[-1,1], E_for_idl:float=None , *args, **kwargs):
-        CV_plot, analyse_plot = make_plot_2x("Tafel Analysis")
+        
+        fig = make_plot_2x("Tafel Analysis")
+        CV_plot = fig.plots[0] 
+        analyse_plot = fig.plots[1]
         CV_plot.title.set_text('CVs')
-
         analyse_plot.title.set_text('Tafel Plot')   
         cv_kwargs = kwargs
         cv_kwargs['cv_plot'] = CV_plot

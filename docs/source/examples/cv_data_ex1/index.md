@@ -46,4 +46,9 @@ and save it an appropriate folder.
 
 ![Plot of CVs](./cv_data_ex1_fig2.png)
 
+## Get the current at a specific potential
 
+```python
+   i_p, i_n = data.get_i_at_E(-0.4)
+   print(i_p,i_n)
+```
