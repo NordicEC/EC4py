@@ -192,7 +192,7 @@ class plot_options:
         """
         ax = self.options['plot']
         fig = None
-        if ax == NEWPLOT:
+        if ax == NEWPLOT or ax is None:
            # fig = plt.figure()
            # plt.suptitle(self.name)
             self.fig = make_plot_1x(self.options['title'])
