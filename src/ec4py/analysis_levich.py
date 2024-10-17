@@ -4,7 +4,7 @@ from .util import Quantity_Value_Unit as Q_V
 from .util_graph import plot_options, quantity_plot_fix
 
 
-def Levich(rot, y_data, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str="bo", line_title:str="",  rot_axis_unit:str="rpm", *args, **kwargs):
+def Levich(rot, y_data, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str="bo", line_title:str="",  rot_unit:str="rpm", *args, **kwargs):
         """Generates a Levich plot and fits 
 
         Args:
@@ -29,7 +29,7 @@ def Levich(rot, y_data, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str
         rot_sqrt = np.sqrt(np.array(rot))
         
         # analyse_plot.plot(rot_sqrt, y_data, STYLE_DL_plot)
-        x_qv = Q_V(1, rot_axis_unit, "w")
+        x_qv = Q_V(1, rot_unit, "w")
         x_qv = x_qv**0.5
         x_qv.value = 1
         x_rot = Q_V(1, x_qv.unit, x_qv.quantity)
@@ -47,14 +47,14 @@ def Levich(rot, y_data, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str
         #Levich Plot
         p = plot_options(kwargs)
         p.set_title("Levich",1)
-        p.set_x_txt("\\omega^0.5", f"{rot_axis_unit}^0.5")
+        p.set_x_txt("$\omega$^0.5", f"{rot_unit}^0.5")
         p.set_y_txt(y_axis_title, y_axis_unit)
 
         p.options["style"]=STYLE_DL[0]+"o"
         p.y_data = y_data
         p.x_data = rot_sqrt 
         line, analyse_plot = p.exe()        
-
+        print(p.get_x_txt())
         STYLE_DL= STYLE_DL[0] + "-"
         line, = analyse_plot.plot(x_plot, y_pos, STYLE_DL )
         line.set_label(f"{line_title} B={m :3.3e}")

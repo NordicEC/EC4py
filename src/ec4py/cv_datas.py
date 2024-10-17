@@ -10,7 +10,7 @@ from .cv_data import CV_Data
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT
 from .analysis_levich import Levich
 #from .analysis_tafel import Tafel as Tafel_calc
 
@@ -151,9 +151,10 @@ class CV_Datas:
             
         """
         #CV_plot = make_plot_1x("CVs")
+        
         p = plot_options(kwargs)
         p.set_title("CVs")
-        line, CV_plot = p.exe()
+        line, CV_plot, fig = p.exe()
         legend = p.legend
         
         CVs = copy.deepcopy(self.datas)
@@ -171,6 +172,7 @@ class CV_Datas:
             p = cv.plot(**cv_kwargs)
 
         CV_plot.legend()
+        saveFig(fig,)
         return CV_plot
 
     #################################################################################################    

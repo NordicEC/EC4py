@@ -71,6 +71,7 @@ def quantity_plot_fix(s:str):
 
 class plot_options:
     def __init__(self, kwargs):
+        self.fig = None
         self.name = NEWPLOT
         self.x_label="x"
         self.x_unit = "xunit"
@@ -106,8 +107,8 @@ class plot_options:
         self.y_unit = unit
         
     def set_x_txt(self, label, unit):
-        self.x_label = f'{label}'
-        self.x_unit = f'{unit}'
+        self.x_label = label
+        self.x_unit = unit
         
 
     def get_y_txt(self):
@@ -190,6 +191,7 @@ class plot_options:
             line, ax: _description_
         """
         ax = self.options['plot']
+        fig = None
         if ax == NEWPLOT:
            # fig = plt.figure()
            # plt.suptitle(self.name)
@@ -241,7 +243,7 @@ class plot_options:
         #print(f'{ylabel}')
         ax.set_ylabel(f'{ylabel}')
         
-        return line, ax
+        return line, ax, fig
     
     def close(self, *args):
         # print("CLOSE:", args)
@@ -252,6 +254,12 @@ class plot_options:
                 plt.close('all')
                 break
         return
+    
+    def saveFig(self,**kwargs):
+        if self.fig is not None:
+            name = kwargs.get("savefig",None)
+            if name is not None:
+                self.fig.fig.savefig(name, dpi='figure', format=None)
             
 
 
