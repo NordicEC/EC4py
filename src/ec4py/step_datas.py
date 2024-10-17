@@ -16,7 +16,7 @@ from .analysis_levich import Levich
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig
 
 
 STYLE_POS_DL = "bo"
@@ -147,6 +147,7 @@ class Step_Datas:
             charge[i] = (self.datas[i].integrate(t_start,t_end,step_nr,*args, **data_kwargs))
         data_plot_i.axvspan(t_start, t_end, color='C0', alpha=0.2)
         p.close(*args)
+        saveFig(fig,**kwargs)
         return charge
     
     ##################################################################################################################
@@ -197,6 +198,7 @@ class Step_Datas:
         print(" :    ",f"\t{y_axis_unit} / rpm^0.5")
         print("slope:", "\t{:.2e}".format(B_factor.value))
         plot_options(kwargs).close(*args)
+        saveFig(fig,**kwargs)
         return B_factor
  
  

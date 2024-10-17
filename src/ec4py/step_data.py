@@ -13,7 +13,7 @@ import copy
 from .ec_data import EC_Data,index_at_time
 
 from .ec_setup import EC_Setup
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
 from .analysis_tafel import Tafel
@@ -306,6 +306,7 @@ class Step_Data(EC_Setup):
         
         data_kwargs = kwargs
         #print(kwargs)
+        fig = None
         if 'plot_i' in data_kwargs:
             data_plot_i = data_kwargs["plot_i"]
             data_plot_E = data_kwargs["plot_E"]
@@ -354,6 +355,7 @@ class Step_Data(EC_Setup):
         #analyse_plot.plot(self.Time[idxmin:idxmax], array_Q)
         #Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],self.i_unit,self.i_label)* QV(1,"s","t")
         options.exe()
+        saveFig(fig,**kwargs)
         return Charge
     
     

@@ -47,8 +47,9 @@ def Levich(rot, y_data, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str
         #Levich Plot
         p = plot_options(kwargs)
         p.set_title("Levich",1)
-        p.set_x_txt("\omega^0.5", f"{rot_axis_unit}^0.5")
-        
+        p.set_x_txt("\\omega^0.5", f"{rot_axis_unit}^0.5")
+        p.set_y_txt(y_axis_title, y_axis_unit)
+
         p.options["style"]=STYLE_DL[0]+"o"
         p.y_data = y_data
         p.x_data = rot_sqrt 
