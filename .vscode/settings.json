@@ -10,5 +10,9 @@
         "./test",
         "-p",
         "test_*.py"
+    ],
+    "cSpell.words": [
+        "dtype",
+        "gdata"
     ]
 }

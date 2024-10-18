@@ -9,7 +9,6 @@ E =np.array([1,2,3,4])
 
 def  rn(value):
     return round(value*1000000)/1000000
-
 class test_Tafel(unittest.TestCase):
     
     def test_linear_slope(self):

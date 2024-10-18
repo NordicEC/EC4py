@@ -10,9 +10,9 @@ from .cv_data import CV_Data
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT
 from .analysis_levich import Levich
-from .analysis_tafel import Tafel
+#from .analysis_tafel import Tafel as Tafel_calc
 
 
 STYLE_POS_DL = "bo"
@@ -133,6 +133,15 @@ class CV_Datas:
                 cv.sub(corr_cv)
         return copy.deepcopy(self)
 
+    def pot_shift(self,shift_to:str|tuple = None):
+        """Shift the potential to another defined reference potential.
+
+        Args:
+            shift_to (str | tuple, optional): RHE or SHE. Defaults to None.
+        """
+        for cv in self.datas:
+            cv.pot_shift(shift_to)
+    
 ################################################################   
 
     def plot(self, *args, **kwargs):
@@ -151,10 +160,11 @@ class CV_Datas:
             
         """
         #CV_plot = make_plot_1x("CVs")
+        
         p = plot_options(kwargs)
         p.set_title("CVs")
         line, CV_plot = p.exe()
-        legend = p.legend
+        # legend = p.legend
         
         CVs = copy.deepcopy(self.datas)
         cv_kwargs = kwargs
@@ -165,12 +175,11 @@ class CV_Datas:
 
             cv_kwargs["plot"] = CV_plot
             cv_kwargs["name"] = cv.setup_data.name
-            if legend == "_" :
-                cv_kwargs["legend"] = cv.setup_data.name
 
-            p = cv.plot(**cv_kwargs)
+            plot = cv.plot(**cv_kwargs)
 
         CV_plot.legend()
+        p.saveFig(**kwargs)
         return CV_plot
 
     #################################################################################################    
@@ -184,8 +193,9 @@ class CV_Datas:
         Returns:
             List : Slope of data based on positive and negative sweep.
         """
-
-        CV_plot, analyse_plot = make_plot_2x("Levich Analysis")
+        fig = make_plot_2x("Levich Analysis")
+        CV_plot = fig.plots[0] 
+        analyse_plot = fig.plots[1]
         # CV_plot, analyse_plot = fig.subplots(1,2)
         CV_plot.title.set_text('CVs')
 
@@ -208,6 +218,8 @@ class CV_Datas:
         print("dir", "\tpos     ", "\tneg     " )
         print(" :    ",f"\t{y_axis_unit} / rpm^0.5",f"\t{y_axis_unit} / rpm^0.5")
         print("slope:", "\t{:.2e}".format(B_factor_pos.value) , "\t{:.2e}".format(B_factor_neg.value))
+        
+        saveFig(fig,**kwargs)
         return B_factor_pos, B_factor_neg
 
     #######################################################################################################
@@ -224,10 +236,10 @@ class CV_Datas:
             _type_: _description_
         """
 
-        CV_plot, analyse_plot = make_plot_2x("Koutechy-Levich Analysis")
-
+        fig = make_plot_2x("Koutechy-Levich Analysis")
+        CV_plot = fig.plots[0] 
+        analyse_plot = fig.plots[1]
         CV_plot.title.set_text('CVs')
-
         analyse_plot.title.set_text('Koutechy-Levich Plot')
         """
         rot=[]
@@ -307,15 +319,19 @@ class CV_Datas:
         print("dir","\tpos     ", "\tneg     " )
         print(" :", f"\trpm^0.5 /{y_axis_unit}", f"\trpm^0.5 /{y_axis_unit}")
         print("slope:", "\t{:.2e}".format(B_pos) , "\t{:.2e}".format(B_neg))
+        
+        saveFig(fig,**kwargs)
         return slope_pos,slope_neg
     
     ##################################################################################################################
     
     
-    def Tafel2(self, lims=[-1,1], E_for_idl:float=None , *args, **kwargs):
-        CV_plot, analyse_plot = make_plot_2x("Tafel Analysis")
+    def Tafel(self, lims=[-1,1], E_for_idl:float=None , *args, **kwargs):
+        
+        fig = make_plot_2x("Tafel Analysis")
+        CV_plot = fig.plots[0] 
+        analyse_plot = fig.plots[1]
         CV_plot.title.set_text('CVs')
-
         analyse_plot.title.set_text('Tafel Plot')   
         cv_kwargs = kwargs
         cv_kwargs['cv_plot'] = CV_plot
@@ -326,112 +342,11 @@ class CV_Datas:
             a, b = cv.Tafel(lims, E_for_idl, **cv_kwargs)
             Tafel_pos.append(a)
             Tafel_neg.append(b)
+        
+        saveFig(fig,**kwargs)
         return Tafel_pos, Tafel_neg
 ##################################################################################################################
 
-
-    """
-    def Tafel(self, lims=[-1,1], E_for_idl:float=None , *args, **kwargs):
-        ""_summary_
-
-        Args:
-            lims (list):  The range where the tafel slope should be calculated 
-            E_for_idl (float,optional.): potential that used to determin the diffusion limited current. This is optional.
-            
-        ""
-        CV_plot, analyse_plot = make_plot_2x("Tafel Analysis")
-        CV_plot.title.set_text('CVs')
-
-        analyse_plot.title.set_text('Tafel Plot')
-
-        rot=[]
-        y = []
-        E = []
-        Tafel_pos =[]
-        Tafel_neg =[]
-        #Epot=-0.5
-        y_axis_title =""
-        CVs = copy.deepcopy(self.datas)
-        cv_kwargs = kwargs
-        dir = kwargs.get("dir", "all")
-        plot_color2= []
-        for cv in CVs:
-            rot.append( math.sqrt(cv.rotation))
-
-            for arg in args:
-                #if arg == "area":
-                cv.norm(arg)
-            cv_kwargs["legend"] = str(f"{float(cv.rotation):.0f}")
-            cv_kwargs["plot"] = CV_plot
-            line,a = cv.plot(**cv_kwargs)
-            plot_color2.append(line.get_color())
-            plot_color =line.get_color()
-            #.get_color()
-            #color = line.get_color()
-            xmin = cv.get_index_of_E(min(lims))
-            xmax = cv.get_index_of_E(max(lims))
-            
-            if E_for_idl != None:
-                i_dl_p,i_dl_n = cv.get_i_at_E(E_for_idl)
-                y.append(cv.get_i_at_E(E_for_idl))
-                with np.errstate(divide='ignore'):
-                    y_data_p = [math.log10(abs(1/(1/i-1/i_dl_p))) for i in cv.i_p]
-                    y_data_n = [math.log10(abs(1/(1/i-1/i_dl_n))) for i in cv.i_n]
-            else:
-                y_data_p = [math.log10(abs(i)) for i in cv.i_p]
-                y_data_n = [math.log10(abs(i)) for i in cv.i_n]
-            #y_data = cv.i_p[xmin:xmax]
-            
-            ##FIT    
-            m_pos, b = np.polyfit(cv.E[xmin:xmax], y_data_p[xmin:xmax], 1)
-            y_pos= m_pos*cv.E[xmin:xmax]+b
-            Tafel_pos.append(QV(1/ m_pos,"V/dec","dE"))
-            m_neg, b = np.polyfit(cv.E[xmin:xmax], y_data_n[xmin:xmax], 1)
-            y_neg= m_neg*cv.E[xmin:xmax]+b
-            Tafel_neg.append(QV(1/ m_neg,"V/dec","dE"))
-            
-            print("Tafel", 1./ m_pos , "V/dec")
-            if E_for_idl != None:
-                E.append([E_for_idl, E_for_idl])
-            
-            y_axis_title= cv.i_label
-            y_axis_unit= cv.i_unit
-            if dir!="neg":
-                analyse_plot.plot(cv.E, y_data_p,c= plot_color)
-                line, = analyse_plot.plot(cv.E[xmin:xmax], y_pos,linewidth=3.0, c= plot_color)
-                #line.set_color(plot_color)
-                line.set_label(f"pos: m={1000/m_pos:3.1f}mV/dec")
-            if dir!="pos":
-                analyse_plot.plot(cv.E, y_data_n,c= plot_color)
-                line, = analyse_plot.plot(cv.E[xmin:xmax], y_neg,linewidth=3.0,c= plot_color)
-                line.set_label(f"neg: m={1000/m_neg:3.1f}mV/dec")
-            
-            #print(cv.setup)
-        #print(rot)
-
-        y_values = np.array(y)
-        if E_for_idl != None:
-            CV_plot.plot(E,y_values[:,0], STYLE_POS_DL, E,y_values[:,1],STYLE_NEG_DL)
-        CV_plot.legend()
-
-
-        analyse_plot.set_xlim(lims[0]-0.1,lims[1]+0.1)
-
-        analyse_plot.set_xlabel("E ( V )")
-        analyse_plot.set_ylabel(f"log( {y_axis_title} / {y_axis_unit} )" )
-        #m_pos, b = np.polyfit(rot, y_inv[:,0], 1)
-        #y_pos= m_pos*rot+b
-        #line,=analyse_plot.plot(rot,y_pos,'-' )
-        #line.set_label(f"pos: m={m_pos:3.3e}")
-        #m_neg, b = np.polyfit(rot, y_inv[:,1], 1)
-        #y_neg= m_neg*rot+b
-        #line, = analyse_plot.plot(rot,y_neg,'-' )
-        #line.set_label(f"neg: m={m_neg:3.3e}")
-        analyse_plot.legend()
-        #print("Tafel",m_pos,m_neg)
-        #return m_pos,m_neg
-        return Tafel_pos, Tafel_neg
-        """
 
 
 def plots_for_rotations(datas: CV_Datas, Epot: float, *args, **kwargs):
@@ -447,7 +362,7 @@ def plots_for_rotations(datas: CV_Datas, Epot: float, *args, **kwargs):
     line=[]
     for cv in CVs:
         # x_qv = cv.rotation
-        rot.append(math.sqrt(cv.rotation))
+        rot.append(float(cv.rotation))
         for arg in args:
             cv.norm(arg)
         cv_kwargs["legend"] = str(f"{float(cv.rotation):.0f}")

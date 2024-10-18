@@ -388,7 +388,9 @@ class LSV_Data(EC_Setup):
         data_plot = Tafel_op["LSV_plot"]
         analyse_plot = Tafel_op["analyse_plot"]
         if Tafel_op["LSV_plot"] is None and Tafel_op["analyse_plot"] is None:
-            data_plot, analyse_plot = make_plot_2x("Tafel Analysis")
+            fig = make_plot_2x("Tafel Analysis")
+            data_plot = fig.plots[0]
+            analyse_plot =  fig.plots[1]
             data_plot.title.set_text('LSV')
             analyse_plot.title.set_text('Tafel Plot')
             

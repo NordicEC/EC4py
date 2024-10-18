@@ -16,7 +16,7 @@ from .analysis_levich import Levich
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig
 
 
 STYLE_POS_DL = "bo"
@@ -125,7 +125,11 @@ class Step_Datas:
         if(step_nr>-1):
             s = s + f" of step #{step_nr}"
         
-        data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1(s)
+        fig = make_plot_2x_1(s)
+        data_plot_i = fig.plots[0]
+        data_plot_E = fig.plots[1]
+        analyse_plot =  fig.plots[2]
+        #data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1(s)
         #########################################################
             # Make plot
         data_kwargs = kwargs
@@ -143,6 +147,7 @@ class Step_Datas:
             charge[i] = (self.datas[i].integrate(t_start,t_end,step_nr,*args, **data_kwargs))
         data_plot_i.axvspan(t_start, t_end, color='C0', alpha=0.2)
         p.close(*args)
+        saveFig(fig,**kwargs)
         return charge
     
     ##################################################################################################################
@@ -168,7 +173,11 @@ class Step_Datas:
         if(step_nr>-1):
             s = s + f" of step #{step_nr}"
         
-        data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1(s)
+        fig = make_plot_2x_1(s)
+        data_plot_i = fig.plots[0]
+        data_plot_E = fig.plots[1]
+        analyse_plot =  fig.plots[2]
+        # data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1(s)
         #data_plot_i.title.set_text("")
         #data_plot_E.title.set_text('')
         analyse_plot.title.set_text('Levich Plot')
@@ -189,6 +198,7 @@ class Step_Datas:
         print(" :    ",f"\t{y_axis_unit} / rpm^0.5")
         print("slope:", "\t{:.2e}".format(B_factor.value))
         plot_options(kwargs).close(*args)
+        saveFig(fig,**kwargs)
         return B_factor
  
  

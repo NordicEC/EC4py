@@ -14,5 +14,6 @@ from .step_datas import Step_Datas
 from .util import Quantity_Value_Unit
 from .lsv_data import LSV_Data
 from .lsv_datas import LSV_Datas
+from .ec_setup import RHE,SHE,RATE,AREA
 
-__all__ = ["EC_Data", "EC_Datas", "CV_Data", "CV_Datas", "Step_Data", "Step_Datas", "Quantity_Value_Unit","LSV_Data"]
+__all__ = ["EC_Data", "EC_Datas", "CV_Data", "CV_Datas", "Step_Data", "Step_Datas", "Quantity_Value_Unit","LSV_Data","RHE","SHE","RATE","AREA"]

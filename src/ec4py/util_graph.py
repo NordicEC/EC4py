@@ -7,6 +7,7 @@ Utility module.
 from scipy.signal import savgol_filter, medfilt
 #from scipy import ndimage, datasets
 import matplotlib.pyplot as plt
+from collections import namedtuple
 #from fractions import Fraction
 #import matplotlib.pyplot as plt
 
@@ -15,34 +16,44 @@ import matplotlib.pyplot as plt
 NEWPLOT = "new_plot"
 
 
+Figure = namedtuple("Figure", ["fig", "plots"])
+"""Tuplet:
+    - fig   : a plt.figure() object.
+    - plots :  subplots of the figure
+"""
+
 def make_plot_1x(Title:str):
     fig = plt.figure()
     fig.set_figheight(5)
     fig.set_figwidth(6)
     plt.suptitle(Title)
-    return fig.subplots()
+    plot1 = fig.subplots()
+    return Figure(fig,[plot1])
 
 def make_plot_2x(Title:str):
-        fig = plt.figure()
-        fig.set_figheight(5)
-        fig.set_figwidth(13)
-        plt.suptitle(Title)
-        plot1,plot2 = fig.subplots(1,2)
-        return plot1, plot2
+    fig = plt.figure()
+    fig.set_figheight(5)
+    fig.set_figwidth(13)
+    plt.suptitle(Title)
+    plot1,plot2 = fig.subplots(1,2)
+    return Figure(fig,[plot1,plot2])
+    #
+    #return plot1, plot2
     
 def make_plot_2x_1(Title:str):
-        fig = plt.figure()
-        fig.set_figheight(5)
-        fig.set_figwidth(13)
-        plt.suptitle(Title)
-        ax_right = fig.add_subplot(122)
-        ax_left_top = fig.add_subplot(221)
-        ax_left_bottom = fig.add_subplot(223)
-        ax_left_bottom.label_outer()
-        ax_left_top.label_outer()
-        fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=.5, hspace=0.2)
-        #plot1,plot2 = fig.subplots(1,2)
-        return ax_left_top, ax_left_bottom, ax_right
+    fig = plt.figure()
+    fig.set_figheight(5)
+    fig.set_figwidth(13)
+    plt.suptitle(Title)
+    ax_right = fig.add_subplot(122)
+    ax_left_top = fig.add_subplot(221)
+    ax_left_bottom = fig.add_subplot(223)
+    ax_left_bottom.label_outer()
+    ax_left_top.label_outer()
+    fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=.5, hspace=0.2)
+    #plot1,plot2 = fig.subplots(1,2)
+    return Figure(fig,[ax_left_top, ax_left_bottom, ax_right ])
+    # return ax_left_top, ax_left_bottom, ax_right
 
 
 def quantity_plot_fix(s:str):
@@ -60,6 +71,7 @@ def quantity_plot_fix(s:str):
 
 class plot_options:
     def __init__(self, kwargs):
+        self.fig = None
         self.name = NEWPLOT
         self.x_label="x"
         self.x_unit = "xunit"
@@ -169,19 +181,22 @@ class plot_options:
         except KeyError("plot keyword was not found"):
             #fig = plt.figure()
             #  plt.subtitle(self.name)
-            ax = make_plot_1x(self.options['title'])
+            fig = make_plot_1x(self.options['title'])
+            ax = fig.plots[0]
 
     def exe(self):
         """_summary_
 
         Returns:
-            _type_: _description_
+            line, ax: _description_
         """
         ax = self.options['plot']
-        if ax == NEWPLOT:
+        fig = None
+        if ax == NEWPLOT or ax is None:
            # fig = plt.figure()
            # plt.suptitle(self.name)
-            ax = make_plot_1x(self.options['title'])
+            self.fig = make_plot_1x(self.options['title'])
+            ax = self.fig.plots[0]
             if self.options['yscale']:
                 ax.set_yscale(self.options['yscale'])
             if self.options['xscale']:
@@ -218,13 +233,15 @@ class plot_options:
         try:
             line, = ax.plot(self.x_data, self.y_data, self.options['style'])
             #line,=analyse_plot.plot(rot,y_pos,'-' )
-            line.set_label( self.get_legend() )
+            if self.x_data is not None:
+                line.set_label( self.get_legend() )
             
         except:  # noqa: E722
             pass
         ax.set_xlabel(f'{quantity_plot_fix(self.x_label)} ({quantity_plot_fix(self.x_unit)})')
         ylabel = quantity_plot_fix(self.y_label) + " (" + quantity_plot_fix(self.y_unit)+ ")"
         #ax.set_ylabel(f'{quantity_plot_fix(self.y_label)}    {quantity_plot_fix(self.y_unit)}')
+        #print(f'{ylabel}')
         ax.set_ylabel(f'{ylabel}')
         
         return line, ax
@@ -238,4 +255,18 @@ class plot_options:
                 plt.close('all')
                 break
         return
+    
+    def saveFig(self,**kwargs):
+        #print("fig")
+        saveFig(self.fig,**kwargs)
             
+
+
+def saveFig(fig:Figure,**kwargs):
+    if fig is not None:
+            name = kwargs.get("savefig",None)
+            if name is not None:
+                fig.fig.savefig(name, dpi='figure', format=None)
+    else:
+        # print("fig is non")
+        pass

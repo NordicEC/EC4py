@@ -3,7 +3,8 @@ title: Example 1
 parent: CV_Data
 grand_parent: Examples
 ---
-# Example class CV_data - example 1
+# Example 1: class CV_data - Basics
+
 
 ## Download dataset
 
@@ -46,4 +47,9 @@ and save it an appropriate folder.
 
 ![Plot of CVs](./cv_data_ex1_fig2.png)
 
+## Get the current at a specific potential
 
+```python
+   i_p, i_n = data.get_i_at_E(-0.4)
+   print(i_p,i_n)
+```

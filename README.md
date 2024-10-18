@@ -2,8 +2,8 @@ The intention
 ---------------
 This is a package to treat electrochemical data in order to extract key values such as ECSA and Tafel slopes. Specifically, its aim is to make the data analysis as quick and easy as possible. 
 
-
-
+#  EC4py Docs
+    https://nordicec.github.io/EC4py/
 # Using EC4py
 
 Get the stable version of EC4py from the Python package index with

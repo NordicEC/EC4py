@@ -13,7 +13,7 @@ import copy
 from .ec_data import EC_Data,index_at_time
 
 from .ec_setup import EC_Setup
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
 from .analysis_tafel import Tafel
@@ -111,7 +111,7 @@ class Step_Data(EC_Setup):
             self.step_Time = List_Str2float(self.setup["Step.Time"])
             self.step_E =List_Str2float(self.setup["Step.E"])
             self.step_Type = List_Str2Str(self.setup["Step.Type"])
-            self.E_label = "E vs " + self.setup.get("Ref.Electrode","")
+            self.E_label = "E vs " + self.RE
         except ValueError:
             print("no_data")
         #self.setup = data.setup
@@ -275,12 +275,14 @@ class Step_Data(EC_Setup):
                 # print("ITTTT",item)
                 shift_factor = self.get_pot_offset(item)
                 if shift_factor:
+                    self.setup_data.setACTIVE_RE(shift_to)
                     end_norm_factor=  shift_factor
                     break
         else:
             shift_factor = self.get_pot_offset(shift_to)
             #print(norm_factor)
             if shift_factor:
+                self.setup_data.setACTIVE_RE(shift_to)
                 end_norm_factor = shift_factor
                 
         if end_norm_factor is not None:
@@ -306,13 +308,18 @@ class Step_Data(EC_Setup):
         
         data_kwargs = kwargs
         #print(kwargs)
+        fig = None
         if 'plot_i' in data_kwargs:
             data_plot_i = data_kwargs["plot_i"]
             data_plot_E = data_kwargs["plot_E"]
             analyse_plot = data_kwargs["analyse_plot"]
             # print("plots are there")
         else:
-            data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1("Integrate Analysis")
+            fig = make_plot_2x_1("Integrate Analysis")
+            data_plot_i = fig.plots[0]
+            data_plot_E = fig.plots[1]
+            analyse_plot =  fig.plots[2]
+            #data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1("Integrate Analysis")
             #########################################################
             # Make plot
             data_kwargs = kwargs
@@ -339,8 +346,8 @@ class Step_Data(EC_Setup):
         step.pot_shift(args)
         #print(step.i_unit,args)
         array_Q = integrate.cumulative_simpson(step.i[idxmin:idxmax], x=step.Time[idxmin:idxmax], initial=0)
-        Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],step.i_unit,self.i_label)* QV(1,"s","t")
-
+        Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],step.i_unit.self.i_label.replace("A","C"),self.i_label.replace("i","Q")) #* QV(1,"s","t")
+        
         options = plot_options(kwargs)
         options.options["plot"] = analyse_plot
         options.x_data = step.Time[idxmin:idxmax]
@@ -350,6 +357,7 @@ class Step_Data(EC_Setup):
         #analyse_plot.plot(self.Time[idxmin:idxmax], array_Q)
         #Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],self.i_unit,self.i_label)* QV(1,"s","t")
         options.exe()
+        saveFig(fig,**kwargs)
         return Charge
     
     
@@ -361,7 +369,7 @@ class Step_Data(EC_Setup):
             maxIndex = len(singleStep.Time)-1
             x_data[i] = singleStep.E[maxIndex]
             y_data[i] = singleStep.i[maxIndex]
-        return Tafel(x_data, y_data, self.i_unit, "Tafel",  **kwargs)
+        return Tafel(x_data, y_data, self.i_unit, self.i_label,  **kwargs)
 ##END OF CLASS
 ########################################################################################## 
 

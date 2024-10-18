@@ -2,6 +2,11 @@ from .util import extract_value_unit
 from .util import Quantity_Value_Unit as QV
 
 
+RHE = "RHE"
+SHE = "SHE"
+AREA = "area"
+RATE = "rate"
+
 class ec_setup_data:
         def __init__(self):
             self.name =""
@@ -17,7 +22,32 @@ class ec_setup_data:
             self._weight_unit ="g"
             self._RHE = None
             self._SHE = None
+            self._RE = ""
+            self._currentElectrode = 0
             return
+
+        def setACTIVE_RE(self,ref):
+            if ref is RHE:
+                self._currentElectrode = 1
+            elif ref is SHE:
+                self._currentElectrode = 2
+            else:
+                self._currentElectrode = 0
+            # print(ref, self._currentElectrode)
+            
+        def getACTIVE_RE(self):
+            """
+            Returns:
+                str: the selected reference electrode.
+            """
+            active_reference_electrode = ""
+            if self._currentElectrode == 1:
+                active_reference_electrode = RHE
+            elif self._currentElectrode == 2:
+                active_reference_electrode = SHE
+            else:
+                active_reference_electrode = self._RE
+            return active_reference_electrode
 
 class EC_Setup:
     """Describes the setup.
@@ -45,6 +75,12 @@ class EC_Setup:
         if 'Inst.Convection.Speed' in self.setup_data._setup:
             v,u = extract_value_unit(self.setup_data._setup['Inst.Convection.Speed'])
             self.set_rotation(v,u)
+        if 'RHE' in self.setup_data._setup:
+            self.setup_data._RHE = self.setup_data._setup['RHE']
+        if 'SHE' in self.setup_data._setup:
+            self.setup_data._SHE = self.setup_data._setup['SHE']
+        if 'Ref.Electrode' in self.setup_data._setup:
+            self.setup_data._RE = self.setup_data._setup['Ref.Electrode']
         #if 'Inst.Convection.Speed' in self.setup_data._setup:
         #    v,u = extract_value_unit(self.setup_data._setup['Inst.Convection.Speed'])
         #    self.set_rotation(v,u)
@@ -207,13 +243,31 @@ class EC_Setup:
         else:
             self.setup_data._rotation_unit = unit
         return
-    
+    #########################################################################
     def set_RHE(self, V_RHE_vs_refereceElectrode):
         self.setup_data._RHE = str(V_RHE_vs_refereceElectrode)
         return
     
     def set_SHE(self, V_SHE_vs_refereceElectrode):
         self.setup_data._SHE = str(V_SHE_vs_refereceElectrode)
+        return
+    
+    
+    @property
+    def RE(self)-> str:
+        """Set the name of the reference electrode
+
+        Returns:
+            str: name of reference electrode
+        """
+        return str(self.setup_data._RE)
+    
+    @RE.setter
+    def RE(self, reference_electrode_name:str):
+        self.set_RE(reference_electrode_name)
+        
+    def set_RE(self, reference_electrode_name:str):
+        self.setup_data._RE =str(reference_electrode_name)
         return
         
     #########################################################################
@@ -230,12 +284,18 @@ class EC_Setup:
         s = str()
         #print(kwargs)
         if 'legend' in kwargs:
-            item = kwargs['legend']
+            item = kwargs.get('legend',"").casefold()
             if item == '?':
                 #print(self.setup_data._setup)
                 return "_"
-            elif item == "name":
+            elif item == "name".casefold():
                 return self.setup_data.name
+            elif item == "rate".casefold():
+                return str(self.rate)
+            elif item == "rot_rate".casefold() or item == "rotation".casefold() or item == "rot".casefold():
+                return str(self.rotation)
+            elif item.casefold() == "area".casefold():
+                return str(self.area)
             elif item in self.setup_data._setup:
                 #print("items was found", item)
                 s = self.setup_data._setup[item]
@@ -257,9 +317,7 @@ class EC_Setup:
         norm_factor = QV(1)
         norm_to = str(norm_to).casefold()
         if norm_to.casefold() == "area".casefold() :
-           
            norm_factor = self.area
-           
         elif norm_to.casefold() == "area_cm".casefold():
             norm_factor = self.area
             if norm_factor.unit.casefold() == "m^2".casefold():
@@ -285,7 +343,7 @@ class EC_Setup:
     def get_pot_offset(self, shift_to:str):
         shift = str(shift_to).casefold()
         shift_value = QV(0,"V","E")
-        if shift == "RHE".casefold():
+        if shift == RHE.casefold():
             if self.setup_data._RHE is not None:
                 s = self.setup_data._RHE
                 v, u = extract_value_unit(s+" V")
@@ -294,7 +352,7 @@ class EC_Setup:
             else:   
                 print("RHE vs reference electrode has not been defined")
             return shift_value
-        if shift == "SHE".casefold():
+        elif shift == "SHE".casefold():
             if self.setup_data._SHE is not None:
                 s = self.setup_data._SHE
                 v, u = extract_value_unit(s)
@@ -302,7 +360,12 @@ class EC_Setup:
                 shift_value = QV(v,"V","E vs SHE")
             else:
                 print("SHE vs reference electrode has not been defined")
+        elif shift == "RE".casefold():
+            shift_value = QV(0,"V","E vs "+ self.setup_data._RE)
             return shift_value
+        else:
+            return None
+
         
 
 
