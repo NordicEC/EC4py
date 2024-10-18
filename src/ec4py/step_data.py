@@ -111,7 +111,7 @@ class Step_Data(EC_Setup):
             self.step_Time = List_Str2float(self.setup["Step.Time"])
             self.step_E =List_Str2float(self.setup["Step.E"])
             self.step_Type = List_Str2Str(self.setup["Step.Type"])
-            self.E_label = "E vs " + self.setup.get("Ref.Electrode","")
+            self.E_label = "E vs " + self.RE
         except ValueError:
             print("no_data")
         #self.setup = data.setup
@@ -275,12 +275,14 @@ class Step_Data(EC_Setup):
                 # print("ITTTT",item)
                 shift_factor = self.get_pot_offset(item)
                 if shift_factor:
+                    self.setup_data.setACTIVE_RE(shift_to)
                     end_norm_factor=  shift_factor
                     break
         else:
             shift_factor = self.get_pot_offset(shift_to)
             #print(norm_factor)
             if shift_factor:
+                self.setup_data.setACTIVE_RE(shift_to)
                 end_norm_factor = shift_factor
                 
         if end_norm_factor is not None:

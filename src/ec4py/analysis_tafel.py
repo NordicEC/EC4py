@@ -21,19 +21,19 @@ def Tafel(x_data, y_data, y_axis_unit, y_axis_title, plot_color, lineName="", x_
     Returns:
         _type_: _description_
     """
-  
-    Tafel_options={
-                   lineName : ""
-                   }
+
     #Tafel Analysis  
     y_data = np.log10(np.abs(y_data))  
     m, b = np.polyfit(x_data, y_data, 1)
     y_fit= m * x_data + b
     Tafel_slope = (Q_V(1/ m, "V/dec", "dE"))
 
-
+   
+ 
     p = plot_options(kwargs)
     p.set_title("Tafel")
+    p.x_label = kwargs.get("x_label","E")
+    p.x_unit = kwargs.get("x_unit","V")
     line, analyse_plot = p.exe()
     if x_data_ext is not None and y_data_ext is not None:
         y_data_ext = np.log10(np.abs(y_data_ext))
@@ -50,7 +50,7 @@ def Tafel(x_data, y_data, y_axis_unit, y_axis_title, plot_color, lineName="", x_
     x = np.array(x_data)
 
     analyse_plot.set_xlim(x.min() - 0.1, x.max() + 0.1)
-    analyse_plot.set_xlabel("E ( V )")
+    # analyse_plot.set_xlabel(Tafel_options["x_label"] + " (V)")
     analyse_plot.set_ylabel(f"log( {y_axis_title} / {y_axis_unit} )" )
     analyse_plot.legend()
 

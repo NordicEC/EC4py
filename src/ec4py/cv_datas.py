@@ -133,6 +133,15 @@ class CV_Datas:
                 cv.sub(corr_cv)
         return copy.deepcopy(self)
 
+    def pot_shift(self,shift_to:str|tuple = None):
+        """Shift the potential to another defined reference potential.
+
+        Args:
+            shift_to (str | tuple, optional): RHE or SHE. Defaults to None.
+        """
+        for cv in self.datas:
+            cv.pot_shift(shift_to)
+    
 ################################################################   
 
     def plot(self, *args, **kwargs):

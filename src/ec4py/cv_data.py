@@ -177,12 +177,6 @@ class CV_Data(Voltammetry):
             return
 
 
-    #####################################################################################################
-    def set_area(self, value,unit):
-        self.setup_data._area = value
-        self.setup_data._area_unit = unit
-
-
     ######################################################################################################
     def conv(self, ec_data: EC_Data, *args, ** kwargs):
         """Converts EC_Data to a CV
@@ -207,6 +201,11 @@ class CV_Data(Voltammetry):
             #print("CONVERTING_AAA",len(ec_data.Time), len(ec_data.E), len(ec_data.i))
             self.setup_data = copy.deepcopy(ec_data.setup_data)
             self.convert(ec_data.Time,ec_data.E,ec_data.i,**kwargs)
+            if 'Ref.Electrode' in self.setup:
+                self.E_label = "E vs " + self.RE
+                print("aaaaa")
+            else:
+                self.E_label ="E"
 
         except ValueError:
             print("no_data")
@@ -324,11 +323,17 @@ class CV_Data(Voltammetry):
         self.i_n = self.clean_up_edges(y_neg)
         
    ######################################################################################### 
-    def norm(self, norm_to:str):
-         
-        norm_factor = self.get_norm_factor(norm_to)
+    def norm(self, norm_to:str|tuple):
+        norm_factor = 1
+        if isinstance(norm_to, tuple):
+            for arg in norm_to:
+                x = self.get_norm_factor(norm_to)
+                if x is not None:   
+                    norm_factor = norm_factor * float(x)
+        else:        
+            norm_factor = self.get_norm_factor(norm_to)
         #print(norm_factor)
-        if norm_factor:
+        if norm_factor is not None:
             self.i_n = self.i_n / float(norm_factor)
             self.i_p = self.i_p / float(norm_factor)
         #norm_factor_inv = norm_factor ** -1
@@ -337,10 +342,10 @@ class CV_Data(Voltammetry):
             self.i_label = current.quantity
             self.i_unit = current.unit
         
-        return 
+        return current.unit
     ###############################
     ###under deve
-    def pot_shift(self,shift_to:str|tuple):
+    def pot_shift(self,shift_to:str|tuple = None):
         end_norm_factor = None
         # print("argeLIST", type(norm_to))
         
@@ -350,23 +355,38 @@ class CV_Data(Voltammetry):
                 # print("ITTTT",item)
                 shift_factor = self.get_pot_offset(item)
                 if shift_factor:
+                    self.setup_data.setACTIVE_RE(item)
                     end_norm_factor=  shift_factor
                     break
+        elif shift_to is None:
+            self.setup_data.setACTIVE_RE("")
+            pass
         else:
             shift_factor = self.get_pot_offset(shift_to)
             #print(norm_factor)
             if shift_factor:
+                self.setup_data.setACTIVE_RE(shift_to)
                 end_norm_factor = shift_factor
-                
+        # print(self.E_shifted_by,end_norm_factor.value)
         if end_norm_factor is not None:
-            self.E = self.E + end_norm_factor.value
-            self.E_label = end_norm_factor.quantity
-            self.E_unit = end_norm_factor.unit
-            # print("SHIFT:",end_norm_factor)
+            if  self.E_shifted_by == end_norm_factor.value :   
+                pass #potential is already shifted.
+            elif self.E_shifted_by is None :
+                self.E = self.E - end_norm_factor.value
+                self.E_label = end_norm_factor.quantity
+                self.E_unit = end_norm_factor.unit
+                self.E_shifted_by = end_norm_factor.value
+                # print("SHIFT:",end_norm_factor)
+            else:
+                #shift back to original.
+                self.E = self.E + self.E_shifted_by
+                self.E_label = "E vs "+ self.RE
+                self.E_unit = self.E_unit = "V" 
+                self.E_shifted_by = None
         return 
     
     ############################################################################        
-    def plot(self,**kwargs):
+    def plot(self,*args,**kwargs):
         '''
         plots y_channel vs x_channel.\n
         to add to a existing plot, add the argument: \n
@@ -375,26 +395,27 @@ class CV_Data(Voltammetry):
         "y_smooth= number" - smoothing of the y-axis. \n
         
         '''
-        
+        data = copy.deepcopy(self)
         options = plot_options(kwargs)
         # print(options.get_legend(),self.legend(**kwargs))
-        options.set_title(self.setup_data.name)
-        options.name = self.setup_data.name
-        options.legend = self.legend(**kwargs)
-        
-        options.x_data = self.E
+        options.set_title(data.setup_data.name)
+        options.name = data.setup_data.name
+        options.legend = data.legend(**kwargs)
+        data.norm(args)
+        data.pot_shift(args)
+        options.x_data = data.E
         if(options.get_dir() == "pos"):  
-            options.y_data = self.i_p
+            options.y_data = data.i_p
         
         elif(options.get_dir() == "neg"):  
-            options.y_data = self.i_n
+            options.y_data = data.i_n
              
         else:
-            options.x_data=np.concatenate((self.E, self.E), axis=None)
-            options.y_data=np.concatenate((self.i_p, self.i_n), axis=None)  
+            options.x_data=np.concatenate((data.E, data.E), axis=None)
+            options.y_data=np.concatenate((data.i_p, data.i_n), axis=None)  
         
-        options.set_x_txt("E", "V")
-        options.set_y_txt(self.i_label, self.i_unit) 
+        options.set_x_txt("E vs "+ data.setup_data.getACTIVE_RE(), data.E_unit)
+        options.set_y_txt(data.i_label, data.i_unit) 
         # print(options.get_legend())
         return options.exe()
     
@@ -559,8 +580,8 @@ class CV_Data(Voltammetry):
             y_data_p = cv.i_p
             y_data_n = cv.i_n 
                 
-        Tafel_pos = Tafel(cv.E[xmin:xmax],y_data_p[xmin:xmax],cv.i_unit,cv.i_label,plot_color,"Pos",cv.E, y_data_p,plot=analyse_plot)
-        Tafel_neg = Tafel(cv.E[xmin:xmax],y_data_n[xmin:xmax],cv.i_unit,cv.i_label,plot_color,"Neg",cv.E, y_data_n, plot=analyse_plot)
+        Tafel_pos = Tafel(cv.E[xmin:xmax],y_data_p[xmin:xmax],cv.i_unit,cv.i_label,plot_color,"Pos",cv.E, y_data_p, plot=analyse_plot, x_label = "E vs "+ self.setup_data.getACTIVE_RE())
+        Tafel_neg = Tafel(cv.E[xmin:xmax],y_data_n[xmin:xmax],cv.i_unit,cv.i_label,plot_color,"Neg",cv.E, y_data_n, plot=analyse_plot, x_label = "E vs "+ self.setup_data.getACTIVE_RE())
         
         y_values = np.array(y)
         if E_for_idl is not None:

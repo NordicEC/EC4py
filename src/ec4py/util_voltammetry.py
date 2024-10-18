@@ -38,6 +38,7 @@ class Voltammetry(EC_Setup):
         self.xmax = 2.5  # view renage
         self.E_axis.update(kwargs)
         self.E = self.make_E_axis()
+        self.E_shifted_by = None
         
     #############################################################################
     def make_E_axis(self, Emin = None, Emax = None):
