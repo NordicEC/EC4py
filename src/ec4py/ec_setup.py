@@ -4,8 +4,8 @@ from .util import Quantity_Value_Unit as QV
 
 RHE = "RHE"
 SHE = "SHE"
-area = "area"
-rate = "rate"
+AREA = "area"
+RATE = "rate"
 
 class ec_setup_data:
         def __init__(self):

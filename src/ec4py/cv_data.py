@@ -327,7 +327,7 @@ class CV_Data(Voltammetry):
         norm_factor = 1
         if isinstance(norm_to, tuple):
             for arg in norm_to:
-                x = self.get_norm_factor(norm_to)
+                x = self.get_norm_factor(arg)
                 if x is not None:   
                     norm_factor = norm_factor * float(x)
         else:        
@@ -341,7 +341,7 @@ class CV_Data(Voltammetry):
          
             self.i_label = current.quantity
             self.i_unit = current.unit
-        
+
         return current.unit
     ###############################
     ###under deve
@@ -401,7 +401,7 @@ class CV_Data(Voltammetry):
         options.set_title(data.setup_data.name)
         options.name = data.setup_data.name
         options.legend = data.legend(**kwargs)
-        data.norm(args)
+        print(data.norm(args))
         data.pot_shift(args)
         options.x_data = data.E
         if(options.get_dir() == "pos"):  
@@ -416,6 +416,7 @@ class CV_Data(Voltammetry):
         
         options.set_x_txt("E vs "+ data.setup_data.getACTIVE_RE(), data.E_unit)
         options.set_y_txt(data.i_label, data.i_unit) 
+        
         # print(options.get_legend())
         return options.exe()
     
