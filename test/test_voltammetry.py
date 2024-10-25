@@ -53,8 +53,21 @@ class test_util_voltammetry( unittest.TestCase ):
         y= np.ones(rr)
         aa = data.interpolate(x,y)
         bb,pl = data._integrate(0,0.5,aa)
-        self.assertEqual(bb.value,0.5)
+        self.assertAlmostEqual(bb.value,0.5)
         self.assertEqual(bb.unit,"C")
+        
+    def test_get_E_at_i(self):
+        data = Voltammetry(E_min=-2,E_max=2)
+        data_i = data.E*2
+        i = data._get_E_at_i(data_i,0)
+        self.assertAlmostEqual(i,0)
+        i = data._get_E_at_i(data_i,1)
+        self.assertAlmostEqual(i,0.5)
+        data_i = data.E*2+1
+        i = data._get_E_at_i(data_i,-1)
+        self.assertAlmostEqual(i,-1)
+        i = data._get_E_at_i(data_i,0.1)
+        self.assertAlmostEqual(i,-0.45)
 
 if __name__ == '__main__':
     unittest.main()

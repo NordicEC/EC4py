@@ -393,7 +393,8 @@ class CV_Data(Voltammetry):
         "plot=subplot"\n
         "x_smooth= number" - smoothing of the x-axis. \n
         "y_smooth= number" - smoothing of the y-axis. \n
-        
+        Returns:
+            line, ax: description
         '''
         data = copy.deepcopy(self)
         options = plot_options(kwargs)
@@ -431,26 +432,56 @@ class CV_Data(Voltammetry):
         return index
     """
     ########################################################################################################
-    def get_i_at_E(self, E:float, dir:str = "all"):
+    def get_i_at_E(self, E:float, dir:str = "all",*args, **kwargs):
         """Get the current at a specific voltage.
 
         Args:
             E (float): potential where to get the current. 
             dir (str): direction, "pos,neg or all"
         Returns:
-            _type_: _description_
+            float: current
         """
         
         index = self.get_index_of_E(E)
                 
         if dir == "pos":
-            return self.i_p[index]
+            return float(self.i_p[index])
         elif dir == "neg":
             return self.i_n[index]
         else:
             return [self.i_p[index] , self.i_n[index]]
     
     ###########################################################################################
+
+    def get_E_at_i(self, i:float,tolerance:float=0,  dir:str = "all", *args, **kwargs):
+        """Get the voltage at a specific current..
+
+        Args:
+            i (float): the current. 
+            dir (str): direction, "pos,neg or all"
+            
+            "tolerance": value
+            
+        Returns:
+            float: Voltage at a specific current.
+        """
+        options = {"plot": None
+                   }
+        options.update(kwargs)
+                       
+        if dir == "pos":
+            
+            return self._get_E_at_i(self.i_p, i, **kwargs)
+        elif dir == "neg":
+            
+            return self._get_E_at_i(self.i_n, i, **kwargs)
+        else:
+            
+            return [self._get_E_at_i(self.i_p, i, **kwargs) , self._get_E_at_i(self.i_n, i, **kwargs)]
+    
+    ###########################################################################################
+
+
 
     def integrate(self, start_E:float, end_E:float, dir:str = "all", show_plot: bool = False, *args, **kwargs):
         """Integrate Current between the voltage limit using cumulative_simpson

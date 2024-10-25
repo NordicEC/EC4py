@@ -64,6 +64,33 @@ class Voltammetry(EC_Setup):
                 index = index + 1
         return index
     
+####################################################################################################    
+    def _get_E_at_i(self, current, i_threashold,*args, **kwargs):
+        
+        options = {"tolerance": 0.0,
+                   "show_plot": False,
+                   "plot": None
+                   }
+        options.update(kwargs)
+        
+        #get indexes where 
+        smaller_than = np.argwhere(current < i_threashold-options["tolerance"])
+        larger_than = np.argwhere(current > i_threashold+options["tolerance"])
+
+        start = np.max(smaller_than)
+        end  = np.min(larger_than)
+        
+        E_fit = self.E[start:end+1]
+        i_fit = current[start:end+1]
+        k,m = np.polyfit(i_fit, E_fit, 1)
+        p =options["plot"]
+        if p is not None:
+            p.plot(E_fit,i_fit,".",[m+k*i_threashold],[i_threashold],"ro")
+        
+        return m+k*i_threashold
+
+
+    
     def interpolate(self, E_data, y_data ):
         return np.interp(self.E, E_data, y_data)
     
