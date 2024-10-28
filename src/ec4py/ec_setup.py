@@ -1,6 +1,6 @@
 from .util import extract_value_unit
 from .util import Quantity_Value_Unit as QV
-
+import numpy as np
 
 RHE = "RHE"
 SHE = "SHE"
@@ -24,6 +24,7 @@ class ec_setup_data:
             self._SHE = None
             self._RE = ""
             self._currentElectrode = 0
+            self.dateTime = np.datetime64('2020-01-01 00:00:01')
             return
 
         def setACTIVE_RE(self,ref):
@@ -233,7 +234,7 @@ class EC_Setup:
         if unit == "":
             pass
         else:
-            self.setup._area_unit = unit
+            self.setup_data._area_unit = unit
         return
         
     def set_rotation(self,value:float,unit:str = ""):

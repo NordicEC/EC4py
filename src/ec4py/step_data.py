@@ -214,8 +214,14 @@ class Step_Data(EC_Setup):
      #   print("startT",startT)
       #  print("endT",endT)
         
+        
+        
         start_index = self.index_at_time(startT+extra)-1
+        if start_index< 0 : 
+            start_index = 0
         end_index =   self.index_at_time(endT+extra)-1
+        #shift dateTime
+        singleStep.setup_data.dateTime = self.setup_data.dateTime + np.timedelta64(int(self.Time[start_index]*1000000),'us')
       #  print("startT",start_index)
      #   print("endT",end_index)
         aSize=end_index-start_index #+1
@@ -236,7 +242,26 @@ class Step_Data(EC_Setup):
         singleStep.i_unit =self.i_unit
         return singleStep
     
-       ######################################################################################### 
+    #########################################################################################
+       
+    def append(self, step_to_append:Step_Data, use_DateTime=True):
+        """Append a step to another step.
+
+        Args:
+            step_to_append (Step_Data): Step to be appended.
+            use_DateTime (bool, optional): _description_. Defaults to True.
+        """
+        self.E= np.append(self.E, step_to_append.E)
+        self.i=np.append(self.i, step_to_append.i)
+        dt = (step_to_append.setup_data.dateTime-self.setup_data.dateTime) / np.timedelta64(1,'us') /1.0e6
+        print("dt", dt , len(step_to_append.Time+ dt))
+        step_to_append.Time[0]=np.nan
+        self.Time=np.append(self.Time, (step_to_append.Time+ dt ))
+        
+    #########################################################################################
+
+       
+        
     def norm(self, norm_to:str|tuple):
         end_norm_factor = 1
         current = QV(1,self.i_unit, self.i_label)

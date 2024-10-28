@@ -45,11 +45,13 @@ class EC_Data(EC_Setup):
                 tdms_file = TdmsFile.read(path)
                 tdms_file.close()
                 self.path = str(path)
+                # print(tdms_file.properties)
                 self.rawdata = tdms_file['EC']
                 self.Time = tdms_file['EC']['Time'].data
                 self.i = tdms_file['EC']['i'].data
                 self.E = tdms_file['EC']['E'].data
                 self.setup_data.name = tdms_file.properties['name']
+                self.setup_data.dateTime = tdms_file.properties['dateTime']
                 try:
                     self.Z_E = tdms_file['EC']['Z_E'].data  # not all data file contains U channel
                     self.Phase_E = tdms_file['EC']['Phase_E'].data  # not all data file contains U channel
@@ -72,17 +74,17 @@ class EC_Data(EC_Setup):
                     self.setup_reset()
                 except KeyError:
                     pass
-                [self.area, self.setup_data._area_unit] = util.extract_value_unit(self.setup["Electrode.Area"])
-                [self.rotation, self.setup_data.rotation_unit] = util.extract_value_unit(self.setup["Inst.Convection.Speed"])
+                # [self.area, self.setup_data._area_unit] = util.extract_value_unit(self.setup["Electrode.Area"])
+                # [self.rotation, self.setup_data.rotation_unit] = util.extract_value_unit(self.setup["Inst.Convection.Speed"])
 
             except FileNotFoundError:
                 print(f"TDMS file was not found: {path}")
             except KeyError as e:
                 print(f"TDMS error: {e}")
         
-    def set_area(self, value, unit):
-        self._area = value
-        self._area_unit = unit
+    #def set_area(self, value, unit):
+    #    self._area = value
+    #    self._area_unit = unit
 
     def __str__(self):
         """_summary_
