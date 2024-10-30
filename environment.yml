@@ -1,4 +1,7 @@
 name: stats
+channels:
+  - conda-forge
+  - defaults
 dependencies:
   - numpy
   - pandas

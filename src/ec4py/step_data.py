@@ -371,7 +371,7 @@ class Step_Data(EC_Setup):
         step.pot_shift(args)
         #print(step.i_unit,args)
         array_Q = integrate.cumulative_simpson(step.i[idxmin:idxmax], x=step.Time[idxmin:idxmax], initial=0)
-        Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],step.i_unit.self.i_label.replace("A","C"),self.i_label.replace("i","Q")) #* QV(1,"s","t")
+        Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],step.i_unit.replace("A","C"),self.i_label.replace("i","Q")) #* QV(1,"s","t")
         
         options = plot_options(kwargs)
         options.options["plot"] = analyse_plot

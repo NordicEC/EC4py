@@ -44,13 +44,13 @@ class test_Step_Datas(unittest.TestCase):
     def test_integrate(self):
         data = copy.deepcopy(gdata)
         v = data.integrate(2.0,4.0)
-        self.assertEqual(v.value,4.0)
-        self.assertEqual(v.unit,"A s")
+        self.assertAlmostEqual(v.value,4.0)
+        self.assertEqual(v.unit,"C")
         data.area = "10 m^2"
         data.norm("area")
         v = data.integrate(2.0,4.0)
-        self.assertEqual(v.value,0.40)
-        self.assertEqual(v.unit,"A s m^-2")
+        self.assertAlmostEqual(v.value,0.40)
+        self.assertEqual(v.unit,"C m^-2")
 
         
                 

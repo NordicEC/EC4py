@@ -43,7 +43,6 @@ class test_cv_data( unittest.TestCase ):
         v=np.abs(k[0].value)*1000
         self.assertTrue(v>40 and v<140)
     
-            
     
   
 

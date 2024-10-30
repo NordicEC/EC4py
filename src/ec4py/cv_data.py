@@ -483,62 +483,78 @@ class CV_Data(Voltammetry):
 
 
 
-    def integrate(self, start_E:float, end_E:float, dir:str = "all", show_plot: bool = False, *args, **kwargs):
+    def integrate(self, start_E:float, end_E:float, *args, **kwargs):
         """Integrate Current between the voltage limit using cumulative_simpson
 
         Args:
             start_E (float): potential where to get the current.
             end_E(float) 
-            dir (str): direction, "pos,neg or all"
+            optional args:
+                "all", "pos", "neg" - for the direction
+                "line": 
+                "offset_at_emax"
+                "offset_at_emin" 
         Returns:
             [float]: charge
         """
-        index1 = self.get_index_of_E(start_E)
-        index2 = self.get_index_of_E(end_E)
+        dir = "all"
+        show_plot = False
+        for arg in args:
+            if "show_plot".casefold() == str(arg).casefold():
+                show_plot = True
+            if "pos".casefold() == str(arg).casefold():
+                dir ="pos"
+            if "neg".casefold() == str(arg).casefold():
+                dir ="neg"
+                
+        data = copy.deepcopy(self)
+        index1 = data.get_index_of_E(start_E)
+        index2 = data.get_index_of_E(end_E)
         imax = max(index1,index2)
         imin = min(index1,index2)
         #print("INDEX",index1,index2)
         #try:
-        i_p = self.i_p[imin:imax+1].copy()
-        i_p[np.isnan(i_p)] = 0
-        i_n = self.i_n[imin:imax+1].copy()
-        i_n[np.isnan(i_n)] = 0
+        #i_p = self.i_p[imin:imax+1].copy()
+        #i_p[np.isnan(i_p)] = 0
+        #i_n = self.i_n[imin:imax+1].copy()
+        #i_n[np.isnan(i_n)] = 0
+        # array_Q_p = integrate.cumulative_simpson(i_p, x=self.E[imin:imax+1], initial=0) / float(self.rate)
+        # array_Q_n = integrate.cumulative_simpson(i_n, x=self.E[imin:imax+1], initial=0)/ float(self.rate)
+        #for arg in args:
+        #    print(arg) 
+        data.norm(args)
+        Q_p, d_p  =  self._integrate(  start_E, end_E, data.i_p, *args, **kwargs)
+        Q_n, d_n  =  self._integrate(  start_E, end_E, data.i_n, *args, **kwargs)
 
-        array_Q_p = integrate.cumulative_simpson(i_p, x=self.E[imin:imax+1], initial=0) / float(self.rate)
-        array_Q_n = integrate.cumulative_simpson(i_n, x=self.E[imin:imax+1], initial=0)/ float(self.rate)
         
-        Q_p, d_p  =  self._integrate(  start_E, end_E, self.i_p, show_plot, *args, **kwargs)
-        Q_n, d_n  =  self._integrate(  start_E, end_E, self.i_n, show_plot, *args, **kwargs)
-
-        
-        Q_unit =self.i_unit.replace("A","C")
+        #Q_unit =self.i_unit.replace("A","C")
         #yn= np.concatenate(i_p,i_n,axis=0)
         
-        y = [max(np.max(d_p[1]),np.max(d_n[1])), min(np.min(i_p),np.min(i_n))]
-        x1 = [self.E[imin],self.E[imin]]
-        x2 = [self.E[imax+1],self.E[imax+1]]  
+        y = [max(np.max(d_p[1]),np.max(d_n[1])), min(np.min(d_p[1]),np.min(d_n[1]))]
+        x1 = [data.E[imin],data.E[imin]]
+        x2 = [data.E[imax+1],data.E[imax+1]]  
         cv_kwargs = kwargs  
         if show_plot:
             cv_kwargs["dir"] = dir
-            line, ax = self.plot(**cv_kwargs)
+            line, ax = data.plot(**cv_kwargs)
             ax.plot(x1,y,'r',x2,y,'r')
             if dir != "neg":
-                ax.fill_between(d_p[0],d_p[1],color='C0',alpha=0.2)
+                ax.fill_between(d_p[0],d_p[1],d_p[3],color='C0',alpha=0.2)
                 #ax.fill_between(self.E[imin:imax+1],i_p,color='C0',alpha=0.2)
             if dir != "pos":
-                ax.fill_between(d_n[0],d_n[1],color='C1',alpha=0.2)
+                ax.fill_between(d_n[0],d_n[1],d_p[3],color='C1',alpha=0.2)
 
                 #ax.fill_between(self.E[imin:imax+1],i_n,color='C1',alpha=0.2)
             
         #except ValueError as e:
         #    print("the integration did not work on this dataset")
         #    return None
-        print(Q_p)
+        #print(Q_p)
 
-        end = len(array_Q_p)-1
-        Q_p = Q_V(array_Q_p[end]-array_Q_p[0],Q_unit,"Q")        
-        Q_n = Q_V(array_Q_n[end]-array_Q_n[0],Q_unit,"Q")
-        print(Q_p)
+        #end = len(array_Q_p)-1
+        #Q_p = Q_V(array_Q_p[end]-array_Q_p[0],Q_unit,"Q")        
+        #Q_n = Q_V(array_Q_n[end]-array_Q_n[0],Q_unit,"Q")
+        #print(Q_p)
         
         if dir == "pos":
             return Q_p#[Q_p[end]-Q_p[0],Q_unit] 

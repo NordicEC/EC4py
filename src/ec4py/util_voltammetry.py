@@ -94,7 +94,24 @@ class Voltammetry(EC_Setup):
     def interpolate(self, E_data, y_data ):
         return np.interp(self.E, E_data, y_data)
     
-    def _integrate(self, start_E:float, end_E:float,current:list(float), dir:str = "all", show_plot: bool = False, *args, **kwargs):
+    def _offset(self, offset:float):
+        return np.ones(self.E)*offset
+    
+    def _line(self, k:float, m:float):
+        """Generate a line y=k*E+m
+
+        Args:
+            k (float): slope
+            m (float): offset
+
+        Returns:
+            NDArray: slope
+        """
+        return self.E*k+ m
+    
+    
+    
+    def _integrate(self, start_E:float, end_E:float,current:list(float), *args, **kwargs):
         """Integrate Current between the voltage limit using cumulative_simpson
 
         Args:
@@ -110,12 +127,27 @@ class Voltammetry(EC_Setup):
         imin = min(index1,index2)
         #print("INDEX",index1,index2)
         #try:
+        
         (current[imin:(imax+1)]).copy()
         loc_i = (current[imin:imax+1]).copy()
         loc_i[np.isnan(loc_i)] = 0
         loc_E = self.E[imin:imax+1]
-
-        array_Q = integrate.cumulative_simpson(loc_i, x=loc_E, initial=0) / float(self.rate)        
+        offset = np.zeros(len(loc_i))
+        #for arg in args:
+        #    print(arg) 
+        for arg in args:
+            a = str(arg).casefold()
+            if a == "offset_at_emin".casefold():
+                print("OFFSET at MIN")
+                offset =np.ones(len(loc_i))*loc_i[0]
+            if a == "offset_at_emax".casefold():
+                offset =np.ones(len(loc_i))*loc_i[len(loc_i)-1]
+            if a == "line".casefold():
+                k = (loc_i[len(loc_i)-1]-loc_i[0])/ (end_E-start_E)
+                m = loc_i[0]-k*start_E
+                offset = k*loc_E+m
+                
+        array_Q = integrate.cumulative_simpson(loc_i-offset, x=loc_E, initial=0) / float(self.rate)        
         
         Q_unit =self.i_unit.replace("A","C")
         #yn= np.concatenate(i_p,i_n,axis=0)
@@ -141,7 +173,7 @@ class Voltammetry(EC_Setup):
         end = len(array_Q)-1
         loc_Q = QV(array_Q[end]-array_Q[0],Q_unit,"Q")        
         #print(Q_p)
-        return loc_Q, [loc_E,loc_i,array_Q ] 
+        return loc_Q, [loc_E,loc_i,array_Q, offset ] 
     
     def clean_up_edges(self, current):
         for i in range(1,current.size):
@@ -181,5 +213,22 @@ class Voltammetry(EC_Setup):
             self.E_unit = end_norm_factor.unit
             # print("SHIFT:",end_norm_factor)
         return 
+    
+    def _norm(self, norm_to:str|tuple, current):
+        norm_factor = 1
+        if isinstance(norm_to, tuple):
+            for arg in norm_to:
+                x = self.get_norm_factor(arg)
+                if x is not None:   
+                    norm_factor = norm_factor * float(x)
+        else:        
+            norm_factor = self.get_norm_factor(norm_to)
+        #print(norm_factor)
+        if norm_factor is not None:
+            current = current / float(norm_factor)
+        #norm_factor_inv = norm_factor ** -1
+            qv = QV(1, self.i_unit, self.i_label) / norm_factor
+
+        return current, qv
         
     

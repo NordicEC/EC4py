@@ -55,6 +55,9 @@ class test_util_voltammetry( unittest.TestCase ):
         bb,pl = data._integrate(0,0.5,aa)
         self.assertAlmostEqual(bb.value,0.5)
         self.assertEqual(bb.unit,"C")
+    
+    
+    
         
     def test_get_E_at_i(self):
         data = Voltammetry(E_min=-2,E_max=2)
