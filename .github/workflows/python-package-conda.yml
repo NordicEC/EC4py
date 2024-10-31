@@ -37,7 +37,8 @@ jobs:
     - name: Install nptdms
       run: |
         pip install nptdms
-    - name: Install src files to be tested
+    - name: Install ec4py packages.
+
       run: |
         pip install -e .
     - name: Test with pytest
