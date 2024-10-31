@@ -25,7 +25,7 @@ Features
 --------
 
 * Read TDMS files.
-    ** Plot
+    * Plot
 
 *   Treats cyclic voltammetry(CV) data:
     * subtraction, addition
