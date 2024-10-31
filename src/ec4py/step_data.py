@@ -39,6 +39,7 @@ class Step_Data(EC_Setup):
         self.step_Time =[]
         self.step_E =[]
         self.step_Type =[]
+        self.E_shifted_by = None
         if not args:
             return
         else:
@@ -146,7 +147,7 @@ class Step_Data(EC_Setup):
         
         # print("plotARGS",args)
         data.norm(args)
-        data.pot_shift(args)
+        data.set_active_RE(args)
         # print("QQQQ",data.E_label)
         index_min = 0
         if range["limit_min"] >0:
@@ -214,8 +215,14 @@ class Step_Data(EC_Setup):
      #   print("startT",startT)
       #  print("endT",endT)
         
+        
+        
         start_index = self.index_at_time(startT+extra)-1
+        if start_index< 0 : 
+            start_index = 0
         end_index =   self.index_at_time(endT+extra)-1
+        #shift dateTime
+        singleStep.setup_data.dateTime = self.setup_data.dateTime + np.timedelta64(int(self.Time[start_index]*1000000),'us')
       #  print("startT",start_index)
      #   print("endT",end_index)
         aSize=end_index-start_index #+1
@@ -236,7 +243,26 @@ class Step_Data(EC_Setup):
         singleStep.i_unit =self.i_unit
         return singleStep
     
-       ######################################################################################### 
+    #########################################################################################
+       
+    def append(self, step_to_append:Step_Data, use_DateTime=True):
+        """Append a step to another step.
+
+        Args:
+            step_to_append (Step_Data): Step to be appended.
+            use_DateTime (bool, optional): _description_. Defaults to True.
+        """
+        self.E= np.append(self.E, step_to_append.E)
+        self.i=np.append(self.i, step_to_append.i)
+        dt = (step_to_append.setup_data.dateTime-self.setup_data.dateTime) / np.timedelta64(1,'us') /1.0e6
+        print("dt", dt , len(step_to_append.Time+ dt))
+        step_to_append.Time[0]=np.nan
+        self.Time=np.append(self.Time, (step_to_append.Time+ dt ))
+        
+    #########################################################################################
+
+       
+        
     def norm(self, norm_to:str|tuple):
         end_norm_factor = 1
         current = QV(1,self.i_unit, self.i_label)
@@ -247,50 +273,60 @@ class Step_Data(EC_Setup):
                 # print("ITTTT",item)
                 norm_factor = self.get_norm_factor(item)
                 if norm_factor:
-                    end_norm_factor= end_norm_factor/ float(norm_factor)
+                    end_norm_factor= end_norm_factor * float(norm_factor)
                     current = current / norm_factor
-            if end_norm_factor != 1:
                 
-                self.i = self.i / float(end_norm_factor)
+                
         else:
             norm_factor = self.get_norm_factor(norm_to)
             #print(norm_factor)
             if norm_factor:
-                self.i = self.i / float(norm_factor)
+                end_norm_factor = end_norm_factor* float(norm_factor)
+                current = current / norm_factor
+                
             #norm_factor_inv = norm_factor ** -1
-                current = QV(1,self.i_unit, self.i_label) / norm_factor
             
-        self.i_label = current.quantity
-        self.i_unit = current.unit
+        if(end_norm_factor!= 1):
+            self.i = self.i / float(norm_factor)   
+            self.i_label = current.quantity
+            self.i_unit = current.unit
         
         return 
     
-    def pot_shift(self,shift_to:str|tuple):
+    def set_active_RE(self,shift_to:str|tuple):
+        """Set active Reference electrode for plotting
+
+        Args:
+            shift_to (str | tuple): use RHE, SHE
+
+        Returns:
+            _type_: _description_
+        """
         end_norm_factor = None
         # print("argeLIST", type(norm_to))
         
-        if isinstance(shift_to, tuple):
-           
-            for item in shift_to:
-                # print("ITTTT",item)
-                shift_factor = self.get_pot_offset(item)
-                if shift_factor:
-                    self.setup_data.setACTIVE_RE(shift_to)
-                    end_norm_factor=  shift_factor
-                    break
-        else:
-            shift_factor = self.get_pot_offset(shift_to)
-            #print(norm_factor)
-            if shift_factor:
-                self.setup_data.setACTIVE_RE(shift_to)
-                end_norm_factor = shift_factor
-                
+        last_Active_RE = self.setup_data.getACTIVE_RE()
+        end_norm_factor = EC_Setup.set_active_RE(self, shift_to)
+    
+        self.E_label = "E vs "+ self.setup_data.getACTIVE_RE()      
         if end_norm_factor is not None:
-            self.E = self.E + end_norm_factor.value
-            self.E_label = end_norm_factor.quantity
-            self.E_unit = end_norm_factor.unit
-            # print("SHIFT:",end_norm_factor)
-        return 
+            if  self.E_shifted_by == end_norm_factor.value :  
+                pass #potential is already shifted.
+            else:
+                if self.E_shifted_by is None :
+                    self.E_label = end_norm_factor.quantity
+                    self.E_unit = end_norm_factor.unit
+                    self.E_shifted_by = end_norm_factor.value
+                    self.E = self.E - self.E_shifted_by
+                else:
+                    self.E_label = "fdsdE vs "+ self.RE
+                    self.E_unit = self.E_unit = "V" 
+                    self.E = self.E + self.E_shifted_by
+                    self.E_shifted_by = None   
+        
+                
+                return end_norm_factor.value
+        return None
     
     def integrate(self,t_start:float,t_end:float, step_nr:int = -1, *args, **kwargs):
         """_summary_
@@ -343,10 +379,10 @@ class Step_Data(EC_Setup):
         #y,quantity,unit = self.get_channel(y_channel)
         #print("befre",step.i_unit)
         step.norm(args)
-        step.pot_shift(args)
+        step.set_active_RE(args)
         #print(step.i_unit,args)
         array_Q = integrate.cumulative_simpson(step.i[idxmin:idxmax], x=step.Time[idxmin:idxmax], initial=0)
-        Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],step.i_unit.self.i_label.replace("A","C"),self.i_label.replace("i","Q")) #* QV(1,"s","t")
+        Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],step.i_unit.replace("A","C"),self.i_label.replace("i","Q")) #* QV(1,"s","t")
         
         options = plot_options(kwargs)
         options.options["plot"] = analyse_plot

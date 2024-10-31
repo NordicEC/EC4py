@@ -33,25 +33,25 @@ class test_EC_Setup(unittest.TestCase):
         setup = EC_Setup()
         setup.area = "9 km^2"
         nf = setup.get_norm_factor("area")
-        self.assertEqual(nf.value, 9)
+        self.assertEqual(nf.value, 9.0)
         self.assertEqual(nf.unit, "km^2")
         
-        setup.area = "9 km^2"
+        setup.rotation = "8.2 rpm"
         nf = setup.get_norm_factor("rotation")
-        self.assertEqual(nf.value, 9)
-        self.assertEqual(nf.unit, "km^2")
+        self.assertEqual(nf.value, 8.2)
+        self.assertEqual(nf.unit, "rpm")
         ## Area
         setup.area = "7 m^2"
         nf = setup.get_norm_factor("area")
-        self.assertEqual(nf.value, 7)
+        self.assertAlmostEqual(nf.value, 7.0)
         self.assertEqual(nf.unit, "m^2")
         nf = setup.get_norm_factor("area_cm")
-        self.assertEqual(nf.value, 7)
+        self.assertAlmostEqual(nf.value, 70000)
         self.assertEqual(nf.unit, "cm^2")
         ## rotation
         setup.rotation = "16.0 f^2"
         nf = setup.get_norm_factor("rotation")
-        self.assertEqual(nf.value, 16)
+        self.assertAlmostEqual(nf.value, 16)
         self.assertEqual(nf.unit, "f^2")
         ## sqrt rotation
         nf = setup.get_norm_factor("sqrt_rot")

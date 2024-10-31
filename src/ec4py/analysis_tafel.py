@@ -1,7 +1,7 @@
 import numpy as np
 
 from .util import Quantity_Value_Unit as Q_V
-from .util_graph import plot_options
+from .util_graph import plot_options,quantity_plot_fix
 import math
 
 
@@ -51,7 +51,7 @@ def Tafel(x_data, y_data, y_axis_unit, y_axis_title, plot_color, lineName="", x_
 
     analyse_plot.set_xlim(x.min() - 0.1, x.max() + 0.1)
     # analyse_plot.set_xlabel(Tafel_options["x_label"] + " (V)")
-    analyse_plot.set_ylabel(f"log( {y_axis_title} / {y_axis_unit} )" )
+    analyse_plot.set_ylabel(f"log( {quantity_plot_fix(y_axis_title)} / {quantity_plot_fix(y_axis_unit)} )" )
     analyse_plot.legend()
 
     return Tafel_slope

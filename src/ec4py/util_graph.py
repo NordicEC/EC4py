@@ -15,6 +15,7 @@ from collections import namedtuple
 
 NEWPLOT = "new_plot"
 
+NO_PLOT = "no_plot"
 
 Figure = namedtuple("Figure", ["fig", "plots"])
 """Tuplet:

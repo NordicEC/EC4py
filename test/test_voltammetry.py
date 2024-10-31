@@ -55,6 +55,9 @@ class test_util_voltammetry( unittest.TestCase ):
         bb,pl = data._integrate(0,0.5,aa)
         self.assertAlmostEqual(bb.value,0.5)
         self.assertEqual(bb.unit,"C")
+    
+    
+    
         
     def test_get_E_at_i(self):
         data = Voltammetry(E_min=-2,E_max=2)
@@ -68,6 +71,42 @@ class test_util_voltammetry( unittest.TestCase ):
         self.assertAlmostEqual(i,-1)
         i = data._get_E_at_i(data_i,0.1)
         self.assertAlmostEqual(i,-0.45)
+        
+        
+        test_data = np.ones(len(data.E))
+        for i in range(data.get_index_of_E(0)):
+            test_data[i]=0
+        i = data._get_E_at_i(test_data,0.9,tolerance=0.01)
+        i=math.ceil(i)
+        self.assertAlmostEqual(i,0)
+        i = data._get_E_at_i(test_data,0.0,tolerance=0.01)
+        i=math.ceil(i)
+        self.assertAlmostEqual(i,-1)
+
+    
+    def test_shift_array(self):
+        data = Voltammetry(E_min=-2,E_max=2)
+        test_data = np.zeros(len(data.E))
+        test_data[data.get_index_of_E(0)]=1
+        test_list_data = list(test_data)
+        #shift None
+        shift_data = data._shift_Current_Array(test_data, None)
+        test_shift_data = list(shift_data)
+        self.assertListEqual(test_list_data,test_shift_data )
+        #shift 0
+        shift_data = data._shift_Current_Array(test_data, 0.0)
+        test_shift_data = list(shift_data)
+        self.assertListEqual(test_list_data,test_shift_data )
+        
+        #shift 0.5
+        #test_data = np.zeros(len(data.E))
+        index_of_test_i = np.argwhere(test_data > 0.5)[0][0]
+        voltage_shift = -0.5
+        shift_index_E = data.get_index_of_E(voltage_shift)-data.get_index_of_E(0)
+        shift_data = data._shift_Current_Array(test_data, voltage_shift)
+        index_of_shifted_i = np.argwhere(shift_data > 0.5)[0][0]
+        shift_index_i =  index_of_test_i - index_of_shifted_i
+        self.assertEqual(shift_index_E,shift_index_i )
 
 if __name__ == '__main__':
     unittest.main()

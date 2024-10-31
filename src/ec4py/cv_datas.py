@@ -5,7 +5,7 @@
 import math
 import numpy as np
 from .ec_data import EC_Data
-from .cv_data import CV_Data
+from .cv_data import CV_Data,STYLE_POS_DL,STYLE_NEG_DL, POS, NEG 
 
 from pathlib import Path
 import copy
@@ -15,8 +15,8 @@ from .analysis_levich import Levich
 #from .analysis_tafel import Tafel as Tafel_calc
 
 
-STYLE_POS_DL = "bo"
-STYLE_NEG_DL = "ro"
+# STYLE_POS_DL = "bo"
+# STYLE_NEG_DL = "ro"
 
 class CV_Datas:
     """# Class to analyze CV datas. 
@@ -167,16 +167,16 @@ class CV_Datas:
         # legend = p.legend
         
         CVs = copy.deepcopy(self.datas)
+        
         cv_kwargs = kwargs
         for cv in CVs:
             #rot.append(math.sqrt(cv.rotation))
-            for arg in args:
-                cv.norm(arg)
+
 
             cv_kwargs["plot"] = CV_plot
             cv_kwargs["name"] = cv.setup_data.name
 
-            plot = cv.plot(**cv_kwargs)
+            plot = cv.plot(args, **cv_kwargs)
 
         CV_plot.legend()
         p.saveFig(**kwargs)
@@ -211,8 +211,8 @@ class CV_Datas:
         # y = np.array(y)
         # rot_max = max(rot) 
         # Levich analysis
-        B_factor_pos = Levich(rot, y[:,0], y_axis_unit, y_axis_title, STYLE_POS_DL, "pos", plot=analyse_plot )
-        B_factor_neg = Levich(rot, y[:,1], y_axis_unit, y_axis_title, STYLE_NEG_DL, "neg", plot=analyse_plot )
+        B_factor_pos = Levich(rot, y[:,0], y_axis_unit, y_axis_title, STYLE_POS_DL, POS, plot=analyse_plot )
+        B_factor_neg = Levich(rot, y[:,1], y_axis_unit, y_axis_title, STYLE_NEG_DL, NEG, plot=analyse_plot )
 
         print("Levich analysis" )
         print("dir", "\tpos     ", "\tneg     " )
@@ -347,7 +347,19 @@ class CV_Datas:
         return Tafel_pos, Tafel_neg
 ##################################################################################################################
 
+    def set_active_RE(self,*args):
+        """Set active reference electrode for plotting.
+        
+        - RHE    - if values is not already set, use ".set_RHE()"
+        
+        - SHE    - if values is not already set, use ".set_RHE()"
+        - None to use the exerimental 
+        """
+        for cv in self.datas:
+            cv.norm(args)
+        return
 
+#########################################################################
 
 def plots_for_rotations(datas: CV_Datas, Epot: float, *args, **kwargs):
     rot = []
@@ -363,11 +375,12 @@ def plots_for_rotations(datas: CV_Datas, Epot: float, *args, **kwargs):
     for cv in CVs:
         # x_qv = cv.rotation
         rot.append(float(cv.rotation))
-        for arg in args:
-            cv.norm(arg)
+        cv.norm(args)
+        cv.set_active_RE(args)
         cv_kwargs["legend"] = str(f"{float(cv.rotation):.0f}")
         # cv_kwargs["plot"] = CV_plot
-        l, ax = cv.plot(**cv_kwargs)
+        l, ax = cv.plot( **cv_kwargs)
+
         line.append(l)
         y.append(cv.get_i_at_E(Epot))
         E.append([Epot, Epot])

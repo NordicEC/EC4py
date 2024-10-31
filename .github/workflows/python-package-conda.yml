@@ -38,6 +38,7 @@ jobs:
       run: |
         pip install nptdms
     - name: Install ec4py packages.
+
       run: |
         pip install -e .
     - name: Test with pytest

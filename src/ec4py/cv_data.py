@@ -14,8 +14,9 @@ from .ec_data import EC_Data
 
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
-from .util import Quantity_Value_Unit as Q_V
-from .util_voltammetry import Voltammetry
+from .util import Quantity_Value_Unit as QV
+from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE
+
 
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig
 from .analysis_tafel import Tafel
@@ -23,6 +24,9 @@ from .analysis_levich import diffusion_limit_corr
 
 STYLE_POS_DL = "bo"
 STYLE_NEG_DL = "ro"
+
+POS = "pos"
+NEG = "neg"
 
 class CV_Data(Voltammetry):
     """# Class to analyze a single CV data. 
@@ -203,7 +207,7 @@ class CV_Data(Voltammetry):
             self.convert(ec_data.Time,ec_data.E,ec_data.i,**kwargs)
             if 'Ref.Electrode' in self.setup:
                 self.E_label = "E vs " + self.RE
-                print("aaaaa")
+                #print("aaaaa")
             else:
                 self.E_label ="E"
 
@@ -324,65 +328,53 @@ class CV_Data(Voltammetry):
         
    ######################################################################################### 
     def norm(self, norm_to:str|tuple):
-        norm_factor = 1
+        """Normalise the current to certain factors. 
+
+        Args:
+            norm_to (str | tuple): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        a = Voltammetry.norm(self, norm_to,[self.i_p, self.i_n] )
+        if a is not None:
+            a,b = a
+            self.i_p = a[0]
+            self.i_n = a[1]
+            
+        """
+        
+        norm_factor = QV(1,)
         if isinstance(norm_to, tuple):
             for arg in norm_to:
                 x = self.get_norm_factor(arg)
                 if x is not None:   
-                    norm_factor = norm_factor * float(x)
+                    norm_factor = norm_factor * x
         else:        
             norm_factor = self.get_norm_factor(norm_to)
-        #print(norm_factor)
+        print(norm_factor)
         if norm_factor is not None:
             self.i_n = self.i_n / float(norm_factor)
             self.i_p = self.i_p / float(norm_factor)
         #norm_factor_inv = norm_factor ** -1
-            current = Q_V(1,self.i_unit, self.i_label) / norm_factor
-         
+            current = QV(1,self.i_unit, self.i_label) / norm_factor
+            print(current.unit,current.unit,norm_factor)
             self.i_label = current.quantity
             self.i_unit = current.unit
-
-        return current.unit
+        """
+        return 
     ###############################
     ###under deve
-    def pot_shift(self,shift_to:str|tuple = None):
+    def set_active_RE(self,shift_to:str|tuple = None):
         end_norm_factor = None
         # print("argeLIST", type(norm_to))
         
-        if isinstance(shift_to, tuple):
-           
-            for item in shift_to:
-                # print("ITTTT",item)
-                shift_factor = self.get_pot_offset(item)
-                if shift_factor:
-                    self.setup_data.setACTIVE_RE(item)
-                    end_norm_factor=  shift_factor
-                    break
-        elif shift_to is None:
-            self.setup_data.setACTIVE_RE("")
-            pass
-        else:
-            shift_factor = self.get_pot_offset(shift_to)
-            #print(norm_factor)
-            if shift_factor:
-                self.setup_data.setACTIVE_RE(shift_to)
-                end_norm_factor = shift_factor
-        # print(self.E_shifted_by,end_norm_factor.value)
-        if end_norm_factor is not None:
-            if  self.E_shifted_by == end_norm_factor.value :   
-                pass #potential is already shifted.
-            elif self.E_shifted_by is None :
-                self.E = self.E - end_norm_factor.value
-                self.E_label = end_norm_factor.quantity
-                self.E_unit = end_norm_factor.unit
-                self.E_shifted_by = end_norm_factor.value
-                # print("SHIFT:",end_norm_factor)
-            else:
-                #shift back to original.
-                self.E = self.E + self.E_shifted_by
-                self.E_label = "E vs "+ self.RE
-                self.E_unit = self.E_unit = "V" 
-                self.E_shifted_by = None
+        a = Voltammetry.set_active_RE(self, shift_to, [self.i_p, self.i_n])
+        if a is not None:
+            a,b = a
+            self.i_p = b[0]
+            self.i_n = b[1]
+            # print("pot_shift",a, "REEE",self.E_label)
         return 
     
     ############################################################################        
@@ -402,20 +394,22 @@ class CV_Data(Voltammetry):
         options.set_title(data.setup_data.name)
         options.name = data.setup_data.name
         options.legend = data.legend(**kwargs)
-        print(data.norm(args))
-        data.pot_shift(args)
+        data.norm(args)
+        # print(args)
+        data.set_active_RE(args)
         options.x_data = data.E
         if(options.get_dir() == "pos"):  
             options.y_data = data.i_p
         
         elif(options.get_dir() == "neg"):  
             options.y_data = data.i_n
-             
+            
         else:
             options.x_data=np.concatenate((data.E, data.E), axis=None)
             options.y_data=np.concatenate((data.i_p, data.i_n), axis=None)  
         
-        options.set_x_txt("E vs "+ data.setup_data.getACTIVE_RE(), data.E_unit)
+        # options.set_x_txt("E vs "+ data.setup_data.getACTIVE_RE(), data.E_unit)
+        options.set_x_txt(data.E_label, data.E_unit)
         options.set_y_txt(data.i_label, data.i_unit) 
         
         # print(options.get_legend())
@@ -483,62 +477,73 @@ class CV_Data(Voltammetry):
 
 
 
-    def integrate(self, start_E:float, end_E:float, dir:str = "all", show_plot: bool = False, *args, **kwargs):
+    def integrate(self, start_E:float, end_E:float, *args, **kwargs):
         """Integrate Current between the voltage limit using cumulative_simpson
 
         Args:
             start_E (float): potential where to get the current.
             end_E(float) 
-            dir (str): direction, "pos,neg or all"
+            optional args:
+                "all", "pos", "neg" - for the direction
+                "line": to make a line between i(end_E) and i(start_E), and the integrate between the i(E) and the line.
+                "offset_at_emax": Subtracting the value i(E_min) from the i(E) and then integrate.
+                "offset_at_emin": Subtracting the value i(E_max) from the i(E) and then integrate.
         Returns:
             [float]: charge
         """
-        index1 = self.get_index_of_E(start_E)
-        index2 = self.get_index_of_E(end_E)
+        dir = "all"
+        show_plot = True
+        for arg in args:
+            if "show_plot".casefold() == str(arg).casefold():
+                show_plot = True
+            if "no_plot".casefold() == str(arg).casefold():
+                show_plot = False
+            
+            if "pos".casefold() == str(arg).casefold():
+                dir ="pos"
+            if "neg".casefold() == str(arg).casefold():
+                dir ="neg"
+                
+        data = copy.deepcopy(self)
+        index1 = data.get_index_of_E(start_E)
+        index2 = data.get_index_of_E(end_E)
         imax = max(index1,index2)
         imin = min(index1,index2)
-        #print("INDEX",index1,index2)
-        #try:
-        i_p = self.i_p[imin:imax+1].copy()
-        i_p[np.isnan(i_p)] = 0
-        i_n = self.i_n[imin:imax+1].copy()
-        i_n[np.isnan(i_n)] = 0
-
-        array_Q_p = integrate.cumulative_simpson(i_p, x=self.E[imin:imax+1], initial=0) / float(self.rate)
-        array_Q_n = integrate.cumulative_simpson(i_n, x=self.E[imin:imax+1], initial=0)/ float(self.rate)
-        
-        Q_p, d_p  =  self._integrate(  start_E, end_E, self.i_p, show_plot, *args, **kwargs)
-        Q_n, d_n  =  self._integrate(  start_E, end_E, self.i_n, show_plot, *args, **kwargs)
+  
+        data.norm(args)
+        data.set_active_RE(args)
+        Q_p, d_p  =  data._integrate(  start_E, end_E, data.i_p, *args, **kwargs)
+        Q_n, d_n  =  data._integrate(  start_E, end_E, data.i_n, *args, **kwargs)
 
         
-        Q_unit =self.i_unit.replace("A","C")
+        #Q_unit =self.i_unit.replace("A","C")
         #yn= np.concatenate(i_p,i_n,axis=0)
         
-        y = [max(np.max(d_p[1]),np.max(d_n[1])), min(np.min(i_p),np.min(i_n))]
-        x1 = [self.E[imin],self.E[imin]]
-        x2 = [self.E[imax+1],self.E[imax+1]]  
+        y = [max(np.max(d_p[1]),np.max(d_n[1])), min(np.min(d_p[1]),np.min(d_n[1]))]
+        x1 = [data.E[imin],data.E[imin]]
+        x2 = [data.E[imax+1],data.E[imax+1]]  
         cv_kwargs = kwargs  
         if show_plot:
             cv_kwargs["dir"] = dir
-            line, ax = self.plot(**cv_kwargs)
+            line, ax = data.plot(**cv_kwargs)
             ax.plot(x1,y,'r',x2,y,'r')
             if dir != "neg":
-                ax.fill_between(d_p[0],d_p[1],color='C0',alpha=0.2)
+                ax.fill_between(d_p[0],d_p[1],d_p[3],color='C0',alpha=0.2)
                 #ax.fill_between(self.E[imin:imax+1],i_p,color='C0',alpha=0.2)
             if dir != "pos":
-                ax.fill_between(d_n[0],d_n[1],color='C1',alpha=0.2)
+                ax.fill_between(d_n[0],d_n[1],d_p[3],color='C1',alpha=0.2)
 
                 #ax.fill_between(self.E[imin:imax+1],i_n,color='C1',alpha=0.2)
             
         #except ValueError as e:
         #    print("the integration did not work on this dataset")
         #    return None
-        print(Q_p)
+        #print(Q_p)
 
-        end = len(array_Q_p)-1
-        Q_p = Q_V(array_Q_p[end]-array_Q_p[0],Q_unit,"Q")        
-        Q_n = Q_V(array_Q_n[end]-array_Q_n[0],Q_unit,"Q")
-        print(Q_p)
+        #end = len(array_Q_p)-1
+        #Q_p = Q_V(array_Q_p[end]-array_Q_p[0],Q_unit,"Q")        
+        #Q_n = Q_V(array_Q_n[end]-array_Q_n[0],Q_unit,"Q")
+        #print(Q_p)
         
         if dir == "pos":
             return Q_p#[Q_p[end]-Q_p[0],Q_unit] 
@@ -559,6 +564,7 @@ class CV_Data(Voltammetry):
         """
         Tafel_op= {"cv_plot": None,"analyse_plot": None}
         Tafel_op.update(kwargs)
+        
         CV_plot = Tafel_op["cv_plot"]
         analyse_plot = Tafel_op["analyse_plot"]
         fig = None
@@ -568,7 +574,7 @@ class CV_Data(Voltammetry):
             analyse_plot = fig.plots[1]
             CV_plot.title.set_text('CV')
             analyse_plot.title.set_text('Tafel Plot')
-           
+        
             
         
         rot=[]
@@ -579,15 +585,15 @@ class CV_Data(Voltammetry):
         #Epot=-0.5
         y_axis_title =""
         cv = copy.deepcopy(self)
+        cv.norm(args)
+        cv.set_active_RE(args)
+        
         cv_kwargs = kwargs
         dir = kwargs.get("dir", "all")
         plot_color2= []
         
         rot.append( math.sqrt(cv.rotation))
     
-        for arg in args:
-            #if arg == "area":
-            cv.norm(arg)
         cv_kwargs["legend"] = str(f"{float(cv.rotation):.0f}")
         cv_kwargs["plot"] = CV_plot
         line,a = cv.plot(**cv_kwargs)

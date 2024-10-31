@@ -1,5 +1,5 @@
 
-from ec4py import CV_Data
+from ec4py import CV_Data,RHE
 
 from pathlib import Path
 import numpy as np
@@ -43,7 +43,18 @@ class test_cv_data( unittest.TestCase ):
         v=np.abs(k[0].value)*1000
         self.assertTrue(v>40 and v<140)
     
-            
+    def test_Tafel_RHE(self):
+        data = CV_Data(path_to_dataSetFolder/ "CV_153559_ 3.tdms")
+        data.set_RHE(-0.9)
+        k = data.Tafel([0.8,0.9],0,7,RHE)
+        self.assertEqual(k[0].unit,"V/dec")
+        v =k[0].value
+        v=np.abs(k[0].value)*1000
+        print(v)
+        # self.assertEqual(v,6)
+
+        self.assertTrue(v>40 and v<140)
+    
     
   
 
