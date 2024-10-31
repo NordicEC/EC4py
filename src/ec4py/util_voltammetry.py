@@ -15,8 +15,9 @@ from .util import extract_value_unit
 from .util import Quantity_Value_Unit as QV
 
 
-
-
+OFFSET_AT_E_MIN ="offset_at_emin"
+OFFSET_AT_E_MAX ="offset_at_emax"
+OFFSET_LINE ="line"
 
 
 
@@ -24,7 +25,8 @@ class Voltammetry(EC_Setup):
     def __init__(self,*args, **kwargs):
         super().__init__(args,kwargs)
         self.E=[]
-        self.E_label = "E"
+        
+        self.E_label = "E" # Potential label
         self.E_unit = "V"
         #self.rate_V_s = 1
         self.i_label = "i"
@@ -56,7 +58,7 @@ class Voltammetry(EC_Setup):
     def get_index_of_E(self, E:float):
         if E is None:
             return None
-        index = 0
+        index = int(0)
         for x in self.E:
             if x >= E:
                 break
@@ -76,9 +78,12 @@ class Voltammetry(EC_Setup):
         #get indexes where 
         smaller_than = np.argwhere(current < i_threashold-options["tolerance"])
         larger_than = np.argwhere(current > i_threashold+options["tolerance"])
-
-        start = np.max(smaller_than)
-        end  = np.min(larger_than)
+        start = 0
+        end =len(current)
+        if(len(smaller_than)!=0):
+            start = np.max(smaller_than)
+        if(len(larger_than)!=0):
+            end  = np.min(larger_than)
         
         E_fit = self.E[start:end+1]
         i_fit = current[start:end+1]
@@ -138,7 +143,7 @@ class Voltammetry(EC_Setup):
         for arg in args:
             a = str(arg).casefold()
             if a == "offset_at_emin".casefold():
-                print("OFFSET at MIN")
+                # print("OFFSET at MIN")
                 offset =np.ones(len(loc_i))*loc_i[0]
             if a == "offset_at_emax".casefold():
                 offset =np.ones(len(loc_i))*loc_i[len(loc_i)-1]
@@ -189,46 +194,120 @@ class Voltammetry(EC_Setup):
                 break
         return current
     
-    def pot_shift(self,shift_to:str|tuple):
+    def set_active_RE(self,shift_to:str|tuple, current: list=None):
         end_norm_factor = None
         # print("argeLIST", type(norm_to))
+        # print(shift_to)
+        last_Active_RE = self.setup_data.getACTIVE_RE()
+        end_norm_factor = EC_Setup.set_active_RE(self, shift_to)
         
-        if isinstance(shift_to, tuple):
-           
-            for item in shift_to:
-                # print("ITTTT",item)
-                shift_factor = self.get_pot_offset(item)
-                if shift_factor:
-                    end_norm_factor=  shift_factor
-                    break
-        else:
-            shift_factor = self.get_pot_offset(shift_to)
-            #print(norm_factor)
-            if shift_factor:
-                end_norm_factor = shift_factor
-                
+        self.E_label = "E vs "+ self.setup_data.getACTIVE_RE()      
         if end_norm_factor is not None:
-            self.E = self.E + end_norm_factor.value
-            self.E_label = end_norm_factor.quantity
-            self.E_unit = end_norm_factor.unit
-            # print("SHIFT:",end_norm_factor)
-        return 
+            if  self.E_shifted_by == end_norm_factor.value :  
+                pass #potential is already shifted.
+            else:
+                if self.E_shifted_by is None :
+                    # self.E = self.E - end_norm_factor.value
+                    self.E_label = end_norm_factor.quantity
+                    self.E_unit = end_norm_factor.unit
+                    self.E_shifted_by = end_norm_factor.value
+                # print("SHIFT:",end_norm_factor)
+                else:
+                    #shift back to original.
+                    # self.E = self.E + self.E_shifted_by
+                    self.E_label = "fdsdE vs "+ self.RE
+                    self.E_unit = self.E_unit = "V" 
+                    self.E_shifted_by = None   
+            #self.E = self.E + end_norm_factor.value
+            # self.E_label = end_norm_factor.quantity
+            # self.E_unit = end_norm_factor.unit
+                #print("SHIFT:",end_norm_factor,self.E_label)
+                if current is not None:
+                    if isinstance(current, list):
+                        i_shifted = current.copy()
+                        for i in range(len(current)):
+                            # print("HEJ-shifting",i)
+                            i_shifted[i] = self._shift_Current_Array(current[i],end_norm_factor.value)
+                    else:
+                        i_shifted = self._shift_Current_Array(current,end_norm_factor.value)
+                return end_norm_factor.value, i_shifted
+        return None
     
-    def _norm(self, norm_to:str|tuple, current):
-        norm_factor = 1
+    
+
+    
+    
+    def norm(self, norm_to:str|tuple, current:list):
+        norm_factor = QV(1,)
         if isinstance(norm_to, tuple):
             for arg in norm_to:
                 x = self.get_norm_factor(arg)
                 if x is not None:   
-                    norm_factor = norm_factor * float(x)
+                    norm_factor = norm_factor * (x)
         else:        
             norm_factor = self.get_norm_factor(norm_to)
-        #print(norm_factor)
+        # print(norm_factor)
         if norm_factor is not None:
-            current = current / float(norm_factor)
+            if isinstance(current, list):
+                i_shifted = current.copy()
+                for i in range(len(current)):
+                    # print("aaaa-shifting",i)
+                    i_shifted[i] = current[i] / float(norm_factor)
+            else:
+                i_shifted = current / float(norm_factor)
         #norm_factor_inv = norm_factor ** -1
             qv = QV(1, self.i_unit, self.i_label) / norm_factor
-
-        return current, qv
-        
+            self.i_unit = qv.unit
+            self.i_label = qv.quantity
+            # print("aaaa-shifting",self.i_unit)
+        return i_shifted, qv
     
+    
+    def _shift_Current_Array(self, array, shift_Voltage):
+        """_summary_
+
+        Args:
+            array (_type_): _description_
+            shift_Voltage (_type_): _description_
+
+        Returns:
+            _type_: a copy of the array
+        """
+        if shift_Voltage is None:
+            return array
+        self.get_index_of_E(float(shift_Voltage))
+        shift_index = self.get_index_of_E(shift_Voltage) - self.get_index_of_E(0)
+        if shift_index is None:
+            return array
+        temp = array.copy()*np.nan
+        # max_index = len(array)-1
+        # print("shift_arrray",shift_index)
+        if shift_index == 0:
+            return array
+        for i in range(0,len(array)):
+            n= i + shift_index
+            if n>=0 and n< len(array):
+                temp[i]=array[n]
+        return temp
+    
+    
+    
+    @EC_Setup.RE.setter
+    def RE(self, reference_electrode_name:str):
+        self.set_RE(reference_electrode_name)
+        
+    def set_RE(self, reference_electrode_name:str):
+        self.setup_data._RE =str(reference_electrode_name)
+        # print("FDFDAF")
+        return
+        
+    def update_E_label(self,shift_to):
+        if self.E_shifted_by is None :
+            self.E_label = shift_to.quantity
+            self.E_unit = shift_to.unit
+                # print("SHIFT:",end_norm_factor)
+        else:
+            #shift back to original.
+            self.E = self.E + self.E_shifted_by
+            self.E_label = "E vs "+ self.RE
+            self.E_unit = self.E_unit = "V"    

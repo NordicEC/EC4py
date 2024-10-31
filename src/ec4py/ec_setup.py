@@ -5,7 +5,11 @@ import numpy as np
 RHE = "RHE"
 SHE = "SHE"
 AREA = "area"
+AREA_CM = "area_cm"
 RATE = "rate"
+SQRT_RATE = "sqrt_rate"
+ROT = "rotation"
+SQRT_ROT = "sqrt_rot"
 
 class ec_setup_data:
         def __init__(self):
@@ -317,25 +321,25 @@ class EC_Setup:
         """
         norm_factor = QV(1)
         norm_to = str(norm_to).casefold()
-        if norm_to.casefold() == "area".casefold() :
-           norm_factor = self.area
-        elif norm_to.casefold() == "area_cm".casefold():
+        if norm_to == "area".casefold() or norm_to == AREA.casefold() :
+            norm_factor = self.area
+        elif norm_to  == "area_cm".casefold() or norm_to == AREA_CM.casefold() :
             norm_factor = self.area
             if norm_factor.unit.casefold() == "m^2".casefold():
                 norm_factor = norm_factor*QV(1e4,"cm^2 m^-2")
 
-        elif norm_to.casefold() == "rate".casefold() :
-           norm_factor = self.rate
-           
-        elif norm_to.casefold() == "sqrt_rate".casefold():
+        elif norm_to  == "rate".casefold() or norm_to  == RATE.casefold():
+            norm_factor = self.rate
+
+        elif norm_to  == "sqrt_rate".casefold() or norm_to  == SQRT_RATE.casefold():
     
            norm_factor = self.rate ** 0.5
-        elif norm_to.casefold() == "rot_rate".casefold() or norm_to.casefold() == "rotation".casefold() or norm_to.casefold() == "rot".casefold():
-           
+        elif norm_to == "rot_rate".casefold() or norm_to == "rotation".casefold() or norm_to  == "rot".casefold() or norm_to  == ROT.casefold():
+
             norm_factor = self.rotation
-          
-        elif norm_to == "sqrt_rot_rate".casefold() or norm_to == "sqrt_rotation".casefold()or norm_to == "sqrt_rot".casefold() :
-           
+    
+        elif norm_to == "sqrt_rot_rate".casefold() or norm_to == "sqrt_rotation".casefold()or norm_to == SQRT_ROT.casefold() :
+
            norm_factor = self.rotation ** 0.5    
         else:
             return
@@ -367,6 +371,27 @@ class EC_Setup:
         else:
             return None
 
+    def set_active_RE(self,shift_to:str|tuple):
+        end_norm_factor = None
+        
+        if isinstance(shift_to, tuple):
+
+            for item in shift_to:
+                shift_factor = self.get_pot_offset(item)
+                if shift_factor:
+                    self.setup_data.setACTIVE_RE(item)
+                    end_norm_factor=  shift_factor
+                    break
+        elif shift_to is None:
+            self.setup_data.setACTIVE_RE("")
+            pass
+        else:
+            shift_factor = self.get_pot_offset(shift_to)
+            #print(norm_factor)
+            if shift_factor:
+                self.setup_data.setACTIVE_RE(shift_to)
+                end_norm_factor = shift_factor
+        return end_norm_factor
         
 
 
