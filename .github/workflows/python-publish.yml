@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Upload Python Package
+name: Upload Python Package to PyPi
 
 on:
   release:
@@ -29,6 +29,12 @@ jobs:
         pip install
         build
         --user
+    - name: Install toml
+      run: python3 -m pip install toml
+    - name: Install json
+      run: python3 -m pip install json
+    - name: Run version updated.
+      run: python3 ./dev/builds/ver_update.py
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
     - name: Store the distribution packages
