@@ -38,10 +38,12 @@ jobs:
     #  run: python3 -m pip install json
     - name: Run version updated.
       run: |
-        echo ls
-        ls
+        # echo ls
+        # ls
         echo python3 ./dev/builds/ver_update.py
-        python3 ver_update.py
+        export INPUT_STORE=$(python3 ver_update.py)
+        echo "Ver_updated:"
+        echo $INPUT_STORE
       working-directory: dev/builds
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
