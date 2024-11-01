@@ -32,4 +32,4 @@ def get_project_version():
 
 if __name__ == '__main__':
     project_version = get_project_version()
-    print("v",project_version)
+    print("v"+project_version)
