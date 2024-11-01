@@ -76,8 +76,6 @@ jobs:
       id-token: write  # IMPORTANT: mandatory for sigstore
 
     steps:
-    - env:
-          OUTPUT1: ${{needs.build_job.outputs.output1}}
     - name: Download all the dists
       uses: actions/download-artifact@v4
       with:
@@ -90,13 +88,15 @@ jobs:
           ./dist/*.tar.gz
           ./dist/*.whl
     - name: Version
+      env:
+          OUTPUT1: ${{needs.build_job.outputs.output1}}
       run: | 
         echo "Ver_updated:"
         echo "VERSION: $OUTPUT1"
-      
     - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
+        OUTPUT1: ${{needs.build_job.outputs.output1}}
       run: | 
         # export INPUT_STORE=$(python3 ver_update.py)
         # echo "Ver_updated:"
@@ -106,6 +106,7 @@ jobs:
     - name: Upload artifact signatures to GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
+        OUTPUT1: ${{needs.build_job.outputs.output1}}
       # Upload to GitHub Release using the `gh` CLI.
       # `dist/` contains the built packages, and the
       # sigstore-produced signatures and certificates.
