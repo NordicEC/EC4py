@@ -24,6 +24,8 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: "3.x"
+    - name: update pip
+      run: python3 -m pip install --upgrade pip
     - name: Install pypa/build
       run: >-
         python3 -m
@@ -32,8 +34,8 @@ jobs:
         --user
     - name: Install toml
       run: python3 -m pip install toml
-    - name: Install json
-      run: python3 -m pip install json
+    #- name: Install json
+    #  run: python3 -m pip install json
     - name: Run version updated.
       run: python3 ./dev/builds/ver_update.py
     - name: Build a binary wheel and a source tarball
