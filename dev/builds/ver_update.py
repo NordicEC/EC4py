@@ -40,7 +40,7 @@ def version_updated():
         toml.dump(data, f)
     with open(pyproject, "r") as f:
         data = toml.load(f)
-    print("\npyproject.toml: , data["project"]["version"])
+    print("\npyproject.toml: ", data["project"]["version"])
 
 
 
