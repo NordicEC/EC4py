@@ -9,7 +9,7 @@ def version_updated():
     pp = Path(".").cwd()
     pa = pp /"package.json"
     if not pa.exists():
-        print(pa)
+        # print(pa)
         pp = pp.parent
         pa = pp /"package.json"
         if not pa.exists():
@@ -41,7 +41,7 @@ def version_updated():
     with open(pyproject, "r") as f:
         data = toml.load(f)
     print("\npyproject.toml: ", data["project"]["version"])
-
+    return project_version
 
 
 if __name__ == '__main__':
