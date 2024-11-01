@@ -37,7 +37,10 @@ jobs:
     #- name: Install json
     #  run: python3 -m pip install json
     - name: Run version updated.
-      run: python3 ./dev/builds/ver_update.py
+      run: |
+        echo ls
+        echo python3 ./dev/builds/ver_update.py
+      working-directory: dev/builds
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
     - name: Store the distribution packages
