@@ -29,14 +29,18 @@ def version_updated():
     print("Project Version",project_version)
     # Closing file
     f.close()
+
     
     pyproject = pp /"pyproject.toml"
     with open(pyproject, "r") as f:
         data = toml.load(f)
-    print(data)
+    # print(data)
     data["project"]["version"]=project_version
     with open(pyproject, 'w') as f:
         toml.dump(data, f)
+    with open(pyproject, "r") as f:
+        data = toml.load(f)
+    print("\npyproject.toml: , data["project"]["version"])
 
 
 
