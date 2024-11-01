@@ -6,12 +6,13 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Upload Python Package
+name: Upload Python Package to PyPi
 
 on:
   release:
     types: [published]
-
+  workflow_dispatch:
+  
 jobs:
   build:
     name: Build distribution 📦
@@ -23,12 +24,27 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: "3.x"
+    - name: update pip
+      run: python3 -m pip install --upgrade pip
     - name: Install pypa/build
       run: >-
         python3 -m
         pip install
         build
         --user
+    - name: Install toml
+      run: python3 -m pip install toml
+    #- name: Install json
+    #  run: python3 -m pip install json
+    - name: Run version updated.
+      run: |
+        # echo ls
+        # ls
+        echo python3 ./dev/builds/ver_update.py
+        export INPUT_STORE=$(python3 ver_update.py)
+        echo "Ver_updated:"
+        echo $INPUT_STORE
+      working-directory: dev/builds
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
     - name: Store the distribution packages
