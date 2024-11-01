@@ -104,7 +104,7 @@ jobs:
         # echo "Ver_updated:"
         # echo $INPUT_STORE
         #gh release create $INPUT_STORE --repo '${{ github.repository }}' --notes ""
-        gh release create $INPUT_STORE --repo '$OUTPUT1' --notes ""
+        gh release create $OUTPUT1 --repo '${{ github.repository }}' --notes ""
     - name: Upload artifact signatures to GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
