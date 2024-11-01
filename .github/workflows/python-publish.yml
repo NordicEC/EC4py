@@ -39,7 +39,9 @@ jobs:
     - name: Run version updated.
       run: |
         echo ls
+        ls
         echo python3 ./dev/builds/ver_update.py
+        python3 ./dev/builds/ver_update.py
       working-directory: dev/builds
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
