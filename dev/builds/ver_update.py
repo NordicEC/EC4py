@@ -37,3 +37,11 @@ def version_updated():
     data["project"]["version"]=project_version
     with open(pyproject, 'w') as f:
         toml.dump(data, f)
+    return project_version
+
+
+
+if __name__ == '__main__':
+    project_version = version_updated()
+    print("Project updated to:",project_version)
+    
