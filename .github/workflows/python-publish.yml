@@ -49,7 +49,7 @@ jobs:
     - name: Get version
       id: version
       run: |
-        export INPUT_STORE=$(python3 ver_update.py)
+        export INPUT_STORE=$(python3 get_project_version.py)
         INPUT_STORE=$(echo $INPUT_STORE | tr '\n' ' ')
         echo "test=$INPUT_STORE" >> "$GITHUB_OUTPUT"
         echo "test=$INPUT_STORE"
