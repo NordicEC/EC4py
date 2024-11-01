@@ -14,10 +14,11 @@ on:
   workflow_dispatch:
   
 jobs:
-  build:
+  build_job:
     name: Build distribution 📦
     runs-on: ubuntu-latest
-
+    outputs:
+      output1: ${{steps.version.outputs.test}}
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
@@ -42,8 +43,14 @@ jobs:
         # ls
         echo python3 ./dev/builds/ver_update.py
         export INPUT_STORE=$(python3 ver_update.py)
-        echo "Ver_updated:"
+        echo "Version:"
         echo $INPUT_STORE
+      working-directory: dev/builds
+    - name: Get version
+      id: version
+      run:
+        export INPUT_STORE=$(python3 ver_update.py)
+        echo "test=$INPUT_STORE" >> "$GITHUB_OUTPUT"
       working-directory: dev/builds
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
@@ -60,7 +67,7 @@ jobs:
       Sign the Python 🐍 distribution 📦 with Sigstore
       and upload them to GitHub Release
     needs:
-    - build
+    - build_job
     #- publish-to-pypi
     runs-on: ubuntu-latest
 
@@ -69,6 +76,8 @@ jobs:
       id-token: write  # IMPORTANT: mandatory for sigstore
 
     steps:
+    - env:
+          OUTPUT1: ${{needs.build_job.outputs.output1}}
     - name: Download all the dists
       uses: actions/download-artifact@v4
       with:
@@ -80,12 +89,11 @@ jobs:
         inputs: >-
           ./dist/*.tar.gz
           ./dist/*.whl
-    - name: Get Version
+    - name: Version
       run: | 
-        export INPUT_STORE=$(python3 get_project_version.py)
         echo "Ver_updated:"
-        echo $INPUT_STORE
-      working-directory: dev/builds
+        echo "VERSION: $OUTPUT1"
+      
     - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -93,7 +101,8 @@ jobs:
         # export INPUT_STORE=$(python3 ver_update.py)
         # echo "Ver_updated:"
         # echo $INPUT_STORE
-        gh release create $INPUT_STORE --repo '${{ github.repository }}' --notes ""
+        #gh release create $INPUT_STORE --repo '${{ github.repository }}' --notes ""
+        gh release create $INPUT_STORE --repo '$OUTPUT1' --notes ""
     - name: Upload artifact signatures to GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -103,7 +112,7 @@ jobs:
       run: >-
         gh release upload
         #'${{ github.ref_name }}' dist/**
-        '$INPUT_STORE' dist/**
+        '$OUTPUT1' dist/**
         --repo '${{ github.repository }}'
 
   publish-to-pypi:
@@ -111,7 +120,7 @@ jobs:
       Publish Python 🐍 distribution 📦 to PyPI
     # if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
     needs:
-    - build
+    - build_job
     runs-on: ubuntu-latest
     environment:
       name: pypi
