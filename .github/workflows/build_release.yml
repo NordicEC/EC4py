@@ -57,8 +57,8 @@ jobs:
     name: >-
       Sign the Python 🐍 distribution 📦 with Sigstore
       and upload them to GitHub Release
-  # needs:
-   # - builds
+    needs:
+    - build
     runs-on: ubuntu-latest
 
     permissions:
@@ -79,7 +79,7 @@ jobs:
           ./dist/*.whl
     - name: Get Version
       run: | 
-        export INPUT_STORE=$(python3 ver_update.py)
+        export INPUT_STORE=$(python3 get_project_version.py)
         echo "Ver_updated:"
         echo $INPUT_STORE
       working-directory: dev/builds
