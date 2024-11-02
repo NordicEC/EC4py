@@ -57,6 +57,7 @@ jobs:
       run: | 
         gh release create ${{env.PROJECT_VERSION}} --repo '${{ github.repository }}' --notes ""
     - name: Upload artifact signatures to GitHub Release
+      continue-on-error: true
       env:
         GITHUB_TOKEN: ${{ github.token }}
       # Upload to GitHub Release using the `gh` CLI.
