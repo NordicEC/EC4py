@@ -62,7 +62,7 @@ jobs:
 
  
 
-  github-release:
+  github-release_job:
     name: >-
       Sign the Python 🐍 distribution 📦 with Sigstore
       and upload them to GitHub Release
@@ -121,6 +121,7 @@ jobs:
     # if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
     needs:
     - build_job
+    - github-release_job
     runs-on: ubuntu-latest
     environment:
       name: pypi
