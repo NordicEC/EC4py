@@ -1,0 +1,8 @@
+
+on:
+  workflow_dispatch:
+     
+jobs:
+  build_release_job:
+    uses: ./.github/workflows/build_release.yml
+    
