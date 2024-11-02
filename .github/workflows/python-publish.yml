@@ -69,6 +69,8 @@ jobs:
     needs:
     - build_job
     #- publish-to-pypi
+    env:
+        PROJECT_VERSION: ${{needs.build_job.outputs.output1}}
     runs-on: ubuntu-latest
 
     permissions:
@@ -92,7 +94,7 @@ jobs:
           OUTPUT1: ${{needs.build_job.outputs.output1}}
       run: | 
         echo "Ver_updated:"
-        echo "VERSION: ${{env.OUTPUT1}}"
+        echo "VERSION: ${{env.PROJECT_VERSION}}"
     - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -102,7 +104,7 @@ jobs:
         # echo "Ver_updated:"
         # echo $INPUT_STORE
         #gh release create $INPUT_STORE --repo '${{ github.repository }}' --notes ""
-        gh release create $OUTPUT1 --repo '${{ github.repository }}' --notes ""
+        gh release create ${{ env.PROJECT_VERSION }} --repo '${{ github.repository }}' --notes ""
     - name: Upload artifact signatures to GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
