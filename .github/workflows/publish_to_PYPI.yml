@@ -17,7 +17,7 @@ jobs:
     needs:
     - build_release_job
     env:
-      ou
+      PROJECT_VERSION: ${{needs.build_release_job.outputs.product_version}}
     runs-on: ubuntu-latest
     environment:
       name: pypi
