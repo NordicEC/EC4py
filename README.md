@@ -11,8 +11,15 @@ The documentation can be found here:
 Get the stable version of EC4py from the Python package index with
 
 ```bash
-pip install EC4py
+python -m pip install EC4py
 ```
+or in a jupyther notebook
+```jupyther
+%pip install EC4py
+```
+
+
+
 
 A simple example
 ---------------
