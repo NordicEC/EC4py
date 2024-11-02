@@ -11,11 +11,11 @@ The documentation can be found here:
 Get the stable version of EC4py from the Python package index with
 
 ```bash
-python -m pip install EC4py
+python -m pip install EC4py --upgrade
 ```
-or in a jupyther notebook
+or in a jupyter notebook
 ```jupyther
-%pip install EC4py
+%pip install EC4py --upgrade
 ```
 
 
