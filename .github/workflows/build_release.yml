@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Create Release
+name: 2. Create Release
 
 on:
   workflow_dispatch:
@@ -45,7 +45,6 @@ jobs:
       run: | 
         echo "Porduct Version:"
         echo ${{env.PROJECT_VERSION}}
-      working-directory: dev/builds
     - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
