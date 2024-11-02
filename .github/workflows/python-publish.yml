@@ -112,7 +112,7 @@ jobs:
       # sigstore-produced signatures and certificates.
       run: |
         echo  gh release upload '$OUTPUT1' dist/** 
-        gh release upload '$OUTPUT1' dist/** --repo '${{ github.repository }}' --clobber
+        gh release upload '${{needs.build_job.outputs.output1}}' dist/** --repo '${{ github.repository }}' --clobber
 
   publish-to-pypi:
     name: >-
