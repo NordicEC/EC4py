@@ -10,10 +10,11 @@ name: 2. Create Release
 
 on:
   workflow_dispatch:
+  workflow_call:
     outputs:
       product_version:
         description: "Product Version"
-        value: ${{ jobs.build_job.outputs.PRODUCT_VERSION }}
+        value: ${{ jobs.build_distribution_job.outputs.product_version }}
   
 jobs:
   build_distribution_job:
