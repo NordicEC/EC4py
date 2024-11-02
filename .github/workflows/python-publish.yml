@@ -9,10 +9,8 @@
 name: Upload Python Package to PyPi
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
-  
+     
 jobs:
   build_job:
     name: Build distribution 📦
