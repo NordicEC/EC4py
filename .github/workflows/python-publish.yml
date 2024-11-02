@@ -12,8 +12,9 @@ on:
   workflow_dispatch:
      
 jobs:
-  build_distribution_job:
-    uses: ./.github/workflows/build_distribution.yml
+  build_release_job:
+    uses: ./.github/workflows/build_release.yml
+    
   build_job:
     name: Build distribution 📦
     runs-on: ubuntu-latest
@@ -69,7 +70,7 @@ jobs:
       Sign the Python 🐍 distribution 📦 with Sigstore
       and upload them to GitHub Release
     needs:
-    - build_job
+    - build_release_job
     #- publish-to-pypi
     env:
         PROJECT_VERSION: ${{needs.build_job.outputs.output1}}
