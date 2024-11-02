@@ -21,6 +21,8 @@ jobs:
       and upload them to GitHub Release
     needs:
     - build_distribution_job
+    env:
+        PROJECT_VERSION: ${{needs.build_distribution_job.outputs.PROJECT_VERSION}}
     runs-on: ubuntu-latest
 
     permissions:
