@@ -41,11 +41,10 @@ jobs:
         inputs: >-
           ./dist/*.tar.gz
           ./dist/*.whl
-    - name: Get Version
+    - name: Project Version
       run: | 
-        export INPUT_STORE=$(python3 get_project_version.py)
-        echo "Ver_updated:"
-        echo $INPUT_STORE
+        echo "Porduct Version:"
+        echo ${{env.PROJECT_VERSION}}
       working-directory: dev/builds
     - name: Create GitHub Release
       env:
