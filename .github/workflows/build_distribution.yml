@@ -4,10 +4,14 @@ name: 1. Build Distribution
 on:
   workflow_dispatch:
   workflow_call:
+    outputs:
+      product_version:
+        description: "Product Version"
+        value: ${{ jobs.build_job.outputs.PRODUCT_VERSION }}
 
   
 jobs:
-  build:
+  build_job:
     name: Build distribution 📦
     runs-on: ubuntu-latest
     outputs:
