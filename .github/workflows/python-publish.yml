@@ -110,10 +110,9 @@ jobs:
       # Upload to GitHub Release using the `gh` CLI.
       # `dist/` contains the built packages, and the
       # sigstore-produced signatures and certificates.
-      run: >-
-        gh release upload
-        '$OUTPUT1' dist/**
-        --repo '${{ github.repository }}'
+      run: |
+        echo  gh release upload '$OUTPUT1' dist/** 
+        gh release upload '$OUTPUT1' dist/** --repo '${{ github.repository }}' --clobber
 
   publish-to-pypi:
     name: >-
