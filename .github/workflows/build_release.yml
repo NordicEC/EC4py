@@ -22,7 +22,7 @@ jobs:
     needs:
     - build_distribution_job
     env:
-        PROJECT_VERSION: ${{needs.build_distribution_job.outputs.PROJECT_VERSION}}
+        PROJECT_VERSION: ${{needs.build_distribution_job.outputs.product_version}}
     runs-on: ubuntu-latest
 
     permissions:
@@ -45,6 +45,7 @@ jobs:
       run: | 
         echo "Porduct Version:"
         echo ${{env.PROJECT_VERSION}}
+        echo ${{needs.build_distribution_job.outputs.product_version}}
     - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
