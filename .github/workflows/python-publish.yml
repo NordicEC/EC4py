@@ -12,6 +12,8 @@ on:
   workflow_dispatch:
      
 jobs:
+  build_distribution_job:
+    uses: ./.github/workflows/build_distribution.yml
   build_job:
     name: Build distribution 📦
     runs-on: ubuntu-latest
