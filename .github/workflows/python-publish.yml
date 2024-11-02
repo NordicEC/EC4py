@@ -92,7 +92,7 @@ jobs:
           OUTPUT1: ${{needs.build_job.outputs.output1}}
       run: | 
         echo "Ver_updated:"
-        echo "VERSION: $OUTPUT1"
+        echo "VERSION: ${{env.OUTPUT1}}"
     - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -106,12 +106,12 @@ jobs:
     - name: Upload artifact signatures to GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
-        OUTPUT1: ${{needs.build_job.outputs.output1}}
+        PRJ_VER: ${{needs.build_job.outputs.output1}}
       # Upload to GitHub Release using the `gh` CLI.
       # `dist/` contains the built packages, and the
       # sigstore-produced signatures and certificates.
       run: |
-        echo  gh release upload '$OUTPUT1' dist/** 
+        echo  gh release upload '${{env.PRJ_VER}}' dist/** 
         gh release upload '${{needs.build_job.outputs.output1}}' dist/** --repo '${{ github.repository }}' --clobber
 
   publish-to-pypi:
