@@ -1,3 +1,4 @@
+name: 3. Upload Python Package to PyPi
 
 on:
   workflow_dispatch:
