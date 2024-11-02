@@ -1,5 +1,5 @@
 
-name: Build Distribution
+name: 1. Build Distribution
 
 on:
   workflow_dispatch:
