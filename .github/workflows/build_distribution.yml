@@ -11,7 +11,7 @@ jobs:
     name: Build distribution 📦
     runs-on: ubuntu-latest
     outputs:
-      PRODUCT_VERSION: ${{steps.version.outputs.PRODUCT_VERSION}}
+      PRODUCT_VERSION: ${{steps.version.outputs.product_version}}
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
@@ -44,8 +44,8 @@ jobs:
       run: |
         export INPUT_STORE=$(python3 get_project_version.py)
         # INPUT_STORE=$(echo $INPUT_STORE | tr '\n' '')
-        echo "PRODUCT_VERSION=$INPUT_STORE" >> "$GITHUB_OUTPUT"
-        echo "PRODUCT_VERSION=$INPUT_STORE"
+        echo "product_version=$INPUT_STORE" >> "$GITHUB_OUTPUT"
+        echo "product_version=$INPUT_STORE"
       working-directory: dev/builds
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
