@@ -51,10 +51,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
       run: | 
-        # export INPUT_STORE=$(python3 ver_update.py)
-        # echo "Ver_updated:"
-        # echo $INPUT_STORE
-        gh release create $INPUT_STORE --repo '${{ github.repository }}' --notes ""
+        gh release create ${{env.PROJECT_VERSION}} --repo '${{ github.repository }}' --notes ""
     - name: Upload artifact signatures to GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -63,8 +60,7 @@ jobs:
       # sigstore-produced signatures and certificates.
       run: >-
         gh release upload
-        #'${{ github.ref_name }}' dist/**
-        '$INPUT_STORE' dist/**
+        '${{env.PROJECT_VERSION}}' dist/**
         --repo '${{ github.repository }}'
 
   
