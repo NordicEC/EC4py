@@ -15,7 +15,7 @@ from .util import Quantity_Value_Unit
 from .lsv_data import LSV_Data
 from .lsv_datas import LSV_Datas
 from .ec_setup import RHE,SHE,RATE,SQRT_RATE, AREA,AREA_CM,ROT,SQRT_ROT
-from .util_graph import NO_PLOT
+from .util_graph import NO_PLOT,LEGEND
 
 __all__ = ["EC_Data", "EC_Datas", 
            "CV_Data", "POS", "NEG",
@@ -24,4 +24,4 @@ __all__ = ["EC_Data", "EC_Datas",
            "Quantity_Value_Unit",
            "LSV_Data","LSV_Datas",
            "RHE","SHE","RATE","SQRT_RATE", "AREA","AREA_CM","ROT","SQRT_ROT",
-           "NO_PLOT"]
+           "NO_PLOT","LEGEND"]

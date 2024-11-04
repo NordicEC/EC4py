@@ -158,11 +158,15 @@ class Voltammetry(EC_Setup):
         #yn= np.concatenate(i_p,i_n,axis=0)
         
         # y = [max(np.max(i_p),np.max(i_n)), min(np.min(i_p),np.min(i_n))]
-        """
+        
         y = [np.max(loc_i), np.min(loc_i)]
         x1 = [self.E[imin],self.E[imin]]
-        x2 = [self.E[imax+1],self.E[imax+1]]  
-        cv_kwargs = kwargs  
+        x2 = [self.E[imax+1],self.E[imax+1]] 
+        ax = kwargs.get("plot",None) 
+        if ax is not None:
+            ax.plot(x1,y,'r',x2,y,'r')
+            ax.fill_between(loc_E,loc_i,offset, color='C0',alpha=0.2)
+        """  
         if show_plot:
             cv_kwargs["dir"] = dir
             line, ax = self.plot(**cv_kwargs)

@@ -1,6 +1,7 @@
 from .util import extract_value_unit
 from .util import Quantity_Value_Unit as QV
 import numpy as np
+from .util_graph import Legend
 
 RHE = "RHE"
 SHE = "SHE"
@@ -279,7 +280,7 @@ class EC_Setup:
 
     
     
-    def legend(self, **kwargs)-> str:
+    def legend(self, *args, **kwargs)-> str:
         """_summary_
 
         use: legend = '?' to get a list of possible options
@@ -288,21 +289,33 @@ class EC_Setup:
         """
         s = str()
         #print(kwargs)
+        for arg in args:
+            if isinstance(arg,Legend):
+                kwargs["legend"]=str(arg).replace("legend_","")
+            if isinstance(arg,str):
+                if arg.startswith("legend"):
+                    kwargs["legend"]=str(arg).replace("legend_","")
+        
         if 'legend' in kwargs:
             item = kwargs.get('legend',"").casefold()
             if item == '?':
                 #print(self.setup_data._setup)
                 return "_"
             elif item == "name".casefold():
+                # print("NAME", self.setup_data.name,"LEGNEIGNSSSS")
                 return self.setup_data.name
-            elif item == "rate".casefold():
+            elif item == RATE.casefold():
                 return str(self.rate)
             elif item == "rot_rate".casefold() or item == "rotation".casefold() or item == "rot".casefold():
                 return str(self.rotation)
             elif item.casefold() == "area".casefold():
                 return str(self.area)
+            elif item.casefold() =="date".casefold():
+                return  np.datetime_as_string(self.setup_data.dateTime, unit='D')
+            elif item.casefold() =="time".casefold():
+                return  np.datetime_as_string(self.setup_data.dateTime, unit='D')
             elif item in self.setup_data._setup:
-                #print("items was found", item)
+                print("items was found", item)
                 s = self.setup_data._setup[item]
                 return s
             else:
