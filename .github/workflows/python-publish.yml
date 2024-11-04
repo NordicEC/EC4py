@@ -6,18 +6,20 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Upload Python Package to PyPi
+name: old. Upload Python Package to PyPi
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
-  
+     
 jobs:
-  build:
+  build_release_job:
+    uses: ./.github/workflows/build_release.yml
+    
+  build_job:
     name: Build distribution 📦
     runs-on: ubuntu-latest
-
+    outputs:
+      output1: ${{steps.version.outputs.test}}
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
@@ -42,8 +44,16 @@ jobs:
         # ls
         echo python3 ./dev/builds/ver_update.py
         export INPUT_STORE=$(python3 ver_update.py)
-        echo "Ver_updated:"
+        echo "Version:"
         echo $INPUT_STORE
+      working-directory: dev/builds
+    - name: Get version
+      id: version
+      run: |
+        export INPUT_STORE=$(python3 get_project_version.py)
+        # INPUT_STORE=$(echo $INPUT_STORE | tr '\n' '')
+        echo "test=$INPUT_STORE" >> "$GITHUB_OUTPUT"
+        echo "test=$INPUT_STORE"
       working-directory: dev/builds
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
@@ -53,12 +63,69 @@ jobs:
         name: python-package-distributions
         path: dist/
 
+ 
+
+  github-release_job:
+    name: >-
+      Sign the Python 🐍 distribution 📦 with Sigstore
+      and upload them to GitHub Release
+    needs:
+    - build_release_job
+    #- publish-to-pypi
+    env:
+        PROJECT_VERSION: ${{needs.build_job.outputs.output1}}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+      id-token: write  # IMPORTANT: mandatory for sigstore
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Sign the dists with Sigstore
+      uses: sigstore/gh-action-sigstore-python@v2.1.1
+      with:
+        inputs: >-
+          ./dist/*.tar.gz
+          ./dist/*.whl
+    - name: Version
+      env:
+          OUTPUT1: ${{needs.build_job.outputs.output1}}
+      run: | 
+        echo "Ver_updated:"
+        echo "VERSION: ${{env.PROJECT_VERSION}}"
+    - name: Create GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        OUTPUT1: ${{needs.build_job.outputs.output1}}
+      run: | 
+        # export INPUT_STORE=$(python3 ver_update.py)
+        # echo "Ver_updated:"
+        # echo $INPUT_STORE
+        #gh release create $INPUT_STORE --repo '${{ github.repository }}' --notes ""
+        gh release create ${{ env.PROJECT_VERSION }} --repo '${{ github.repository }}' --notes ""
+    - name: Upload artifact signatures to GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        PRJ_VER: ${{needs.build_job.outputs.output1}}
+      # Upload to GitHub Release using the `gh` CLI.
+      # `dist/` contains the built packages, and the
+      # sigstore-produced signatures and certificates.
+      run: |
+        echo  gh release upload '${{env.PRJ_VER}}' dist/** 
+        gh release upload '${{needs.build_job.outputs.output1}}' dist/** --repo '${{ github.repository }}' --clobber
+
   publish-to-pypi:
     name: >-
       Publish Python 🐍 distribution 📦 to PyPI
     # if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
     needs:
-    - build
+    - build_job
+    - github-release_job
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -74,5 +141,3 @@ jobs:
         path: dist/
     - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-
- 
