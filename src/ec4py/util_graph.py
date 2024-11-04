@@ -10,8 +10,10 @@ import matplotlib.pyplot as plt
 from collections import namedtuple
 #from fractions import Fraction
 #import matplotlib.pyplot as plt
-
+from enum import StrEnum
 #from .util import Quantity_Value_Unit as Q_V
+
+
 
 NEWPLOT = "new_plot"
 
@@ -22,6 +24,20 @@ Figure = namedtuple("Figure", ["fig", "plots"])
     - fig   : a plt.figure() object.
     - plots :  subplots of the figure
 """
+
+
+class Legend(StrEnum):
+    NAME = "legend_name"
+    DATE = "legend_date"
+    TIME = "legend_time"
+    DATETIME = "legend_datetime"
+    ROT = "legend_rot"
+    RATE = "legend_rate"
+    VSTART = "legend_start"
+    V1 = "legend_v1"
+    V2 = "legend_v2"
+
+LEGEND = Legend
 
 def make_plot_1x(Title:str):
     fig = plt.figure()
@@ -236,6 +252,8 @@ class plot_options:
             #line,=analyse_plot.plot(rot,y_pos,'-' )
             if self.x_data is not None:
                 line.set_label( self.get_legend() )
+                if self.get_legend()[0] != "_":
+                    ax.legend()
             
         except:  # noqa: E722
             pass

@@ -1,6 +1,7 @@
 
 
 from ec4py import CV_Datas
+from ec4py import AREA,AREA_CM
 from ec4py.util import Quantity_Value_Unit as QVU
 #"import inc_dec    # "The code to test
 import unittest   # The test framework
@@ -35,6 +36,7 @@ class Test_CV_Datas(unittest.TestCase):
     def test_plot(self):
         datas = CV_Datas(paths)
         a = datas.plot()
+        datas.plot(AREA)
         
         
     
