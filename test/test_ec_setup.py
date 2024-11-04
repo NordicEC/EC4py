@@ -2,6 +2,7 @@
 import copy
 from ec4py.ec_setup import EC_Setup
 from ec4py.util import Quantity_Value_Unit as QVU
+from ec4py.util_graph import LEGEND
 #"import inc_dec    # "The code to test
 import unittest   # The test framework
 import numpy as np
@@ -58,8 +59,18 @@ class test_EC_Setup(unittest.TestCase):
         self.assertEqual(nf.value, 4)
         self.assertEqual(nf.unit, "f")
      
+    def test_get_legend(self): 
+        setup = EC_Setup()
+        setup.setup_data._setup["Date"] = "dateDATE"
+        setup.setup_data._setup["rate"] = "rate"
+        setup.setup_data.name = "nameNAME"
+        self.assertEqual( setup.legend(LEGEND.NAME), "nameNAME")
+        self.assertEqual( setup.legend(LEGEND.DATE), "2020-01-01")
+        self.assertEqual( setup.legend(LEGEND.TIME), "2020-01-01")
+
+        self.assertEqual( setup.legend(LEGEND.RATE), "1.000e+00 V/s")
         
-    
+        
   
 
 if __name__ == '__main__':

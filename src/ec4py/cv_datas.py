@@ -146,14 +146,17 @@ class CV_Datas:
 
     def plot(self, *args, **kwargs):
         """Plot CVs.
-            use args to normalize the data
-            - area or area_cm
-            - rotation
-            - rate
+            
+            *args (str): Variable length argument list to normalize the data or shift the potential.             
+                - AREA or AREA_CM (constants)
+                - ROT or SQRT_ROT (constants)
+                - RATE or SQRT_RATE (constants)
+                - LEGEND (enum) for legend of plot
+                
+            
             
             #### use kwargs for other settings.
             
-            - legend = "name"
             - x_smooth = 10
             - y_smooth = 10
             
@@ -169,6 +172,7 @@ class CV_Datas:
         CVs = copy.deepcopy(self.datas)
         
         cv_kwargs = kwargs
+        lines = []
         for cv in CVs:
             #rot.append(math.sqrt(cv.rotation))
 
@@ -176,8 +180,9 @@ class CV_Datas:
             cv_kwargs["plot"] = CV_plot
             cv_kwargs["name"] = cv.setup_data.name
 
-            plot = cv.plot(args, **cv_kwargs)
-
+            line, ax = cv.plot(*args, **cv_kwargs)
+            lines.append(line)
+            
         CV_plot.legend()
         p.saveFig(**kwargs)
         return CV_plot
@@ -347,7 +352,7 @@ class CV_Datas:
         return Tafel_pos, Tafel_neg
 ##################################################################################################################
 
-    def set_active_RE(self,*args):
+    def set_active_RE(self,*args):     
         """Set active reference electrode for plotting.
         
         - RHE    - if values is not already set, use ".set_RHE()"

@@ -18,7 +18,7 @@ from .util import Quantity_Value_Unit as QV
 from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE
 
 
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, Legend
 from .analysis_tafel import Tafel
 from .analysis_levich import diffusion_limit_corr
 
@@ -391,9 +391,11 @@ class CV_Data(Voltammetry):
         data = copy.deepcopy(self)
         options = plot_options(kwargs)
         # print(options.get_legend(),self.legend(**kwargs))
+        
         options.set_title(data.setup_data.name)
         options.name = data.setup_data.name
-        options.legend = data.legend(**kwargs)
+        options.legend = data.legend(*args, **kwargs)
+        # print("AAAA",data.legend(*args, **kwargs))
         data.norm(args)
         # print(args)
         data.set_active_RE(args)
@@ -499,27 +501,40 @@ class CV_Data(Voltammetry):
             if "no_plot".casefold() == str(arg).casefold():
                 show_plot = False
             
-            if "pos".casefold() == str(arg).casefold():
-                dir ="pos"
-            if "neg".casefold() == str(arg).casefold():
-                dir ="neg"
-                
+            if POS.casefold() == str(arg).casefold():
+                kwargs["dir"] ="pos"
+            if NEG.casefold() == str(arg).casefold():
+                kwargs["dir"] ="neg"
+                           
         data = copy.deepcopy(self)
+        #  options = plot_options(kwargs)
+        # print(options.get_legend(),self.legend(**kwargs))
+        #options.set_title(data.setup_data.name)
+    
         index1 = data.get_index_of_E(start_E)
         index2 = data.get_index_of_E(end_E)
         imax = max(index1,index2)
         imin = min(index1,index2)
   
+        
+        if kwargs.get("plot",None) is None:
+            #line, ax = options.exe()
+            line, ax = data.plot(*args, **kwargs)
+            kwargs["plot"]=ax
+            
         data.norm(args)
         data.set_active_RE(args)
-        Q_p, d_p  =  data._integrate(  start_E, end_E, data.i_p, *args, **kwargs)
-        Q_n, d_n  =  data._integrate(  start_E, end_E, data.i_n, *args, **kwargs)
+        dir = kwargs.get("dir", "all")
+        if dir != "neg":   
+            Q_p, d_p  =  data._integrate(  start_E, end_E, data.i_p, *args, **kwargs)
+        if dir != "pos":
+            Q_n, d_n  =  data._integrate(  start_E, end_E, data.i_n, *args, **kwargs)
 
         
         #Q_unit =self.i_unit.replace("A","C")
         #yn= np.concatenate(i_p,i_n,axis=0)
         
-        y = [max(np.max(d_p[1]),np.max(d_n[1])), min(np.min(d_p[1]),np.min(d_n[1]))]
+        """        y = [max(np.max(d_p[1]),np.max(d_n[1])), min(np.min(d_p[1]),np.min(d_n[1]))]
         x1 = [data.E[imin],data.E[imin]]
         x2 = [data.E[imax+1],data.E[imax+1]]  
         cv_kwargs = kwargs  
@@ -534,21 +549,12 @@ class CV_Data(Voltammetry):
                 ax.fill_between(d_n[0],d_n[1],d_p[3],color='C1',alpha=0.2)
 
                 #ax.fill_between(self.E[imin:imax+1],i_n,color='C1',alpha=0.2)
-            
-        #except ValueError as e:
-        #    print("the integration did not work on this dataset")
-        #    return None
-        #print(Q_p)
-
-        #end = len(array_Q_p)-1
-        #Q_p = Q_V(array_Q_p[end]-array_Q_p[0],Q_unit,"Q")        
-        #Q_n = Q_V(array_Q_n[end]-array_Q_n[0],Q_unit,"Q")
-        #print(Q_p)
+        """         
         
         if dir == "pos":
             return Q_p#[Q_p[end]-Q_p[0],Q_unit] 
         elif dir == "neg":
-            return  Q_p #[Q_n[end]-Q_n[0],Q_unit]
+            return  Q_n #[Q_n[end]-Q_n[0],Q_unit]
         else:
             return [Q_p, Q_n] #[Q_p[end]-Q_p[0] ,Q_unit, Q_n[end]-Q_n[0],Q_unit]
         
