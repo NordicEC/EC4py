@@ -213,6 +213,7 @@ class CV_Data(Voltammetry):
             data_E = ec_data.E
             data_i = ec_data.i
             self.setup_data = copy.deepcopy(ec_data.setup_data)
+            print(data_E)
             self.convert(ec_data.Time,data_E,data_i,**kwargs)
             if 'Ref.Electrode' in self.setup:
                 self.E_label = "E vs " + self.RE
