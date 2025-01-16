@@ -250,12 +250,15 @@ class Voltammetry(EC_Setup):
                     norm_factor = norm_factor * (x)
         else:        
             norm_factor = self.get_norm_factor(norm_to)
-        # print(norm_factor)
+        #print(norm_factor)
+        i_shifted = None
         if norm_factor is not None:
+            i_shifted = current.copy()
             if isinstance(current, list):
                 i_shifted = current.copy()
                 for i in range(len(current)):
                     # print("aaaa-shifting",i)
+                    
                     i_shifted[i] = current[i] / float(norm_factor)
             else:
                 i_shifted = current / float(norm_factor)

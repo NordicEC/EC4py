@@ -11,6 +11,7 @@ from . import util
 from .util_graph import plot_options
 from .ec_setup import EC_Setup
 from .util import Quantity_Value_Unit as Q
+from .ec_data_util import ec_channels
 
 
 class EC_Data(EC_Setup):
@@ -24,6 +25,7 @@ class EC_Data(EC_Setup):
         # self._area_unit="cm^2"
         # self.rotation =0
         # self.rotation_unit ="/min"
+        sel_channels = ec_channels()
         self.Time = np.array([], dtype=np.float64)
         self.E = np.array([], dtype=np.float64)
         self.i = np.array([], dtype=np.float64)
@@ -93,6 +95,13 @@ class EC_Data(EC_Setup):
             _type_: _description_
         """
         return f"{self.setup_data.name}"
+    
+    @property 
+    def channels(self):
+        ch_names=list()
+        for ch_name in self.rawdata:
+                ch_names.append(ch_name)
+        return ch_names
 
     def get_channel(self, datachannel: str) -> tuple[list, str, str]:
         """

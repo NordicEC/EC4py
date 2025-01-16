@@ -11,6 +11,7 @@ from scipy.signal import savgol_filter
 import copy
 
 from .ec_data import EC_Data
+from .ec_data_util import ec_channels
 
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
@@ -190,6 +191,7 @@ class CV_Data(Voltammetry):
         """
         #print("Convert:",kwargs)
         
+        sel_channels = ec_channels(*args,**kwargs)
         ch_E ="E"
         for a in args:
             if a == "IR":
@@ -197,14 +199,21 @@ class CV_Data(Voltammetry):
         options = {
             'x_smooth' : 0,
             'y_smooth' : 0,
-            'IR': 0
+            'IR': 0,
+            'E' : "E",
+            'i' : 'i'
         }
         options.update(kwargs)
         
         try:
             #print("CONVERTING_AAA",len(ec_data.Time), len(ec_data.E), len(ec_data.i))
+            
+            data_E,_ = ec_data.get_channel(sel_channels.E)
+            data_i,_ = ec_data.get_channel(sel_channels.i)
+            data_E = ec_data.E
+            data_i = ec_data.i
             self.setup_data = copy.deepcopy(ec_data.setup_data)
-            self.convert(ec_data.Time,ec_data.E,ec_data.i,**kwargs)
+            self.convert(ec_data.Time,data_E,data_i,**kwargs)
             if 'Ref.Electrode' in self.setup:
                 self.E_label = "E vs " + self.RE
                 #print("aaaaa")
@@ -336,32 +345,12 @@ class CV_Data(Voltammetry):
         Returns:
             _type_: _description_
         """
-        a = Voltammetry.norm(self, norm_to,[self.i_p, self.i_n] )
-        if a is not None:
-            a,b = a
-            self.i_p = a[0]
-            self.i_n = a[1]
+        p = Voltammetry.norm(self, norm_to,self.i_p )
+        n = Voltammetry.norm(self, norm_to,self.i_n )
+        if p is not None and n is not None:
+            self.i_p = p
+            self.i_n = n
             
-        """
-        
-        norm_factor = QV(1,)
-        if isinstance(norm_to, tuple):
-            for arg in norm_to:
-                x = self.get_norm_factor(arg)
-                if x is not None:   
-                    norm_factor = norm_factor * x
-        else:        
-            norm_factor = self.get_norm_factor(norm_to)
-        print(norm_factor)
-        if norm_factor is not None:
-            self.i_n = self.i_n / float(norm_factor)
-            self.i_p = self.i_p / float(norm_factor)
-        #norm_factor_inv = norm_factor ** -1
-            current = QV(1,self.i_unit, self.i_label) / norm_factor
-            print(current.unit,current.unit,norm_factor)
-            self.i_label = current.quantity
-            self.i_unit = current.unit
-        """
         return 
     ###############################
     ###under deve
@@ -396,7 +385,8 @@ class CV_Data(Voltammetry):
         options.name = data.setup_data.name
         options.legend = data.legend(*args, **kwargs)
         # print("AAAA",data.legend(*args, **kwargs))
-        data.norm(args)
+        
+        #data.norm(args)
         # print(args)
         data.set_active_RE(args)
         options.x_data = data.E
