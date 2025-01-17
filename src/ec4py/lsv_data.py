@@ -11,7 +11,7 @@ from scipy.signal import savgol_filter
 import copy
 
 from .ec_data import EC_Data
-
+from .ec_data_util import EC_Channels
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as Q_V
@@ -58,7 +58,7 @@ class LSV_Data(EC_Setup):
             return
         else:
             #print(kwargs)
-            self.conv(EC_Data(args[0]),**kwargs)
+            self.conv(EC_Data(args[0]),*args, **kwargs)
     #############################################################################   
     def sub(self, subData: LSV_Data) -> None:
         try:
@@ -174,7 +174,7 @@ class LSV_Data(EC_Setup):
             'IR': 0
         }
         options.update(kwargs)
-        
+        sel_channels = EC_Channels(*args,**kwargs)
         try:
             #print("CONVERTING_AAA",len(ec_data.Time), len(ec_data.E), len(ec_data.i))
             self.setup_data = copy.deepcopy(ec_data.setup_data)

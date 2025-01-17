@@ -17,7 +17,7 @@ class ec_setup_data:
             self.name =""
             self._setup = {"Current Range" : "", "Control Mode" : "", "Cell Switch": 0}
             self._area= 1.0
-            self._area_unit="cm^2"
+            self._area_unit="m^2"
             self._rotation = 0.0
             self._rotation_unit ="/min"
             self._rate_V_s = 1
@@ -321,7 +321,18 @@ class EC_Setup:
             else:
                 return item
         return "_"
-        
+    
+    def get_norm_factors(self, norm_to:str|tuple|list):
+        norm_factor = QV(1,)
+        if isinstance(norm_to, tuple):
+            for arg in norm_to:
+                x = self.get_norm_factor(arg)
+                if x is not None:   
+                    norm_factor = norm_factor * (x)
+        else:        
+            norm_factor = self.get_norm_factor(norm_to)
+        return norm_factor
+    
     def get_norm_factor(self, norm_to:str):
         """Get normalization factor
         Args:norm_to (str): 
@@ -336,6 +347,8 @@ class EC_Setup:
         norm_to = str(norm_to).casefold()
         if norm_to == "area".casefold() or norm_to == AREA.casefold() :
             norm_factor = self.area
+            if norm_factor.unit.casefold() == "cm^2".casefold():
+                norm_factor = norm_factor*QV(1e-4,"m^2 cm^-2")
         elif norm_to  == "area_cm".casefold() or norm_to == AREA_CM.casefold() :
             norm_factor = self.area
             if norm_factor.unit.casefold() == "m^2".casefold():

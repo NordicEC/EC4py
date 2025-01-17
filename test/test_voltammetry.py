@@ -1,10 +1,12 @@
 
 from ec4py.util_voltammetry import Voltammetry 
+from ec4py import Quantity_Value_Unit 
+
 from pathlib import Path
 import numpy as np
 import math
 import unittest   # The test framework
-
+from numpy.testing import assert_almost_equal
 
 gdata_u = np.array([range(0,101)])/100
 gdata_d = np.array([range(99,0,-1)])/100
@@ -107,6 +109,64 @@ class test_util_voltammetry( unittest.TestCase ):
         index_of_shifted_i = np.argwhere(shift_data > 0.5)[0][0]
         shift_index_i =  index_of_test_i - index_of_shifted_i
         self.assertEqual(shift_index_E,shift_index_i )
+
+    def test_norm(self):
+        data = Voltammetry(E_min=-2,E_max=2)
+        data.set_area(2)
+        print(data.area)
+        testdata = np.array([10])
+        r = data.norm("AREA_CM",testdata)
+        print(r)
+        self.assertIsInstance(r,tuple)
+        self.assertEqual((r[0])[0],[5/10000]) #should return the data-
+        q=r[1]
+        self.assertIsInstance(q,Quantity_Value_Unit)
+        print(q)
+        self.assertEqual(q.unit,"A cm^-2")
+        
+        data = Voltammetry(E_min=-2,E_max=2)
+
+        data.set_area("5 m^2")
+        print(data.area)
+        r = data.norm("AREA",testdata)
+        self.assertIsInstance(r,tuple)
+        self.assertEqual((r[0])[0],[2]) #should return the data-
+        q=r[1]
+        self.assertIsInstance(q,Quantity_Value_Unit)
+        print(q)
+        print(data.get_norm_factor("AREA_CM"))
+        print(data.get_norm_factor("AREA"))
+
+        self.assertEqual(q.unit,"A m^-2")
+        
+ 
+    def test_set_active_RE(self):
+        data = Voltammetry(E_min=-2,E_max=2)
+        testdata=data.E.copy()
+       
+        #r = data.set_active_RE("RHE",testdata)
+     
+        data.set_RHE(0.0)
+        r1 = data.set_active_RE("RHE",testdata)
+        print(r1)
+        #self.assertSequenceEqual(r1[1],data.E )
+       
+        data = Voltammetry(E_min=-2,E_max=2)
+        data.set_RHE(1.0)
+        r1 = data.set_active_RE("RHE",[testdata])
+        print(r1)
+        #self.assertEqual(r1,[data.E])
+        self.assertIsInstance(r1,tuple)
+        r1 = data.set_active_RE("RE",[testdata,testdata])
+        print(r1)
+        self.assertIsInstance(r1,tuple)
+        r1 = data.set_active_RE("RHE",[testdata,testdata])
+        self.assertIsNotNone(r1) #cannot shift twice.
+
+        print(r1)
+
+        #self.assertEqual(r1,[data.E, data.E])
+        
 
 if __name__ == '__main__':
     unittest.main()
