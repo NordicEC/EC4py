@@ -11,7 +11,7 @@ from scipy.signal import savgol_filter
 import copy
 
 from .ec_data import EC_Data
-from .ec_data_util import ec_channels
+from .ec_data_util import EC_Channels
 
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
@@ -39,6 +39,8 @@ class CV_Data(Voltammetry):
     - .Tafel() - Tafel analysis data    
     
     ### Options args:
+    "in" where n is a number to select another current channel, ex. "i2"
+    "pn" where n is a number to select another potentiostat group, ex. "P2"
     "area" - to normalize to area
     
     ### Options keywords:
@@ -71,20 +73,8 @@ class CV_Data(Voltammetry):
             return
         else:
             #print(kwargs)
-            self.conv(EC_Data(args[0]),**kwargs)
-    #############################################################################
-    """
-    def make_E_axis(self, Emin = None, Emax = None):
-        if Emin is not None:
-            self.E_axis["E_min"] = Emin
-        if Emax is not None:
-            self.E_axis["E_max"] = Emax
-        maxE = self.E_axis["E_max"]
-        minE = self.E_axis["E_min"]    
-        dE_range = int((maxE - minE)*1000)
-        E_sweep = np.linspace(minE, maxE, dE_range+1)
-        return E_sweep 
-    """
+            self.conv(EC_Data(args[0]), *args, **kwargs)
+
     #########################################   
     def sub(self, subData: CV_Data) -> None:
         try:
@@ -191,7 +181,6 @@ class CV_Data(Voltammetry):
         """
         #print("Convert:",kwargs)
         
-        sel_channels = ec_channels(*args,**kwargs)
         ch_E ="E"
         for a in args:
             if a == "IR":
@@ -204,16 +193,18 @@ class CV_Data(Voltammetry):
             'i' : 'i'
         }
         options.update(kwargs)
-        
+        sel_channels = EC_Channels(*args,**kwargs)
+
         try:
-            #print("CONVERTING_AAA",len(ec_data.Time), len(ec_data.E), len(ec_data.i))
+            data_E,q,u = ec_data.get_channel(sel_channels.Voltage)
+            data_i,q,u = ec_data.get_channel(sel_channels.Current)
+        except NameError as e:
+            print(e)
+            raise NameError(e)
+            return
             
-            data_E,_ = ec_data.get_channel(sel_channels.E)
-            data_i,_ = ec_data.get_channel(sel_channels.i)
-            data_E = ec_data.E
-            data_i = ec_data.i
+        try:
             self.setup_data = copy.deepcopy(ec_data.setup_data)
-            print(data_E)
             self.convert(ec_data.Time,data_E,data_i,**kwargs)
             if 'Ref.Electrode' in self.setup:
                 self.E_label = "E vs " + self.RE
@@ -223,6 +214,7 @@ class CV_Data(Voltammetry):
 
         except ValueError:
             print("no_data")
+        
         #self.setup = data.setup
         #self.set_area(data._area, data._area_unit)
         #self.set_rotation(data.rotation, data.rotation_unit)
@@ -230,7 +222,7 @@ class CV_Data(Voltammetry):
         return
 
     #####################################################################################################    
-    def convert(self, time, E, i, **kwargs):
+    def convert(self, time, Potential_V, Current_A, **kwargs):
         """Converts data to CV data
 
         Args:
@@ -239,8 +231,8 @@ class CV_Data(Voltammetry):
             i (_type_): current
             direction(str): direction
         """
-        x= E
-        y= i
+        x= Potential_V
+        y= Current_A
 
         #print("Convert", len(E))
         #print("SETP",self.setup)
@@ -346,11 +338,12 @@ class CV_Data(Voltammetry):
         Returns:
             _type_: _description_
         """
-        p = Voltammetry.norm(self, norm_to,self.i_p )
-        n = Voltammetry.norm(self, norm_to,self.i_n )
-        if p is not None and n is not None:
-            self.i_p = p
-            self.i_n = n
+        r = Voltammetry.norm(self, norm_to,[self.i_p,self.i_n ] )
+        #n = Voltammetry.norm(self, norm_to,self.i_n )
+        if r is not None:
+            v= r[0]
+            self.i_p = v[0]
+            self.i_n = v[1]
             
         return 
     ###############################
@@ -359,7 +352,7 @@ class CV_Data(Voltammetry):
         end_norm_factor = None
         # print("argeLIST", type(norm_to))
         
-        a = Voltammetry.set_active_RE(self, shift_to, [self.i_p, self.i_n])
+        a = Voltammetry.set_active_RE(self,shift_to, [self.i_p, self.i_n])
         if a is not None:
             a,b = a
             self.i_p = b[0]
@@ -375,6 +368,7 @@ class CV_Data(Voltammetry):
         "plot=subplot"\n
         "x_smooth= number" - smoothing of the x-axis. \n
         "y_smooth= number" - smoothing of the y-axis. \n
+        
         Returns:
             line, ax: description
         '''
@@ -387,7 +381,7 @@ class CV_Data(Voltammetry):
         options.legend = data.legend(*args, **kwargs)
         # print("AAAA",data.legend(*args, **kwargs))
         
-        #data.norm(args)
+        data.norm(args)
         # print(args)
         data.set_active_RE(args)
         options.x_data = data.E

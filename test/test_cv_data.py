@@ -34,6 +34,10 @@ class test_cv_data( unittest.TestCase ):
         data = CV_Data(paths[0])
         self.assertFalse(data.name == "")
         
+    def test_RHE_Shift(self):
+        data = CV_Data(paths[0])
+        self.assertFalse(data.name == "")
+        
           
     def test_Tafel(self):
         data = CV_Data(path_to_dataSetFolder/ "CV_153559_ 3.tdms")

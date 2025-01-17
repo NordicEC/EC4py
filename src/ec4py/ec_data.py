@@ -11,7 +11,7 @@ from . import util
 from .util_graph import plot_options
 from .ec_setup import EC_Setup
 from .util import Quantity_Value_Unit as Q
-from .ec_data_util import ec_channels
+from .ec_data_util import EC_Channels
 
 
 class EC_Data(EC_Setup):
@@ -25,7 +25,7 @@ class EC_Data(EC_Setup):
         # self._area_unit="cm^2"
         # self.rotation =0
         # self.rotation_unit ="/min"
-        sel_channels = ec_channels()
+        sel_channels = EC_Channels()
         self.Time = np.array([], dtype=np.float64)
         self.E = np.array([], dtype=np.float64)
         self.i = np.array([], dtype=np.float64)
@@ -155,7 +155,7 @@ class EC_Data(EC_Setup):
                     quantity = self.rawdata[datachannel].properties.get("Quantity", "")
                     return self.rawdata[datachannel].data, str(quantity) , str(unit)
                 except KeyError:
-                    raise NameError("The channel name is not supported")
+                    raise NameError("Error:" + datachannel + " channel name is not supported")
                 # return np.array([2]), "No channel", "No channel"
 
     def cosVal(self, phase: float):

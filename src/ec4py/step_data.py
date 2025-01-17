@@ -11,6 +11,7 @@ from scipy.signal import savgol_filter
 import copy
 
 from .ec_data import EC_Data,index_at_time
+from .ec_data_util import EC_Channels
 
 from .ec_setup import EC_Setup
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig
@@ -44,7 +45,7 @@ class Step_Data(EC_Setup):
             return
         else:
             #print(kwargs)
-            self.conv(EC_Data(args[0]),**kwargs)
+            self.conv(EC_Data(args[0]),*args,**kwargs)
     #############################################################################   
     def __getitem__(self, item_index:int|slice) -> Step_Data: 
         if isinstance(item_index, slice):
@@ -98,13 +99,15 @@ class Step_Data(EC_Setup):
             'IR': 0
         }
         options.update(kwargs)
-        
+        sel_channels = EC_Channels(*args,**kwargs)
         try:
+            data_E,q_E,u_E = ec_data.get_channel(sel_channels.Voltage)
+            data_i,q,u = ec_data.get_channel(sel_channels.Current)
             self.setup_data = ec_data.setup_data
             #self.convert(ec_data.Time,ec_data.E,ec_data.i,**kwargs)
             self.Time = ec_data.Time
-            self.i =ec_data.i
-            self.E = ec_data.E
+            self.i = data_i
+            self.E = data_E
             
             #self.step_Time = self.setup["Step.Time"].split(";",-1)
             #self.step_E = self.setup["Step.E"].split(";",-1)
@@ -112,7 +115,7 @@ class Step_Data(EC_Setup):
             self.step_Time = List_Str2float(self.setup["Step.Time"])
             self.step_E =List_Str2float(self.setup["Step.E"])
             self.step_Type = List_Str2Str(self.setup["Step.Type"])
-            self.E_label = "E vs " + self.RE
+            self.E_label = q_E + " vs " + self.RE
         except ValueError:
             print("no_data")
         #self.setup = data.setup
@@ -267,6 +270,9 @@ class Step_Data(EC_Setup):
         end_norm_factor = 1
         current = QV(1,self.i_unit, self.i_label)
         # print("argeLIST", type(norm_to))
+        norm_factor = self.get_norm_factors(norm_to)
+
+        """
         if isinstance(norm_to, tuple):
            
             for item in norm_to:
@@ -285,7 +291,9 @@ class Step_Data(EC_Setup):
                 current = current / norm_factor
                 
             #norm_factor_inv = norm_factor ** -1
-            
+        """  
+        end_norm_factor = float(norm_factor)
+        current =  QV(1,self.i_unit, self.i_label) / norm_factor
         if(end_norm_factor!= 1):
             self.i = self.i / float(norm_factor)   
             self.i_label = current.quantity

@@ -2,7 +2,7 @@ import re
 
 
 
-class ec_channels:
+class EC_Channels:
     def __init__(self,*args, **kwargs):
         self._channels = {
             'E' : "E",
@@ -28,22 +28,22 @@ class ec_channels:
                     self._channels["Phase"]="Phase"+numMatch.group()
                 if arg[0]=='P' and numMatch!= None:
                     self._channels["E"]=arg+"_E"
-                    self._channels["i"]=arg+"_E"
+                    self._channels["i"]=arg+"_i"
                     self._channels["Z"]=arg+"_Z"
                     self._channels["Phase"]=arg+"_Phase"       
         self._channels.update(kwargs)                
         return
     
     @property
-    def E(self):
+    def Voltage(self):
         return self._channels["E"]
     
     @property
-    def i(self):
+    def Current(self):
         return self._channels["i"]
     
     @property
-    def Z(self):
+    def Impedance(self):
         return self._channels["Z"]
     @property
     def Phase(self):
