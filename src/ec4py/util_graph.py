@@ -47,12 +47,19 @@ def make_plot_1x(Title:str):
     plot1 = fig.subplots()
     return Figure(fig,[plot1])
 
-def make_plot_2x(Title:str):
+def make_plot_2x(Title:str,Vertical = False):
     fig = plt.figure()
     fig.set_figheight(5)
     fig.set_figwidth(13)
     plt.suptitle(Title)
-    plot1,plot2 = fig.subplots(1,2)
+    if Vertical:
+        fig.set_figheight(5)
+        fig.set_figwidth(4)
+        plot1,plot2 = fig.subplots(2,1)
+    else:
+        fig.set_figheight(5)
+        fig.set_figwidth(13)
+        plot1,plot2 = fig.subplots(1,2)
     return Figure(fig,[plot1,plot2])
     #
     #return plot1, plot2
