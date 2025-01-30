@@ -1,9 +1,7 @@
-import toml
 import json
 from pathlib import Path
 
-def version_updated():
-    
+def get_project_version():
     
     # Opening JSON file
     pp = Path(".").cwd()
@@ -26,25 +24,12 @@ def version_updated():
     # list
 
     project_version =data["version"]
-    print("Project Version",project_version)
+    # print("Project Version",project_version)
     # Closing file
     f.close()
-
-    
-    pyproject = pp /"pyproject.toml"
-    with open(pyproject, "r") as f:
-        data = toml.load(f)
-    # print(data)
-    data["project"]["version"]=project_version
-    with open(pyproject, 'w') as f:
-        toml.dump(data, f)
-    with open(pyproject, "r") as f:
-        data = toml.load(f)
-    print("\npyproject.toml: ", data["project"]["version"])
     return project_version
 
 
 if __name__ == '__main__':
-    project_version = version_updated()
-    print("Project updated to:",project_version)
-    
+    project_version = get_project_version()
+    print("v"+project_version)

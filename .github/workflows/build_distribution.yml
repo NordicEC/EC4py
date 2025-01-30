@@ -1,0 +1,62 @@
+
+name: 1. Build Distribution
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    outputs:
+      product_version:
+        description: "Product Version"
+        value: ${{ jobs.build_job.outputs.PRODUCT_VERSION }}
+
+  
+jobs:
+  build_job:
+    name: Build distribution 📦
+    runs-on: ubuntu-latest
+    outputs:
+      PRODUCT_VERSION: ${{steps.version.outputs.product_version}}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+    - name: update pip
+      run: python3 -m pip install --upgrade pip
+    - name: Install pypa/build
+      run: >-
+        python3 -m
+        pip install
+        build
+        --user
+    - name: Install toml
+      run: python3 -m pip install toml
+    #- name: Install json
+    #  run: python3 -m pip install json
+    - name: Run version updated.
+      run: |
+        # echo ls
+        # ls
+        echo python3 ./dev/builds/ver_update.py
+        export INPUT_STORE=$(python3 ver_update.py)
+        echo "Ver_updated:"
+        echo $INPUT_STORE
+      working-directory: dev/builds
+    - name: Get version
+      id: version
+      run: |
+        export INPUT_STORE=$(python3 get_project_version.py)
+        # INPUT_STORE=$(echo $INPUT_STORE | tr '\n' '')
+        echo "product_version=$INPUT_STORE" >> "$GITHUB_OUTPUT"
+        echo "product_version=$INPUT_STORE"
+      working-directory: dev/builds
+    - name: Build a binary wheel and a source tarball
+      run: python3 -m build
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+
+ 

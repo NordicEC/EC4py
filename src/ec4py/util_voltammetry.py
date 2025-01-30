@@ -133,7 +133,8 @@ class Voltammetry(EC_Setup):
         #print("INDEX",index1,index2)
         #try:
         
-        (current[imin:(imax+1)]).copy()
+        # (current[imin:(imax+1)]).copy()
+       
         loc_i = (current[imin:imax+1]).copy()
         loc_i[np.isnan(loc_i)] = 0
         loc_E = self.E[imin:imax+1]
@@ -158,11 +159,15 @@ class Voltammetry(EC_Setup):
         #yn= np.concatenate(i_p,i_n,axis=0)
         
         # y = [max(np.max(i_p),np.max(i_n)), min(np.min(i_p),np.min(i_n))]
-        """
+        
         y = [np.max(loc_i), np.min(loc_i)]
         x1 = [self.E[imin],self.E[imin]]
-        x2 = [self.E[imax+1],self.E[imax+1]]  
-        cv_kwargs = kwargs  
+        x2 = [self.E[imax+1],self.E[imax+1]] 
+        ax = kwargs.get("plot",None) 
+        if ax is not None:
+            ax.plot(x1,y,'r',x2,y,'r')
+            ax.fill_between(loc_E,loc_i,offset, color='C0',alpha=0.2)
+        """  
         if show_plot:
             cv_kwargs["dir"] = dir
             line, ax = self.plot(**cv_kwargs)
@@ -195,6 +200,15 @@ class Voltammetry(EC_Setup):
         return current
     
     def set_active_RE(self,shift_to:str|tuple, current: list=None):
+        """_summary_
+
+        Args:
+            shift_to (str | tuple): Name of new reference potential
+            current (list, optional): list like array of data points. Defaults to None.
+
+        Returns:
+            _tuple_: shifted potential, and shifted data. or NONE
+        """
         end_norm_factor = None
         # print("argeLIST", type(norm_to))
         # print(shift_to)
@@ -215,7 +229,7 @@ class Voltammetry(EC_Setup):
                 else:
                     #shift back to original.
                     # self.E = self.E + self.E_shifted_by
-                    self.E_label = "fdsdE vs "+ self.RE
+                    self.E_label = "E vs "+ self.RE
                     self.E_unit = self.E_unit = "V" 
                     self.E_shifted_by = None   
             #self.E = self.E + end_norm_factor.value
@@ -223,7 +237,7 @@ class Voltammetry(EC_Setup):
             # self.E_unit = end_norm_factor.unit
                 #print("SHIFT:",end_norm_factor,self.E_label)
                 if current is not None:
-                    if isinstance(current, list):
+                    if isinstance(current, list) or isinstance(current, tuple):
                         i_shifted = current.copy()
                         for i in range(len(current)):
                             # print("HEJ-shifting",i)
@@ -238,7 +252,7 @@ class Voltammetry(EC_Setup):
     
     
     def norm(self, norm_to:str|tuple, current:list):
-        norm_factor = QV(1,)
+        """norm_factor = QV(1,)
         if isinstance(norm_to, tuple):
             for arg in norm_to:
                 x = self.get_norm_factor(arg)
@@ -246,12 +260,16 @@ class Voltammetry(EC_Setup):
                     norm_factor = norm_factor * (x)
         else:        
             norm_factor = self.get_norm_factor(norm_to)
-        # print(norm_factor)
+        #print(norm_factor)"""
+        norm_factor = self.get_norm_factors(norm_to)
+        i_shifted = None
         if norm_factor is not None:
+            i_shifted = current.copy()
             if isinstance(current, list):
                 i_shifted = current.copy()
                 for i in range(len(current)):
                     # print("aaaa-shifting",i)
+                    
                     i_shifted[i] = current[i] / float(norm_factor)
             else:
                 i_shifted = current / float(norm_factor)

@@ -1,16 +1,25 @@
 The intention
 ---------------
-This is a package to treat electrochemical data in order to extract key values such as ECSA and Tafel slopes. Specifically, its aim is to make the data analysis as quick and easy as possible. 
+This is a package to be used to treat electrochemical data in order to extract key values such as ECSA and Tafel slopes. Specifically, its aim is to make the data analysis as quick, transparemt and easy as possible. 
 
 #  EC4py Docs
-    https://nordicec.github.io/EC4py/
+The documentation can be found here:
+    [https://nordicec.github.io/EC4py](https://nordicec.github.io/EC4py/)
+    
 # Using EC4py
 
 Get the stable version of EC4py from the Python package index with
 
 ```bash
-pip install EC4py
+python -m pip install EC4py --upgrade
 ```
+or in a jupyter notebook
+```jupyther
+%pip install EC4py --upgrade
+```
+
+
+
 
 A simple example
 ---------------
@@ -25,7 +34,7 @@ Features
 --------
 
 * Read TDMS files.
-    ** Plot
+    * Plot
 
 *   Treats cyclic voltammetry(CV) data:
     * subtraction, addition

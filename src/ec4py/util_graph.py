@@ -10,8 +10,10 @@ import matplotlib.pyplot as plt
 from collections import namedtuple
 #from fractions import Fraction
 #import matplotlib.pyplot as plt
-
+from enum import StrEnum
 #from .util import Quantity_Value_Unit as Q_V
+
+
 
 NEWPLOT = "new_plot"
 
@@ -23,6 +25,20 @@ Figure = namedtuple("Figure", ["fig", "plots"])
     - plots :  subplots of the figure
 """
 
+
+class Legend(StrEnum):
+    NAME = "legend_name"
+    DATE = "legend_date"
+    TIME = "legend_time"
+    DATETIME = "legend_datetime"
+    ROT = "legend_rot"
+    RATE = "legend_rate"
+    VSTART = "legend_start"
+    V1 = "legend_v1"
+    V2 = "legend_v2"
+
+LEGEND = Legend
+
 def make_plot_1x(Title:str):
     fig = plt.figure()
     fig.set_figheight(5)
@@ -31,12 +47,19 @@ def make_plot_1x(Title:str):
     plot1 = fig.subplots()
     return Figure(fig,[plot1])
 
-def make_plot_2x(Title:str):
+def make_plot_2x(Title:str,Vertical = False):
     fig = plt.figure()
     fig.set_figheight(5)
     fig.set_figwidth(13)
     plt.suptitle(Title)
-    plot1,plot2 = fig.subplots(1,2)
+    if Vertical:
+        fig.set_figheight(5)
+        fig.set_figwidth(4)
+        plot1,plot2 = fig.subplots(2,1)
+    else:
+        fig.set_figheight(5)
+        fig.set_figwidth(13)
+        plot1,plot2 = fig.subplots(1,2)
     return Figure(fig,[plot1,plot2])
     #
     #return plot1, plot2
@@ -236,6 +259,8 @@ class plot_options:
             #line,=analyse_plot.plot(rot,y_pos,'-' )
             if self.x_data is not None:
                 line.set_label( self.get_legend() )
+                if self.get_legend()[0] != "_":
+                    ax.legend()
             
         except:  # noqa: E722
             pass
@@ -246,6 +271,17 @@ class plot_options:
         ax.set_ylabel(f'{ylabel}')
         
         return line, ax
+    
+    def render_plot(self):
+        ax = self.options['plot']
+        if ax == NEWPLOT or ax is None:
+            return
+        else:
+            ax.set_xlabel(f'{quantity_plot_fix(self.x_label)} ({quantity_plot_fix(self.x_unit)})')
+            
+            ylabel = quantity_plot_fix(self.y_label) + " (" + quantity_plot_fix(self.y_unit)+ ")"
+            ax.set_ylabel(f'{ylabel}')
+        return
     
     def close(self, *args):
         # print("CLOSE:", args)

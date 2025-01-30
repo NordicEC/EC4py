@@ -11,6 +11,7 @@ from scipy.signal import savgol_filter
 import copy
 
 from .ec_data import EC_Data
+from .ec_data_util import EC_Channels
 
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
@@ -18,7 +19,7 @@ from .util import Quantity_Value_Unit as QV
 from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE
 
 
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, Legend
 from .analysis_tafel import Tafel
 from .analysis_levich import diffusion_limit_corr
 
@@ -38,6 +39,8 @@ class CV_Data(Voltammetry):
     - .Tafel() - Tafel analysis data    
     
     ### Options args:
+    "in" where n is a number to select another current channel, ex. "i2"
+    "pn" where n is a number to select another potentiostat group, ex. "P2"
     "area" - to normalize to area
     
     ### Options keywords:
@@ -70,20 +73,8 @@ class CV_Data(Voltammetry):
             return
         else:
             #print(kwargs)
-            self.conv(EC_Data(args[0]),**kwargs)
-    #############################################################################
-    """
-    def make_E_axis(self, Emin = None, Emax = None):
-        if Emin is not None:
-            self.E_axis["E_min"] = Emin
-        if Emax is not None:
-            self.E_axis["E_max"] = Emax
-        maxE = self.E_axis["E_max"]
-        minE = self.E_axis["E_min"]    
-        dE_range = int((maxE - minE)*1000)
-        E_sweep = np.linspace(minE, maxE, dE_range+1)
-        return E_sweep 
-    """
+            self.conv(EC_Data(args[0]), *args, **kwargs)
+
     #########################################   
     def sub(self, subData: CV_Data) -> None:
         try:
@@ -197,14 +188,24 @@ class CV_Data(Voltammetry):
         options = {
             'x_smooth' : 0,
             'y_smooth' : 0,
-            'IR': 0
+            'IR': 0,
+            'E' : "E",
+            'i' : 'i'
         }
         options.update(kwargs)
-        
+        sel_channels = EC_Channels(*args,**kwargs)
+
         try:
-            #print("CONVERTING_AAA",len(ec_data.Time), len(ec_data.E), len(ec_data.i))
+            data_E,q,u = ec_data.get_channel(sel_channels.Voltage)
+            data_i,q,u = ec_data.get_channel(sel_channels.Current)
+        except NameError as e:
+            print(e)
+            raise NameError(e)
+            return
+            
+        try:
             self.setup_data = copy.deepcopy(ec_data.setup_data)
-            self.convert(ec_data.Time,ec_data.E,ec_data.i,**kwargs)
+            self.convert(ec_data.Time,data_E,data_i,**kwargs)
             if 'Ref.Electrode' in self.setup:
                 self.E_label = "E vs " + self.RE
                 #print("aaaaa")
@@ -213,6 +214,7 @@ class CV_Data(Voltammetry):
 
         except ValueError:
             print("no_data")
+        
         #self.setup = data.setup
         #self.set_area(data._area, data._area_unit)
         #self.set_rotation(data.rotation, data.rotation_unit)
@@ -220,7 +222,7 @@ class CV_Data(Voltammetry):
         return
 
     #####################################################################################################    
-    def convert(self, time, E, i, **kwargs):
+    def convert(self, time, Potential_V, Current_A, **kwargs):
         """Converts data to CV data
 
         Args:
@@ -229,8 +231,8 @@ class CV_Data(Voltammetry):
             i (_type_): current
             direction(str): direction
         """
-        x= E
-        y= i
+        x= Potential_V
+        y= Current_A
 
         #print("Convert", len(E))
         #print("SETP",self.setup)
@@ -336,32 +338,13 @@ class CV_Data(Voltammetry):
         Returns:
             _type_: _description_
         """
-        a = Voltammetry.norm(self, norm_to,[self.i_p, self.i_n] )
-        if a is not None:
-            a,b = a
-            self.i_p = a[0]
-            self.i_n = a[1]
+        r = Voltammetry.norm(self, norm_to,[self.i_p,self.i_n ] )
+        #n = Voltammetry.norm(self, norm_to,self.i_n )
+        if r is not None:
+            v= r[0]
+            self.i_p = v[0]
+            self.i_n = v[1]
             
-        """
-        
-        norm_factor = QV(1,)
-        if isinstance(norm_to, tuple):
-            for arg in norm_to:
-                x = self.get_norm_factor(arg)
-                if x is not None:   
-                    norm_factor = norm_factor * x
-        else:        
-            norm_factor = self.get_norm_factor(norm_to)
-        print(norm_factor)
-        if norm_factor is not None:
-            self.i_n = self.i_n / float(norm_factor)
-            self.i_p = self.i_p / float(norm_factor)
-        #norm_factor_inv = norm_factor ** -1
-            current = QV(1,self.i_unit, self.i_label) / norm_factor
-            print(current.unit,current.unit,norm_factor)
-            self.i_label = current.quantity
-            self.i_unit = current.unit
-        """
         return 
     ###############################
     ###under deve
@@ -369,7 +352,7 @@ class CV_Data(Voltammetry):
         end_norm_factor = None
         # print("argeLIST", type(norm_to))
         
-        a = Voltammetry.set_active_RE(self, shift_to, [self.i_p, self.i_n])
+        a = Voltammetry.set_active_RE(self,shift_to, [self.i_p, self.i_n])
         if a is not None:
             a,b = a
             self.i_p = b[0]
@@ -385,15 +368,19 @@ class CV_Data(Voltammetry):
         "plot=subplot"\n
         "x_smooth= number" - smoothing of the x-axis. \n
         "y_smooth= number" - smoothing of the y-axis. \n
+        
         Returns:
             line, ax: description
         '''
         data = copy.deepcopy(self)
         options = plot_options(kwargs)
         # print(options.get_legend(),self.legend(**kwargs))
+        
         options.set_title(data.setup_data.name)
         options.name = data.setup_data.name
-        options.legend = data.legend(**kwargs)
+        options.legend = data.legend(*args, **kwargs)
+        # print("AAAA",data.legend(*args, **kwargs))
+        
         data.norm(args)
         # print(args)
         data.set_active_RE(args)
@@ -499,27 +486,40 @@ class CV_Data(Voltammetry):
             if "no_plot".casefold() == str(arg).casefold():
                 show_plot = False
             
-            if "pos".casefold() == str(arg).casefold():
-                dir ="pos"
-            if "neg".casefold() == str(arg).casefold():
-                dir ="neg"
-                
+            if POS.casefold() == str(arg).casefold():
+                kwargs["dir"] ="pos"
+            if NEG.casefold() == str(arg).casefold():
+                kwargs["dir"] ="neg"
+                           
         data = copy.deepcopy(self)
+        #  options = plot_options(kwargs)
+        # print(options.get_legend(),self.legend(**kwargs))
+        #options.set_title(data.setup_data.name)
+    
         index1 = data.get_index_of_E(start_E)
         index2 = data.get_index_of_E(end_E)
         imax = max(index1,index2)
         imin = min(index1,index2)
   
+        
+        if kwargs.get("plot",None) is None:
+            #line, ax = options.exe()
+            line, ax = data.plot(*args, **kwargs)
+            kwargs["plot"]=ax
+            
         data.norm(args)
         data.set_active_RE(args)
-        Q_p, d_p  =  data._integrate(  start_E, end_E, data.i_p, *args, **kwargs)
-        Q_n, d_n  =  data._integrate(  start_E, end_E, data.i_n, *args, **kwargs)
+        dir = kwargs.get("dir", "all")
+        if dir != "neg":   
+            Q_p, d_p  =  data._integrate(  start_E, end_E, data.i_p, *args, **kwargs)
+        if dir != "pos":
+            Q_n, d_n  =  data._integrate(  start_E, end_E, data.i_n, *args, **kwargs)
 
         
         #Q_unit =self.i_unit.replace("A","C")
         #yn= np.concatenate(i_p,i_n,axis=0)
         
-        y = [max(np.max(d_p[1]),np.max(d_n[1])), min(np.min(d_p[1]),np.min(d_n[1]))]
+        """        y = [max(np.max(d_p[1]),np.max(d_n[1])), min(np.min(d_p[1]),np.min(d_n[1]))]
         x1 = [data.E[imin],data.E[imin]]
         x2 = [data.E[imax+1],data.E[imax+1]]  
         cv_kwargs = kwargs  
@@ -534,21 +534,12 @@ class CV_Data(Voltammetry):
                 ax.fill_between(d_n[0],d_n[1],d_p[3],color='C1',alpha=0.2)
 
                 #ax.fill_between(self.E[imin:imax+1],i_n,color='C1',alpha=0.2)
-            
-        #except ValueError as e:
-        #    print("the integration did not work on this dataset")
-        #    return None
-        #print(Q_p)
-
-        #end = len(array_Q_p)-1
-        #Q_p = Q_V(array_Q_p[end]-array_Q_p[0],Q_unit,"Q")        
-        #Q_n = Q_V(array_Q_n[end]-array_Q_n[0],Q_unit,"Q")
-        #print(Q_p)
+        """         
         
         if dir == "pos":
             return Q_p#[Q_p[end]-Q_p[0],Q_unit] 
         elif dir == "neg":
-            return  Q_p #[Q_n[end]-Q_n[0],Q_unit]
+            return  Q_n #[Q_n[end]-Q_n[0],Q_unit]
         else:
             return [Q_p, Q_n] #[Q_p[end]-Q_p[0] ,Q_unit, Q_n[end]-Q_n[0],Q_unit]
         
