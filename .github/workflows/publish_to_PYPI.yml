@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
      
 jobs:
-  build_release_job:
-    uses: ./.github/workflows/build_release.yml
-    permissions:
-      contents: write  # IMPORTANT: mandatory for making GitHub Releases
-      id-token: write  # IMPORTANT: mandatory for sigstore
+#  build_release_job:
+#    uses: ./.github/workflows/build_release.yml
+#    permissions:
+#      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+#      id-token: write  # IMPORTANT: mandatory for sigstore
     
   publish-to-pypi:
     name: >-
