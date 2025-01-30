@@ -3,6 +3,15 @@ import re
 
 
 class EC_Channels:
+    """
+    property
+    - Voltage:
+    - Current
+    - Impedance
+ 
+    - Phase - returns the phase
+    
+    """
     def __init__(self,*args, **kwargs):
         self._channels = {
             'E' : "E",
@@ -31,6 +40,11 @@ class EC_Channels:
                     self._channels["i"]=arg+"_i"
                     self._channels["Z"]=arg+"_Z"
                     self._channels["Phase"]=arg+"_Phase"       
+                if arg.casefold()=='cell'.casefold():
+                    self._channels["E"]="Ucell"
+                    self._channels["i"]="i"
+                    self._channels["Z"]="Z_cell"
+                    self._channels["Phase"]="Phase_cell"      
         self._channels.update(kwargs)                
         return
     

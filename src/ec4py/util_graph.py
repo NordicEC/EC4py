@@ -47,12 +47,19 @@ def make_plot_1x(Title:str):
     plot1 = fig.subplots()
     return Figure(fig,[plot1])
 
-def make_plot_2x(Title:str):
+def make_plot_2x(Title:str,Vertical = False):
     fig = plt.figure()
     fig.set_figheight(5)
     fig.set_figwidth(13)
     plt.suptitle(Title)
-    plot1,plot2 = fig.subplots(1,2)
+    if Vertical:
+        fig.set_figheight(5)
+        fig.set_figwidth(4)
+        plot1,plot2 = fig.subplots(2,1)
+    else:
+        fig.set_figheight(5)
+        fig.set_figwidth(13)
+        plot1,plot2 = fig.subplots(1,2)
     return Figure(fig,[plot1,plot2])
     #
     #return plot1, plot2
@@ -264,6 +271,17 @@ class plot_options:
         ax.set_ylabel(f'{ylabel}')
         
         return line, ax
+    
+    def render_plot(self):
+        ax = self.options['plot']
+        if ax == NEWPLOT or ax is None:
+            return
+        else:
+            ax.set_xlabel(f'{quantity_plot_fix(self.x_label)} ({quantity_plot_fix(self.x_unit)})')
+            
+            ylabel = quantity_plot_fix(self.y_label) + " (" + quantity_plot_fix(self.y_unit)+ ")"
+            ax.set_ylabel(f'{ylabel}')
+        return
     
     def close(self, *args):
         # print("CLOSE:", args)

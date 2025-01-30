@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [0.4.8] - 2024-01-30
 
+### Added
+  - Support for EIS data. Nyquist and Bode plots. 
 ### Changed
+
+## [0.4.7] - 2024-01-17
+### Added
+  - Support for MWE and MultiPotentiostats
 
 ## [0.4.6] - 2024-11-04
 ### Changed
