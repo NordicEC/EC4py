@@ -18,10 +18,22 @@ from .util import extract_value_unit
 from .util import Quantity_Value_Unit as QV
 
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, Legend
+from .util_eis import make_Bode_plot, bode_plot_phase, bode_plot_Z
 
 class EIS_Data(EC_Setup):
-
+    """## Class to analyze a single EIS dataset. 
+    ### Class Functions:
+    - .bode() - bode plot    
+    - .nq()  - Nyquist plot.
+    
+    ### Analysis: 
+    
+    """   
     def __init__(self,*args, **kwargs):
+        """## Initial EIS class
+        ### optinal args:
+            - channel: Cell, i0, P0 etc.
+        """
         EC_Setup.__init__(self,*args, **kwargs)
         self.freq=[]
         self.Z=[]
@@ -61,7 +73,14 @@ class EIS_Data(EC_Setup):
         
     
     def nq(self,*args, **kwargs):
-        
+        """_summary_
+        Nyquist plot.
+        kwargs:
+            maxf: to set the max frequency
+            minf: to set the min frequency
+        Returns:
+            _type_: _description_
+        """
         data = copy.deepcopy(self)
         r = data.norm( args, data.Z)
         if r is not None:
@@ -73,9 +92,11 @@ class EIS_Data(EC_Setup):
         options.set_title(data.setup_data.name)
         options.name = data.setup_data.name
         options.legend = data.legend(*args, **kwargs)
-        
-        Z_re = data.Z*np.cos(data.Phase)
-        Z_im = data.Z*np.sin(data.Phase)
+
+        # filter data set:
+        filter =  get_freq_filter_array(data.freq,**kwargs)      
+        Z_re = data.Z[filter]*np.cos(data.Phase[filter])
+        Z_im = data.Z[filter]*np.sin(data.Phase[filter])
         
         options.x_data=  Z_re
         options.y_data= -Z_im 
@@ -94,12 +115,25 @@ class EIS_Data(EC_Setup):
         return line,ax 
     
     def bode(self,*args, **kwargs):
+        """Creates a bode plot:
         
+        kwargs:
+            maxf: set max frequency in Hz
+            minf: set min frequency in Hz
+
+        Returns:
+            _type_: _description_
+        """
         data = copy.deepcopy(self)
+        r = data.norm( args, data.Z)
+        if r is not None:
+            data.Z= r[0]
+        kwargs["style"]="o"
         BODE_op= {"bode_Z": None,"bode_phase": None}
         BODE_op.update(kwargs)
         
         plot_Z = BODE_op["bode_Z"]
+        
         plot_phase = BODE_op["bode_phase"]
         fig = None
      
@@ -132,28 +166,43 @@ class EIS_Data(EC_Setup):
             bode_phase = plot_options(bode_A_args )
             bode_phase.set_x_txt("Freq", "Hz")
             bode_phase.set_y_txt("Phase", "rad")
+        else:
+           
             
-            
+            bode_f.options["plot"]=plot_Z
+            bode_f = bode_plot_Z(plot_Z)
+            #bode_phase.options["plot"]=plot_phase
+            bode_phase=bode_plot_phase(plot_phase)
             # bode_f.set_y_txt(data.i_label, data.i_unit)  
-        
-        
+            
+        bode_f.name = data.setup_data.name
+        bode_f.legend = data.legend(*args, **kwargs)
+        bode_f.set_y_txt(data.Z_label, data.Z_unit)
+        # filter data set:
+        filter =  get_freq_filter_array(data.freq,**kwargs)      
+       
         # print(options.get_legend(),self.legend(**kwargs))
-        
+        #bode_f.set_x_txt("Freq", "Hz")
+        #bode_f.set_y_txt("Z", "Ohm")
         bode_f.set_title(data.setup_data.name)
         bode_f.name = data.setup_data.name
-        bode_f.x_data = data.freq
-        bode_f.y_data = data.Z
+        bode_f.x_data = data.freq[filter]
+        bode_f.y_data = data.Z[filter]
 
         # bode_f.legend = data.legend(*args, **kwargs)
-        
-        bode_phase.x_data = data.freq
-        bode_phase.y_data = data.Phase
+        #bode_phase.set_x_txt("Freq", "Hz")
+        #bode_phase.set_y_txt("Phase", "rad")
+        phase_corr = data.Phase[filter] > np.pi/2
+        phase = data.Phase[filter] - np.pi*phase_corr
+       
+        bode_phase.x_data = data.freq[filter]
+        bode_phase.y_data = phase
   
         line,ax0= bode_f.exe()
-        line,ax1 = bode_phase.exe()
+        line1,ax1 = bode_phase.exe()
         fix_plot_Xrange(ax0, **kwargs)
         fix_plot_Xrange(ax1, **kwargs)
-        return plot_Z,plot_phase
+        return [line,line1],[ax0,ax1]
     
     def norm(self, norm_to:str|tuple, Impedance):
         
@@ -194,4 +243,10 @@ def fix_plot_Yrange(ax,*args, **kwargs):
 
 
 
-    
+def get_freq_filter_array(freq_array,**kwargs):
+    filter_options={"maxf": 10E10, "minf": 0}
+    filter_options.update(kwargs)
+    filterU = filter_options["minf"]<freq_array 
+    filterD = freq_array < filter_options["maxf"]
+    filter =  filterD == filterU 
+    return filter    

@@ -272,6 +272,17 @@ class plot_options:
         
         return line, ax
     
+    def render_plot(self):
+        ax = self.options['plot']
+        if ax == NEWPLOT or ax is None:
+            return
+        else:
+            ax.set_xlabel(f'{quantity_plot_fix(self.x_label)} ({quantity_plot_fix(self.x_unit)})')
+            
+            ylabel = quantity_plot_fix(self.y_label) + " (" + quantity_plot_fix(self.y_unit)+ ")"
+            ax.set_ylabel(f'{ylabel}')
+        return
+    
     def close(self, *args):
         # print("CLOSE:", args)
         for item in args:
