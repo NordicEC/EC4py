@@ -1,5 +1,5 @@
 ---
-title: CV_Data
+title: EIS_Data
 parent: Examples
 nav_order: 1
 ---
