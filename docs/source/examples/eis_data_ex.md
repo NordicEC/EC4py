@@ -4,7 +4,7 @@ parent: Examples
 nav_order: 1
 ---
  
-## Class CV_Data:
+## Class EIS_Data:
 ### Import the class:
 
 ```python
