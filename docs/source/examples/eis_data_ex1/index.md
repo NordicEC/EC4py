@@ -1,6 +1,6 @@
 ---
 title: Example 1
-parent: CV_Data
+parent: EIS_Data
 grand_parent: Examples
 ---
 # Example 1: class CV_data - Basics
