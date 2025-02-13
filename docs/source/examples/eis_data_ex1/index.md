@@ -3,7 +3,7 @@ title: Example 1
 parent: EIS_Data
 grand_parent: Examples
 ---
-# Example 1: class CV_data - Basics
+# Example 1: class EIS_data - Basics
 
 
 ## Download dataset
