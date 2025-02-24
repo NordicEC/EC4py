@@ -50,6 +50,15 @@ class test_Step_Data(unittest.TestCase):
         i = data.get_current_at_time(2.3)
         self.assertAlmostEqual(i,step_size / 3.5)
         
+    def test_current_at_time_range(self):
+        data = copy.deepcopy(gdata)
+        i = data.get_current_at_time(2.3, 0.1)
+        self.assertAlmostEqual(i,step_size)
+        data.area = "3.5 m^2"
+        data.norm("area")
+        i = data.get_current_at_time(2.3)
+        self.assertAlmostEqual(i,step_size / 3.5)
+        
     def test_normalize_current(self):
         data = copy.deepcopy(gdata)
         data.area = "3.5 m^2"

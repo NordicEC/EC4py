@@ -33,10 +33,16 @@ class Step_Data(EC_Setup):
         self.Time=np.array([],dtype=np.float64)
         self.E=np.array([],dtype=np.float64)
         self.i=np.array([],dtype=np.float64)
+        self.Z=np.array([],dtype=np.float64)
+        self.P=np.array([],dtype=np.float64)
+
         self.i_label = "i"
         self.i_unit = "A"
         self.E_label = "E"
         self.E_unit = "V"
+        self.Z_label = "Z"
+        self.Z_unit = "Ohm"
+        
         self.step_Time =[]
         self.step_E =[]
         self.step_Type =[]
@@ -103,11 +109,15 @@ class Step_Data(EC_Setup):
         try:
             data_E,q_E,u_E = ec_data.get_channel(sel_channels.Voltage)
             data_i,q,u = ec_data.get_channel(sel_channels.Current)
+            data_Z,q,u = ec_data.get_channel(sel_channels.Impedance)
+            data_P,q,u = ec_data.get_channel(sel_channels.Phase)
             self.setup_data = ec_data.setup_data
             #self.convert(ec_data.Time,ec_data.E,ec_data.i,**kwargs)
             self.Time = ec_data.Time
             self.i = data_i
             self.E = data_E
+            self.Z = data_Z
+            self.P = data_P
             
             #self.step_Time = self.setup["Step.Time"].split(";",-1)
             #self.step_E = self.setup["Step.E"].split(";",-1)
@@ -181,18 +191,66 @@ class Step_Data(EC_Setup):
     def index_at_time(self, time_s_:float):
         return index_at_time(self.Time, time_s_)
        ##################################################################################################################
-    def get_current_at_time(self, time_s_:float, dt_s_:float = 0):
-        current = 0.0
+    def get_current_at_time(self, time_s_:float, dt_s_:float = 0,*args, **data_kwargs):
+        """Get the current at a specific time
+
+        Args:
+            time_s_ (float): _description_
+            dt_s_ (float, optional): _description_. Defaults to 0.
+
+        Returns:
+            QV: current
+        """
+        # current = 0.0
+        current = QV(1,self.i_unit, self.i_label)
+        # print("argeLIST", type(norm_to))
+        norm_factor =  self.get_norm_factors(args)
         if dt_s_ == 0:
             index = self.index_at_time(time_s_)
-            current = self.i[index]
+            i = self.i[index]
         else:
             index_low = self.index_at_time(time_s_-dt_s_ /2)
             index_high = self.index_at_time(time_s_+ dt_s_ /2)
-            current = np.average(current[index_low, index_high])
+            i = np.average(self.i[range(index_low, index_high)])
+        current = QV(i,self.i_unit, self.i_label) / norm_factor
         return current
        ##################################################################################################################
+       
+    def get_voltage_at_time(self, time_s_:float, dt_s_:float = 0,*args, **data_kwargs):
+        """Get voltage at a specific time or the average value
+
+        Args:
+            time_s_ (float): _description_
+            dt_s_ (float, optional): _description_. Defaults to 0.
+
+        Returns:
+            _type_: the voltage or avg. voltage value.
+        """
+        v=1
+        if dt_s_ == 0:
+            index = self.index_at_time(time_s_)
+            v = self.E[index]
+        else:
+            index_low = self.index_at_time(time_s_-dt_s_ /2)
+            index_high = self.index_at_time(time_s_+ dt_s_ /2)
+            v = np.average(self.E[range(index_low, index_high)])
+        voltage = QV(v,self.E_unit, self.E_label)
+        return voltage
+       ##################################################################################################################
     
+    def get_Z_at_time(self, time_s_:float, dt_s_:float = 0,*args, **data_kwargs):
+        impedance = 0.0
+        norm_factor =  self.get_norm_factors(args)
+        if dt_s_ == 0:
+            index = self.index_at_time(time_s_)
+            impedance = self.Z[index]
+        else:
+            index_low = self.index_at_time(time_s_-dt_s_ /2)
+            index_high = self.index_at_time(time_s_+ dt_s_ /2)
+            impedance = np.average(self.Z[range(index_low, index_high)])
+        imp = QV(impedance,self.Z_unit, self.Z_label) / norm_factor
+        return imp
+       ##################################################################################################################
     
     def get_step(self,step_index:int, steprange:int = 1):
         singleStep = Step_Data()
@@ -267,6 +325,8 @@ class Step_Data(EC_Setup):
        
         
     def norm(self, norm_to:str|tuple):
+        """norm_self_to
+        """
         end_norm_factor = 1
         current = QV(1,self.i_unit, self.i_label)
         # print("argeLIST", type(norm_to))
