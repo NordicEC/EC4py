@@ -248,7 +248,26 @@ class EC_Data(EC_Setup):
         y,quantity,unit = self.get_channel(y_channel)
         array_Q = integrate.cumulative_simpson(y[idxmin:idxmax], x=self.Time[idxmin:idxmax], initial=0)
         Charge = Q(array_Q[len(array_Q)-1]-array_Q[0],unit,quantity)*Q(1,"s","t")
-        return Charge        
+        return Charge 
+    
+    def IR_comp_value(self, y_channel: str = "i", comp_value = None ,**kwargs):
+        """_summary_
+
+        Args:
+            y_channel (str, optional): _description_. Defaults to "i".
+            comp_value (float, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
+        y, quantity, unit = self.get_channel(y_channel)
+        if comp_value is None:
+            comp_value = kwargs.get('comp_resistor',None)
+            if comp_value is None:
+                return y*comp_value
+        
+        
+               
 
 
 def index_at_time(Time, time_s_:float):
