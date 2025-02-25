@@ -193,6 +193,26 @@ class Quantity_Value_Unit:
             raise TypeError("Must be a number, i.e. float or int")
             return
         
+    def set_quantity(self, new_quantity_label:str):
+        """Set the quantity of label.
+
+        Args: new_quantity_label (str): _description_
+            
+        Returns: quantity label (Str)
+        """
+        self._quantity = symbols(new_quantity_label)
+        return self.quantity
+    
+    def set_unit(self, new_unit_label:str):
+        """Set the unit of label.
+
+        Args: new_unit_label (str): _description_
+            
+        Returns: unit_label (str)
+        """
+        self._unit = symbols(new_unit_label)
+        return self.unit
+    
     @property
     def unit(self):
         return str(self._unit)
@@ -200,6 +220,9 @@ class Quantity_Value_Unit:
     @property
     def quantity(self):
         return str(self._quantity)
+    
+    
+###########################################################
 
 def get_unit_and_exponent(s:str):
     aa = s.split("^",2)

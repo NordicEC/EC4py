@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.10] - 
 ### Added
   - Steps -
+  - Quantity and Values: added set_unit and set_quantity
 ### Changed
 
 
