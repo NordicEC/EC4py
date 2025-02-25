@@ -44,6 +44,7 @@ class test_Step_Data(unittest.TestCase):
     def test_current_at_time(self):
         data = copy.deepcopy(gdata)
         i = data.get_current_at_time(2.3)
+        print(i)
         self.assertAlmostEqual(i,step_size)
         data.area = "3.5 m^2"
         data.norm("area")
@@ -53,11 +54,20 @@ class test_Step_Data(unittest.TestCase):
     def test_current_at_time_range(self):
         data = copy.deepcopy(gdata)
         i = data.get_current_at_time(2.3, 0.1)
-        self.assertAlmostEqual(i,step_size)
+        self.assertAlmostEqual(float(i),step_size)
         data.area = "3.5 m^2"
         data.norm("area")
         i = data.get_current_at_time(2.3)
-        self.assertAlmostEqual(i,step_size / 3.5)
+        self.assertAlmostEqual(float(i),step_size / 3.5)
+        
+    def test_voltage_at_time_range(self):
+        data = copy.deepcopy(gdata)
+        u = data.get_voltage_at_time(2.3, 0.1)
+        self.assertAlmostEqual(float(u),1.0)
+        data.area = "3.5 m^2"
+        data.norm("area")
+        u= data.get_voltage_at_time(2.3)
+        self.assertAlmostEqual(float(u),1.0)
         
     def test_normalize_current(self):
         data = copy.deepcopy(gdata)
