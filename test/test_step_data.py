@@ -74,12 +74,12 @@ class test_Step_Data(unittest.TestCase):
         data.area = "3.5 m^2"
         data.norm(AREA)
         i = data.get_current_at_time(2.3)
-        self.assertAlmostEqual(i,step_size / 3.5)
+        self.assertAlmostEqual(i.value,step_size / 3.5)
         data = copy.deepcopy(gdata) 
         data.area = "4.5 m^2"
         data.norm(AREA_CM) 
         i = data.get_current_at_time(2.3)
-        self.assertAlmostEqual(i,step_size / 4.5/10000)     
+        self.assertAlmostEqual(i.value,step_size / 4.5/10000)     
         
         
     def test_integrate(self):

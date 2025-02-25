@@ -10,7 +10,8 @@ permalink: /
 
    intro
    install
-   package/modules
-   - [Examples](/examples/)
+   - [Install](EC4py/install/)
+   - [Package](EC4py/package/)
+   - [Examples](EC4py/examples/)
     
 
