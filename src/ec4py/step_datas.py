@@ -119,7 +119,38 @@ class Step_Datas:
         return data_kwargs
     
     #################################################################################################    
+
+    def get_current_at_time(self, time_s_:float, dt_s_:float = 0,*args, **data_kwargs):
+        """Get the current at a specific time.
+
+        Args:
+            time_s_ (float): _description_
+            dt_s_ (float, optional): _description_. Defaults to 0.
+
+        Returns:
+            list of QV: _description_
+        """
+        current = [QV()] * len(self.datas)
+        for i in range(len(self.datas)):
+            current[i] = self.datas[i].get_current_at_time(time_s_,dt_s_,*args, **data_kwargs)
+        return current
    
+    def get_voltage_at_time(self, time_s_:float, dt_s_:float = 0,*args, **data_kwargs):
+        """_summary_
+
+        Args:
+            time_s_ (float): _description_
+            dt_s_ (float, optional): _description_. Defaults to 0.
+
+        Returns:
+            List of QV: list of voltage values
+        """
+        voltage = [QV()] * len(self.datas)
+        for i in range(len(self.datas)):
+            voltage[i] = self.datas[i].get_voltage_at_time(time_s_,dt_s_,*args, **data_kwargs)
+        return voltage
+    
+
     def integrate(self,t_start,t_end,step_nr:int = -1, *args, **kwargs):
         s = "Integrate Analysis"
         if(step_nr>-1):

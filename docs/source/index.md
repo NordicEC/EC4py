@@ -11,5 +11,6 @@ permalink: /
    intro
    install
    package/modules
-   examples/index
+   - [Examples](/examples/)
+    
 
