@@ -14,10 +14,10 @@ jobs:
     name: >-
       Publish Python 🐍 distribution 📦 to PyPI
     # if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
-    needs:
-    - build_release_job
-    env:
-      PROJECT_VERSION: ${{needs.build_release_job.outputs.product_version}}
+    # needs:
+    # - build_release_job
+    #env:
+    #  PROJECT_VERSION: ${{needs.build_release_job.outputs.product_version}}
     runs-on: ubuntu-latest
     environment:
       name: pypi
