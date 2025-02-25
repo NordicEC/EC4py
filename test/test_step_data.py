@@ -44,12 +44,12 @@ class test_Step_Data(unittest.TestCase):
     def test_current_at_time(self):
         data = copy.deepcopy(gdata)
         i = data.get_current_at_time(2.3)
-        print(i)
-        self.assertAlmostEqual(i,step_size)
+        # print(i)
+        self.assertAlmostEqual(float(i),step_size)
         data.area = "3.5 m^2"
         data.norm("area")
         i = data.get_current_at_time(2.3)
-        self.assertAlmostEqual(i,step_size / 3.5)
+        self.assertAlmostEqual(float(i),step_size / 3.5)
         
     def test_current_at_time_range(self):
         data = copy.deepcopy(gdata)
