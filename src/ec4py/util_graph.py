@@ -234,9 +234,16 @@ class plot_options:
                     y_median +=1 
                 #print("median filter Y", y_median)
                 self.y_data = medfilt(self.y_data, y_median)
+        except:
+            pass
+        try:
+            print("smooth")
             y_smooth = int(self.options['y_smooth'])
+            print(y_smooth)
             if y_smooth > 0:
+                print("SMOTTHING!!!")
                 self.y_data = savgol_filter(self.y_data, y_smooth, 1)
+                print("SMOTTHING!!!")
             yscale = ax.get_yscale()
             if yscale == "log":
                 self.y_data=abs(self.y_data)

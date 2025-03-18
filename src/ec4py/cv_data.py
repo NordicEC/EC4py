@@ -374,6 +374,8 @@ class CV_Data(Voltammetry):
         '''
         data = copy.deepcopy(self)
         options = plot_options(kwargs)
+        print("AAAAAAAAAAAAAAAAAAAAAAA")
+        print(options.get_y_smooth())
         # print(options.get_legend(),self.legend(**kwargs))
         
         options.set_title(data.setup_data.name)
@@ -400,6 +402,8 @@ class CV_Data(Voltammetry):
         options.set_y_txt(data.i_label, data.i_unit) 
         
         # print(options.get_legend())
+        print("AAAAAAAAAAAAAAAAAAAAAAA")
+        print(options.get_y_smooth())
         return options.exe()
     
     ####################################################################################################
