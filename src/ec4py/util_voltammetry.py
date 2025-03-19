@@ -13,6 +13,7 @@ import copy
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x
 
 
 OFFSET_AT_E_MIN ="offset_at_emin"
@@ -41,7 +42,27 @@ class Voltammetry(EC_Setup):
         self.E_axis.update(kwargs)
         self.E = self.make_E_axis()
         self.E_shifted_by = None
+    
+    
+    
+    def copy_from(self, source:Voltammetry):
+        """Voltammetry copy from source voltammetry
+
+        Args:
+            source (Voltammetry): Any voltammetry class
+        """
+        self.E              = source.E
+        self.E_label        = source.E_label
+        self.E_unit         = source.E_unit
+        self.E_axis         = source.E_axis
+        self.E_shifted_by   = source.E_shifted_by
+        self.xmin = source.xmin
+        self.xmax = source.xmax
+        self.i_label = source.i_label
+        self.i_unit = source.i_unit
+        EC_Setup.copy_from(self,source)
         
+    
     #############################################################################
     def make_E_axis(self, Emin = None, Emax = None):
         if Emin is not None:
@@ -329,3 +350,18 @@ class Voltammetry(EC_Setup):
             self.E = self.E + self.E_shifted_by
             self.E_label = "E vs "+ self.RE
             self.E_unit = self.E_unit = "V"    
+            
+            
+            
+def create_Tafel_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
+    Tafel_op= {"data_plot": None,"analyse_plot": None}
+    Tafel_op.update(kwargs)
+    data_plot = Tafel_op["data_plot"]
+    analyse_plot = Tafel_op["analyse_plot"]
+    if Tafel_op["data_plot"] is None and Tafel_op["analyse_plot"] is None:
+        fig = make_plot_2x("Tafel Analysis")
+        data_plot = fig.plots[0]
+        analyse_plot =  fig.plots[1]
+        data_plot.title.set_text(data_plot_title)
+        analyse_plot.title.set_text('Tafel Plot')
+    return data_plot,analyse_plot,fig

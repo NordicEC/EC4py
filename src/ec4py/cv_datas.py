@@ -12,6 +12,7 @@ import copy
 from .util import Quantity_Value_Unit as QV
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT
 from .analysis_levich import Levich
+from .util_voltammetry import create_Tafel_data_analysis_plot
 #from .analysis_tafel import Tafel as Tafel_calc
 
 
@@ -332,14 +333,15 @@ class CV_Datas:
     
     
     def Tafel(self, lims=[-1,1], E_for_idl:float=None , *args, **kwargs):
-        
-        fig = make_plot_2x("Tafel Analysis")
-        CV_plot = fig.plots[0] 
-        analyse_plot = fig.plots[1]
-        CV_plot.title.set_text('CVs')
-        analyse_plot.title.set_text('Tafel Plot')   
+        data_plot, analyse_plot,fig = create_Tafel_data_analysis_plot("CVs",**kwargs)
+        #fig = make_plot_2x("Tafel Analysis")
+        #CV_plot = fig.plots[0] 
+        #analyse_plot = fig.plots[1]
+        #CV_plot.title.set_text('CVs')
+        #analyse_plot.title.set_text('Tafel Plot')   
         cv_kwargs = kwargs
-        cv_kwargs['cv_plot'] = CV_plot
+        #cv_kwargs['data_plot'] = CV_plot
+        cv_kwargs['data_plot'] = data_plot
         cv_kwargs['analyse_plot'] = analyse_plot
         Tafel_pos =[]
         Tafel_neg =[]

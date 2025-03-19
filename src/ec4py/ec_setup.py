@@ -2,6 +2,7 @@ from .util import extract_value_unit
 from .util import Quantity_Value_Unit as QV
 import numpy as np
 from .util_graph import Legend
+import copy
 
 RHE = "RHE"
 SHE = "SHE"
@@ -73,7 +74,7 @@ class EC_Setup:
         #self._setup_rotation_unit ="/min"
         self.setup_data = ec_setup_data()
         return
-    
+          
     def setup_reset(self):
         if 'Electrode.Area' in self.setup_data._setup:
             v,u = extract_value_unit(self.setup_data._setup['Electrode.Area'])
@@ -91,6 +92,15 @@ class EC_Setup:
         #    v,u = extract_value_unit(self.setup_data._setup['Inst.Convection.Speed'])
         #    self.set_rotation(v,u)
             #self.setup_data._area_unit = u
+    
+    
+    def copy_from(self, source):
+        """Imports a copy of EC_Setup from source.
+
+        Args:
+            source (EC_Setup): Source.
+        """
+        self.setup_data = copy.deepcopy(source.setup_data)
     
     
     @property 

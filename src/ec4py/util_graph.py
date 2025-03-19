@@ -5,6 +5,7 @@ Utility module.
 
 #import math
 from scipy.signal import savgol_filter, medfilt
+import numpy as np
 #from scipy import ndimage, datasets
 import matplotlib.pyplot as plt
 from collections import namedtuple
@@ -168,12 +169,23 @@ class plot_options:
         return self.options['plot']
     
     def smooth_y(self, ydata =[]):
-        try:
-            y_smooth = self.get_y_smooth()
-            if(y_smooth > 0):
-                ydata = savgol_filter(ydata, y_smooth, 1)
-        except:
-            pass
+        #try:
+        y_smooth = self.get_y_smooth()
+        # print("SA VALUE")
+        # print(y_smooth)
+        if(y_smooth > 0):
+            ydata_array= np.isnan(ydata)
+            for i in range(len(ydata_array)):
+                if ydata_array[i]:
+                    ydata[i]=0
+            ydata = savgol_filter(ydata, y_smooth, 1)
+            for i in range(len(ydata_array)):
+                if ydata_array[i]:
+                    ydata[i]=np.nan
+                    
+            # print("SA FITER")
+    #except:
+        #    pass
         return ydata
     
     def median_y(self, ydata =[]):
@@ -236,14 +248,8 @@ class plot_options:
                 self.y_data = medfilt(self.y_data, y_median)
         except:
             pass
+        self.y_data = self.smooth_y(self.y_data)
         try:
-            print("smooth")
-            y_smooth = int(self.options['y_smooth'])
-            print(y_smooth)
-            if y_smooth > 0:
-                print("SMOTTHING!!!")
-                self.y_data = savgol_filter(self.y_data, y_smooth, 1)
-                print("SMOTTHING!!!")
             yscale = ax.get_yscale()
             if yscale == "log":
                 self.y_data=abs(self.y_data)
