@@ -48,9 +48,23 @@ class EC_Data(EC_Setup):
                 tdms_file.close()
                 self.path = str(path)
                 # print(tdms_file.properties)
+                
+                try:
+                    Items = tdms_file['Setup']['Item']
+                    Value = tdms_file['Setup']['Value']
+                    for x in range(len(Items)):
+                        self.setup_data._setup[Items[x]] = Value[x]
+                    self.setup_reset()
+                except KeyError:
+                    pass
+                
                 self.rawdata = tdms_file['EC']
                 self.Time = tdms_file['EC']['Time'].data
-                self.i = tdms_file['EC']['i'].data
+                try:
+                    self.i = tdms_file['EC']['i'].data
+                except KeyError:
+                    pass
+                
                 self.E = tdms_file['EC']['E'].data
                 self.setup_data.name = tdms_file.properties['name']
                 self.setup_data.dateTime = tdms_file.properties['dateTime']
@@ -68,14 +82,7 @@ class EC_Data(EC_Setup):
                     self.Phase_U = tdms_file['EC']['Phase_cell'].data  # not all data file contains U channel
                 except KeyError:
                     pass
-                try:
-                    Items = tdms_file['Setup']['Item']
-                    Value = tdms_file['Setup']['Value']
-                    for x in range(len(Items)):
-                        self.setup[Items[x]] = Value[x]
-                    self.setup_reset()
-                except KeyError:
-                    pass
+                
                 # [self.area, self.setup_data._area_unit] = util.extract_value_unit(self.setup["Electrode.Area"])
                 # [self.rotation, self.setup_data.rotation_unit] = util.extract_value_unit(self.setup["Inst.Convection.Speed"])
 

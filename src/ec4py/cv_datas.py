@@ -11,8 +11,12 @@ from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT
+
 from .analysis_levich import Levich
-from .util_voltammetry import create_Tafel_data_analysis_plot
+from .analysis_ran_sev   import ran_sev
+
+from .util_voltammetry import create_Tafel_data_analysis_plot,create_RanSev_data_analysis_plot
+from .lsv_datas import LSV_Datas
 #from .analysis_tafel import Tafel as Tafel_calc
 
 
@@ -36,7 +40,7 @@ class CV_Datas:
     ### Options keywords:
     legend = "name"
     """
-    def __init__(self, paths:list[Path] | Path, **kwargs):
+    def __init__(self, paths:list[Path] | Path,*args, **kwargs):
 
         if not isinstance(paths,list ):
             path_list = [paths]
@@ -49,7 +53,7 @@ class CV_Datas:
         for path in path_list:
             ec = EC_Data(path)
             try:
-                self.datas[index].conv(ec,**kwargs)
+                self.datas[index].conv(ec,*args,**kwargs)
             finally:
                 index=index+1 
         #print(index)
@@ -145,6 +149,44 @@ class CV_Datas:
     
 ################################################################   
 
+    def get_i_at_E(self, E:float, dir:str = "all",*args, **kwargs):
+        """Get the current at a specific voltage.
+
+        Args:
+            E (float): potential where to get the current. 
+            dir (str): direction, "pos,neg or all"
+        Returns:
+            float: current
+        """
+        i_at_E_pos=[]
+        i_at_E_neg=[]
+        for x in self.datas:
+            cv = copy.deepcopy(x)
+            
+            a =cv.get_i_at_E(E,"all",*args,**kwargs)
+            i_at_E_pos.append(a[0])
+            i_at_E_neg.append(a[1])
+        return i_at_E_pos,i_at_E_neg
+    
+    ########################################################################################################
+
+    def get_sweep(self,sweep:str):
+        """_summary_"""
+        
+        
+        LSVs = LSV_Datas()
+        for cv in self.datas:
+            LSVs.append(cv.get_sweep(sweep))
+        return LSVs
+    
+    @property
+    def rate(self):
+        rate=[]
+        for cv in self.datas:
+            
+            rate.append(cv.rate)
+        return rate
+
     def plot(self, *args, **kwargs):
         """Plot CVs.
             
@@ -187,7 +229,56 @@ class CV_Datas:
         CV_plot.legend()
         p.saveFig(**kwargs)
         return CV_plot
+    #################################################################################################    
+    
+    def RanSev(self, Epot:float,*args, **kwargs):
+        """Randles–Sevcik analysis. Creates plot of the data and a Randles–Sevcik plot.
 
+        Args:
+            Epot (float): Potential at which the current will be used.
+
+        Returns:
+            List : Slope of data based on positive and negative sweep.
+        """
+        dir="all"
+        data_plot, analyse_plot,fig = create_RanSev_data_analysis_plot()
+        # fig = make_plot_2x("Levich Analysis")
+        # CV_plot = fig.plots[0] 
+        # analyse_plot = fig.plots[1]
+        # CV_plot, analyse_plot = fig.subplots(1,2)
+        #CV_plot.title.set_text('CVs')
+
+        #analyse_plot.title.set_text('Levich Plot')
+
+        #########################################################
+        # Make plot
+        cv_kwargs = kwargs
+        cv_kwargs["plot"] = data_plot
+        
+        rate = [float(val) for val in self.rate]
+        E =[Epot for val in self.rate]
+       
+ 
+        plot =self.plot(*args, **kwargs)
+       
+
+        
+        yu,yn = self.get_i_at_E(Epot,"all",*args, **kwargs)
+        print(yn[0])
+        # rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **cv_kwargs)
+        plot.plot(E, yu, STYLE_POS_DL, E, yn, STYLE_NEG_DL)
+        y_axis_title =yu[0].quantity
+        y_axis_unit = yu[0].unit
+        B_factor_pos = ran_sev(rate, yu, y_axis_unit, y_axis_title, STYLE_POS_DL, POS, plot=analyse_plot )
+        B_factor_neg = ran_sev(rate, yn, y_axis_unit, y_axis_title, STYLE_NEG_DL, NEG, plot=analyse_plot )
+
+        print("RanSev analysis" )
+        print("dir", "\tpos     ", "\tneg     " )
+        print(" :    ",f"\t{y_axis_unit} / V^0.5 s^-0.5",f"\t{y_axis_unit} / V^0.5")
+        print("slope:", "\t{:.2e}".format(B_factor_pos.value) , "\t{:.2e}".format(B_factor_neg.value))
+        
+        saveFig(fig,**kwargs)
+        return B_factor_pos, B_factor_neg
     #################################################################################################    
     
     def Levich(self, Epot:float, *args, **kwargs):

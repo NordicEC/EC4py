@@ -31,6 +31,18 @@ class test_lsv_data_basic( unittest.TestCase ):
         data = LSV_Data()
         l = len(data.E)
         self.assertGreater(l,0)
+        
+    def test_lsv_tafel(self):
+        data = LSV_Data()
+        tafel=100.0
+        data.i = np.pow(10,data.E/tafel)
+        slope=data.Tafel([0,1])
+        self.assertAlmostEqual(tafel,slope.value)
+        tafel=-60.0
+        data.i = np.pow(10,data.E/tafel)
+        slope=data.Tafel([0,1])
+        self.assertAlmostEqual(tafel,slope.value)
+        self.assertEqual("V/dec",slope.unit)
 
 
 

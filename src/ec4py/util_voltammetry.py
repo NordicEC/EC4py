@@ -365,3 +365,16 @@ def create_Tafel_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):
         data_plot.title.set_text(data_plot_title)
         analyse_plot.title.set_text('Tafel Plot')
     return data_plot,analyse_plot,fig
+
+def create_RanSev_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
+    Tafel_op= {"data_plot": None,"analyse_plot": None}
+    Tafel_op.update(kwargs)
+    data_plot = Tafel_op["data_plot"]
+    analyse_plot = Tafel_op["analyse_plot"]
+    if Tafel_op["data_plot"] is None and Tafel_op["analyse_plot"] is None:
+        fig = make_plot_2x("RanSev Analysis")
+        data_plot = fig.plots[0]
+        analyse_plot =  fig.plots[1]
+        data_plot.title.set_text(data_plot_title)
+        analyse_plot.title.set_text('RanSev Plot')
+    return data_plot,analyse_plot,fig

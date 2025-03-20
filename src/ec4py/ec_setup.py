@@ -289,6 +289,10 @@ class EC_Setup:
     #########################################################################
 
     
+    @property
+    def is_MWE(self) -> bool:
+        return self.setup_data._setup.get('AddOn',False)
+    
     
     def legend(self, *args, **kwargs)-> str:
         """_summary_

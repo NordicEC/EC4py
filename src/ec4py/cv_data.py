@@ -217,7 +217,10 @@ class CV_Data(Voltammetry):
                 self.E_label ="E"
 
         except ValueError:
-            print("no_data")
+            if(self.is_MWE):
+                print("select a current channel")
+            else:
+                print("no_data")
         
         #self.setup = data.setup
         #self.set_area(data._area, data._area_unit)
@@ -431,14 +434,25 @@ class CV_Data(Voltammetry):
             float: current
         """
         
-        index = self.get_index_of_E(E)
-                
-        if dir == "pos":
-            return float(self.i_p[index])
-        elif dir == "neg":
-            return self.i_n[index]
+        
+        cv = copy.deepcopy(self)
+        cv.norm(args)
+        cv.set_active_RE(args)  
+        # cv.plot() 
+        index = cv.get_index_of_E(E)
+        print("INDEX",index,cv.i_n[index],cv.i_unit)
+        # print(cv.get_sweep(NEG).get_i_at_E(1.4))
+        i_p = QV(cv.i_n[index],cv.i_unit,cv.i_label)
+        i_n = QV(cv.i_n[index],cv.i_unit,cv.i_label)
+        
+
+        
+        if dir.casefold() == POS.casefold():
+            return i_p
+        elif dir.casefold() == NEG.casefold():
+            return i_n
         else:
-            return [self.i_p[index] , self.i_n[index]]
+            return [i_p , i_n]
     
     ###########################################################################################
 
@@ -458,10 +472,10 @@ class CV_Data(Voltammetry):
                    }
         options.update(kwargs)
                        
-        if dir == "pos":
+        if dir.casefold() == POS.casefold():
             
             return self._get_E_at_i(self.i_p, i, **kwargs)
-        elif dir == "neg":
+        elif dir.casefold() == NEG.casefold():
             
             return self._get_E_at_i(self.i_n, i, **kwargs)
         else:

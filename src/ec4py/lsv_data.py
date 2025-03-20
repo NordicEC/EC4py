@@ -15,7 +15,7 @@ from .ec_data_util import EC_Channels
 from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
-from .util import Quantity_Value_Unit as Q_V
+from .util import Quantity_Value_Unit as QV
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x
 from .analysis_tafel import Tafel
 from .analysis_levich import diffusion_limit_corr
@@ -272,7 +272,7 @@ class LSV_Data(Voltammetry):
             self.i = self.i / float(norm_factor)
              
         #norm_factor_inv = norm_factor ** -1
-            current = Q_V(1,self.i_unit, self.i_label) / norm_factor
+            current = QV(1,self.i_unit, self.i_label) / norm_factor
          
             self.i_label = current.quantity
             self.i_unit = current.unit
@@ -326,7 +326,7 @@ class LSV_Data(Voltammetry):
         return index
     
     ########################################################################################################
-    def get_i_at_E(self, E:float, dir:str = "all"):
+    def get_i_at_E(self, E:float, *args):
         """Get the current at a specific voltage.
 
         Args:
@@ -335,9 +335,13 @@ class LSV_Data(Voltammetry):
         Returns:
             _type_: _description_
         """
+        lsv = copy.deepcopy(self)
+        lsv.norm(args)
+        lsv.set_active_RE(args)  
+        
         index = self.get_index_of_E(E)
                 
-        return self.i[index]
+        return QV(self.i[index],lsv.i_unit,lsv.i_label)
     ###########################################################################################
 
     def integrate(self, start_E:float, end_E:float, show_plot: bool = False, *args, **kwargs):
