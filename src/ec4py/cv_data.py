@@ -394,10 +394,10 @@ class CV_Data(Voltammetry):
         # print(args)
         data.set_active_RE(args)
         options.x_data = data.E
-        if(options.get_dir() == "pos"):  
+        if(options.get_dir() == POS.casefold()):  
             options.y_data = data.i_p
         
-        elif(options.get_dir() == "neg"):  
+        elif(options.get_dir() == NEG.casefold()):  
             options.y_data = data.i_n
             
         else:
@@ -440,9 +440,9 @@ class CV_Data(Voltammetry):
         cv.set_active_RE(args)  
         # cv.plot() 
         index = cv.get_index_of_E(E)
-        print("INDEX",index,cv.i_n[index],cv.i_unit)
+        # print("INDEX",index,cv.i_n[index],cv.i_unit)
         # print(cv.get_sweep(NEG).get_i_at_E(1.4))
-        i_p = QV(cv.i_n[index],cv.i_unit,cv.i_label)
+        i_p = QV(cv.i_p[index],cv.i_unit,cv.i_label)
         i_n = QV(cv.i_n[index],cv.i_unit,cv.i_label)
         
 

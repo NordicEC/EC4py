@@ -264,13 +264,18 @@ class CV_Datas:
 
         
         yu,yn = self.get_i_at_E(Epot,"all",*args, **kwargs)
-        print(yn[0])
+        #[print(x) for x in yu]
+        #print("yn")
+        #[print(x) for x in yn]
+        #print(yu[0])
         # rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **cv_kwargs)
-        plot.plot(E, yu, STYLE_POS_DL, E, yn, STYLE_NEG_DL)
+        plot.plot(E, yu, STYLE_POS_DL)
+        plot.plot(E, yn, STYLE_NEG_DL)
         y_axis_title =yu[0].quantity
         y_axis_unit = yu[0].unit
-        B_factor_pos = ran_sev(rate, yu, y_axis_unit, y_axis_title, STYLE_POS_DL, POS, plot=analyse_plot )
-        B_factor_neg = ran_sev(rate, yn, y_axis_unit, y_axis_title, STYLE_NEG_DL, NEG, plot=analyse_plot )
+        B_factor_pos=0
+        B_factor_pos = ran_sev(rate, yn, y_axis_unit, y_axis_title, STYLE_POS_DL, POS, plot=analyse_plot )
+        B_factor_neg = ran_sev(rate, yu, y_axis_unit, y_axis_title, STYLE_NEG_DL, NEG, plot=analyse_plot )
 
         print("RanSev analysis" )
         print("dir", "\tpos     ", "\tneg     " )

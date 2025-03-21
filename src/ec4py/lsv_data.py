@@ -280,7 +280,7 @@ class LSV_Data(Voltammetry):
         return 
     
     ############################################################################        
-    def plot(self,**kwargs):
+    def plot(self,*args, **kwargs):
         '''
         plots y_channel vs x_channel.\n
         to add to a existing plot, add the argument: \n
@@ -294,7 +294,9 @@ class LSV_Data(Voltammetry):
         options.set_title(self.setup_data.name)
         options.name = self.setup_data.name
         options.legend = self.legend(**kwargs)
-        
+        #data.norm(args)
+        # print(args)
+        #data.set_active_RE(args)
         options.x_data = self.E
         options.y_data = self.i
                 
