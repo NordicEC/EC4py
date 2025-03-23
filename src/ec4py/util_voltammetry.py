@@ -378,3 +378,16 @@ def create_RanSev_data_analysis_plot(data_plot_title:str="data",*args, **kwargs)
         data_plot.title.set_text(data_plot_title)
         analyse_plot.title.set_text('RanSev Plot')
     return data_plot,analyse_plot,fig
+
+def create_Rate_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
+    op= {"data_plot": None,"analyse_plot": None}
+    op.update(kwargs)
+    data_plot = op["data_plot"]
+    analyse_plot = op["analyse_plot"]
+    if op["data_plot"] is None and op["analyse_plot"] is None:
+        fig = make_plot_2x("Rate Analysis")
+        data_plot = fig.plots[0]
+        analyse_plot =  fig.plots[1]
+        data_plot.title.set_text(data_plot_title)
+        analyse_plot.title.set_text('Rate Plot')
+    return data_plot,analyse_plot,fig

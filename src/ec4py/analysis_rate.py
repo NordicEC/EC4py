@@ -13,7 +13,7 @@ for more info.
 
 """
 
-def ran_sev(rate_values, current, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str="bo", line_title:str="",  rate_unit:str="V /s", *args, **kwargs):
+def sweep_rate_analysis(rate_values, current, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str="bo", line_title:str="",  rate_unit:str="V /s", *args, **kwargs):
         """Generates a Randles–Sevcik plot and fits a line.  
 
         Args:
@@ -34,26 +34,27 @@ def ran_sev(rate_values, current, y_axis_unit:str="A", y_axis_title:str="i", STY
         #p.set_ylabel(f"{quantity_plot_fix(y_axis_title)} ({quantity_plot_fix(y_axis_unit)})" )
         
         
-        rate_sqrt = np.sqrt(np.array([float(val) for val in rate_values]))
-        # rate = (np.array([float(val) for val in rate_values]))
+        # rate_sqrt = np.sqrt(np.array([float(val) for val in rate_values]))
+        rate = (np.array([float(val) for val in rate_values]))
         
         y_data = np.array([float(val) for val in current])
         # ([print(float(val)) for val in current])
         
         # analyse_plot.plot(rot_sqrt, y_data, STYLE_DL_plot)
         x_qv = Q_V(1, rate_unit, "v")
-        x_qv = x_qv**0.5
+        # x_qv = x_qv**0.5
         x_qv.value = 1
         x_rot = Q_V(1, x_qv.unit, x_qv.quantity)
         ##print("aa", x_qv.unit)
         y_qv = Q_V(1, y_axis_unit.strip(), y_axis_title.strip())
         
-        x_plot = np.insert(rate_sqrt, 0, 0)
-        m , b = np.polyfit(rate_sqrt, y_data, 1)
+        x_plot = np.insert(rate, 0, 0)
+        m , b = np.polyfit(rate, y_data, 1)
         y_pos= m * x_plot + b
         ##print("AAA",x_rot, "BBB", x_rot.quantity)
 
         B_factor = Q_V(m , y_axis_unit, y_axis_title) / x_rot
+        B_factor = B_factor * Q_V(1, "C V /A /s") 
         ##print("AAA",B_factor_pos, "BBB", B_factor_pos.quantity)
         
         #Levich Plot
@@ -64,7 +65,7 @@ def ran_sev(rate_values, current, y_axis_unit:str="A", y_axis_title:str="i", STY
 
         p.options["style"]=STYLE_DL[0]+"o"
         p.y_data = y_data
-        p.x_data = rate_sqrt
+        p.x_data = rate
         line, analyse_plot = p.exe()        
         print(p.get_x_txt())
         STYLE_DL= STYLE_DL[0] + "-"
