@@ -27,7 +27,7 @@ def Levich(rot, y_data, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str
         
         
         rot_sqrt = np.sqrt(np.array(rot))
-        
+        y_data = np.array([float(val) for val in y_data])
         # analyse_plot.plot(rot_sqrt, y_data, STYLE_DL_plot)
         x_qv = Q_V(1, rot_unit, "w")
         x_qv = x_qv**0.5

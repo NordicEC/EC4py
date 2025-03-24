@@ -199,9 +199,10 @@ class LSV_Datas:
             if legend == "_" :
                 data_plot_kwargs["legend"] = data.setup_data.name
 
-            p = data.plot(*args, **data_plot_kwargs)
+            data.plot(*args, **data_plot_kwargs)
 
         data_plot.legend()
+        p.saveFig(**kwargs)
         return data_plot
 
     #################################################################################################    
@@ -308,14 +309,14 @@ class LSV_Datas:
         # y = np.array(y)
         # rot_max = max(rot) 
         # Levich analysis
-        B_factor_pos = Levich(rot, y[:,0], y_axis_unit, y_axis_title, STYLE_POS_DL, "pos", plot=analyse_plot )
-        B_factor_neg = Levich(rot, y[:,1], y_axis_unit, y_axis_title, STYLE_NEG_DL, "neg", plot=analyse_plot )
+        B_factor_pos = Levich(rot, y, y_axis_unit, y_axis_title, STYLE_POS_DL, self.dir, plot=analyse_plot )
+       
 
         print("Levich analysis" )
         print("dir", "\tpos     ", "\tneg     " )
-        print(" :    ",f"\t{y_axis_unit} / rpm^0.5",f"\t{y_axis_unit} / rpm^0.5")
-        print("slope:", "\t{:.2e}".format(B_factor_pos.value) , "\t{:.2e}".format(B_factor_neg.value))
-        return B_factor_pos, B_factor_neg
+        print(" :    ",f"\t{y_axis_unit} / rpm^0.5")
+        print("slope:", "\t{:.2e}".format(B_factor_pos.value) )
+        return B_factor_pos
 
     #######################################################################################################
     
@@ -541,12 +542,12 @@ def plots_for_rotations(datas: LSV_Datas, Epot: float, *args, **kwargs):
         l, ax = cv.plot(**cv_kwargs)
         line.append(l)
         y.append(cv.get_i_at_E(Epot))
-        E.append([Epot, Epot])
+        E.append(Epot)
         y_axis_title = str(cv.i_label)
         y_axis_unit = str(cv.i_unit)
     rot = np.array(rot)
     y = np.array(y)
     CV_plot = cv_kwargs["plot"]
-    CV_plot.plot(E, y[:, 0], STYLE_POS_DL, E, y[:, 1], STYLE_NEG_DL)
+    CV_plot.plot(E, y, STYLE_POS_DL)
     CV_plot.legend()
     return rot, y, E, y_axis_title, y_axis_unit
