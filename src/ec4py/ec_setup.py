@@ -193,12 +193,14 @@ class EC_Setup:
             float: sweep rate in V/s
         """
         r = self.setup_data._setup.get('Rate',None)
+        
         if r is None:
-            v = self.setup_data._rate_V_s
-            u = "V/s"
+            value = self.setup_data._rate_V_s
+            unit = "V /s"
         else:
-            v,u = extract_value_unit(self.setup_data._setup['Rate'])
-        return QV(v,u,"v")
+            value,unit = extract_value_unit(self.setup_data._setup['Rate'])
+            unit = "V /s"
+        return QV(value,unit,"v")
     ###########################################################
     
     @property

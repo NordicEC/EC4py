@@ -48,8 +48,11 @@ def sweep_rate_analysis(rate_values, current, y_axis_unit:str="A", y_axis_title:
         ##print("aa", x_qv.unit)
         y_qv = Q_V(1, y_axis_unit.strip(), y_axis_title.strip())
         
-        x_plot = np.insert(rate, 0, 0)
         m , b = np.polyfit(rate, y_data, 1)
+        rate_t = np.sort(rate)
+        x_plot = np.insert(rate_t,0, 0.8*rate_t[0]) #rate_t[0]*
+        x_plot = np.append(x_plot,np.nanmax(rate_t)*1.2)
+        
         y_pos= m * x_plot + b
         ##print("AAA",x_rot, "BBB", x_rot.quantity)
 
@@ -59,7 +62,7 @@ def sweep_rate_analysis(rate_values, current, y_axis_unit:str="A", y_axis_title:
         
         #Levich Plot
         p = plot_options(kwargs)
-        p.set_title("RanSev",1)
+        p.set_title("Sweep Rate",1)
         p.set_x_txt("$v$", f"{rate_unit}")
         p.set_y_txt(y_axis_title, y_axis_unit)
 
@@ -67,13 +70,13 @@ def sweep_rate_analysis(rate_values, current, y_axis_unit:str="A", y_axis_title:
         p.y_data = y_data
         p.x_data = rate
         line, analyse_plot = p.exe()        
-        print(p.get_x_txt())
+        # print(p.get_x_txt())
         STYLE_DL= STYLE_DL[0] + "-"
         line, = analyse_plot.plot(x_plot, y_pos, STYLE_DL )
         line.set_label(f"{line_title} {m :3.3e} {B_factor.unit}")
         #ax.xlim(left=0)
         analyse_plot.legend()
-        analyse_plot.set_xlim(left=0, right =None)
+        #analyse_plot.set_xlim(left=0, right =None)
 
         return B_factor
 

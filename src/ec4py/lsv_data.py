@@ -45,7 +45,7 @@ class LSV_Data(Voltammetry):
         self.i=[]
         self.i_label = "i"
         self.i_unit = "A"
-        self.dir =""
+       
         self.rate_V_s = 1
 
         """max voltage""" 
@@ -264,20 +264,38 @@ class LSV_Data(Voltammetry):
         self.i = y_pos     
     
    ######################################################################################### 
-    def norm(self, norm_to:str):
-         
-        norm_factor = self.get_norm_factor(norm_to)
+    def norm(self, norm_to:str| tuple):
+        """Normalize lsv current
+
+        Args:
+            norm_to (str): _description_
+        """
+        
+        r,qv = Voltammetry.norm(self, norm_to,[self.i ] )
+        #print("CCCC",r)
+        #print("CCCC",qv)
+                #n = Voltammetry.norm(self, norm_to,self.i_n )
+        
+        if r is not None:
+            v= r[0]
+            #print("AAAAAAA",v)
+            #print("BBBBBBB",v)
+            if v is not None:
+                self.i = v
+        return 
+        
+        #norm_factor = self.get_norm_factor(norm_to)
         #print(norm_factor)
-        if norm_factor:
-            self.i = self.i / float(norm_factor)
+        #if norm_factor:
+        #    self.i = self.i / float(norm_factor)
              
         #norm_factor_inv = norm_factor ** -1
-            current = QV(1,self.i_unit, self.i_label) / norm_factor
+        #    current = QV(1,self.i_unit, self.i_label) / norm_factor
          
-            self.i_label = current.quantity
-            self.i_unit = current.unit
+        #    self.i_label = current.quantity
+        #    self.i_unit = current.unit
         
-        return 
+        #return 
     
     ############################################################################        
     def plot(self,*args, **kwargs):
@@ -289,20 +307,23 @@ class LSV_Data(Voltammetry):
         "y_smooth= number" - smoothing of the y-axis. \n
         
         '''
-        
+        data = copy.deepcopy(self)
         options = plot_options(kwargs)
         options.set_title(self.setup_data.name)
         options.name = self.setup_data.name
         options.legend = self.legend(**kwargs)
-        #data.norm(args)
-        # print(args)
-        #data.set_active_RE(args)
-        options.x_data = self.E
-        options.y_data = self.i
+        #if options.legend == "_" :
+        #        data_plot_kwargs["legend"] = data.setup_data.name
+        #data
+        data.norm(args)
+        data.set_active_RE(args)
+        options.x_data = data.E
+        options.y_data = data.i
                 
-        options.set_x_txt("E", "V")
-        options.set_y_txt(self.i_label, self.i_unit) 
+        options.set_x_txt(data.E_label, data.E_unit)
+        options.set_y_txt(data.i_label, data.i_unit) 
         
+            
         return options.exe()
     
     
@@ -328,12 +349,11 @@ class LSV_Data(Voltammetry):
         return index
     
     ########################################################################################################
-    def get_i_at_E(self, E:float, *args):
-        """Get the current at a specific voltage.
+    def get_i_at_E(self, E:float, *args,**kwargs):
+        """Get the current at a specific voltage. The current can be normalized. 
 
         Args:
             E (float): potential where to get the current. 
-            dir (str): direction, "pos,neg or all"
         Returns:
             _type_: _description_
         """
@@ -343,7 +363,7 @@ class LSV_Data(Voltammetry):
         
         index = self.get_index_of_E(E)
                 
-        return QV(self.i[index],lsv.i_unit,lsv.i_label)
+        return QV(lsv.i[index],lsv.i_unit,lsv.i_label)
     ###########################################################################################
 
     def integrate(self, start_E:float, end_E:float, show_plot: bool = False, *args, **kwargs):

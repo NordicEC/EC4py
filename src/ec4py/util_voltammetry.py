@@ -20,7 +20,10 @@ OFFSET_AT_E_MIN ="offset_at_emin"
 OFFSET_AT_E_MAX ="offset_at_emax"
 OFFSET_LINE ="line"
 
-
+POS = "pos"
+NEG = "neg"
+AVG = "avg"
+DIF = "dif"
 
 class Voltammetry(EC_Setup):
     def __init__(self,*args, **kwargs):
@@ -39,6 +42,8 @@ class Voltammetry(EC_Setup):
                     }
         self.xmin = -2.5 # View range
         self.xmax = 2.5  # view renage
+        self.dir ="Direction"
+        
         self.E_axis.update(kwargs)
         self.E = self.make_E_axis()
         self.E_shifted_by = None
@@ -135,7 +140,21 @@ class Voltammetry(EC_Setup):
         """
         return self.E*k+ m
     
-    
+    def _direction(self,*args, **kwargs):
+        direction = ""
+        for arg in args:
+            # print(arg)
+            test = str(arg).casefold()
+            if test == POS.casefold():
+                direction = POS  
+            if test == NEG.casefold():
+                direction = NEG   
+            if test == AVG.casefold():
+                direction = AVG 
+            if test == DIF.casefold():
+                direction = DIF 
+        direction = kwargs.get("dir",direction)
+        return direction
     
     def _integrate(self, start_E:float, end_E:float,current:list(float), *args, **kwargs):
         """Integrate Current between the voltage limit using cumulative_simpson
@@ -284,6 +303,7 @@ class Voltammetry(EC_Setup):
         #print(norm_factor)"""
         norm_factor = self.get_norm_factors(norm_to)
         i_shifted = None
+        qv = QV(0,"","")
         if norm_factor is not None:
             i_shifted = current.copy()
             if isinstance(current, list):

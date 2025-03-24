@@ -43,6 +43,7 @@ class LSV_Datas:
     """
     def __init__(self, paths:list[Path] | Path = None, **kwargs):
         self.datas = []
+        self.dir =""
         if paths is None:
             return
         if not isinstance(paths,list ):
@@ -112,6 +113,14 @@ class LSV_Datas:
     
     def append(self,LSV = LSV_Data):
         self.datas.append(LSV)
+        
+    @property
+    def rate(self):
+        rates=[]
+        for lsv in self.datas:
+            
+            rates.append(lsv.rate)
+        return rates
     
     def bg_corr(self, bg: LSV_Data|Path) -> LSV_Data:
         """Background correct the data by subtracting the bg. 
@@ -140,7 +149,7 @@ class LSV_Datas:
         return copy.deepcopy(self)
 ################################################################   
 
-    def get_i_at_E(self, E:float, dir:str = "all",*args, **kwargs):
+    def get_i_at_E(self, E:float,*args, **kwargs):
         """Get the current at a specific voltage.
 
         Args:
@@ -153,7 +162,7 @@ class LSV_Datas:
         for x in self.datas:
             lsv = copy.deepcopy(x)
             
-            a =lsv.get_i_at_E(E,"all",*args,**kwargs)
+            a =lsv.get_i_at_E(E,*args,**kwargs)
             i_at_E.append(a)
             
         return i_at_E
@@ -176,23 +185,21 @@ class LSV_Datas:
         """
         #CV_plot = make_plot_1x("CVs")
         p = plot_options(kwargs)
-        p.set_title("LVs")
+        p.set_title("LSVs")
         line, data_plot = p.exe()
         legend = p.legend
         
         datas = copy.deepcopy(self.datas)
         data_plot_kwargs = kwargs
+        data_plot_kwargs["plot"] = data_plot
         for data in datas:
             #rot.append(math.sqrt(cv.rotation))
-            for arg in args:
-                data.norm(arg)
-
-            data_plot_kwargs["plot"] = data_plot
+  
             data_plot_kwargs["name"] = data.setup_data.name
             if legend == "_" :
                 data_plot_kwargs["legend"] = data.setup_data.name
 
-            p = data.plot(**data_plot_kwargs)
+            p = data.plot(*args, **data_plot_kwargs)
 
         data_plot.legend()
         return data_plot
@@ -208,7 +215,7 @@ class LSV_Datas:
         Returns:
             List : Slope of data based on positive and negative sweep.
         """
-        dir="all"
+    
         data_plot, analyse_plot,fig = create_Rate_data_analysis_plot()
        
         #########################################################
@@ -220,28 +227,58 @@ class LSV_Datas:
         E =[Epot for val in self.rate]
        
  
-        plot =self.plot(*args, **kwargs)
-       
+        self.plot(*args, **cv_kwargs)
 
-        
-        yu = self.get_i_at_E(Epot,"all",*args, **kwargs)
-        #[print(x) for x in yu]
-        #print("yn")
-        #[print(x) for x in yn]
-        #print(yu[0])
-        # rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **cv_kwargs)
-        plot.plot(E, yu, STYLE_POS_DL)
-        plot.plot(E, yn, STYLE_NEG_DL)
-        y_axis_title =yu[0].quantity
-        y_axis_unit = yu[0].unit
+        y = self.get_i_at_E(Epot,*args, **kwargs)
+        #PLOT
+        data_plot.plot(E, y, STYLE_POS_DL)
+        y_axis_title =y[0].quantity
+        y_axis_unit = y[0].unit
+        # print(y_axis_title)
         B_factor_pos=0
-        B_factor_pos = sweep_rate_analysis(rate, yn, y_axis_unit, y_axis_title, STYLE_POS_DL, POS, plot=analyse_plot )
+        B_factor_pos = sweep_rate_analysis(rate, y, y_axis_unit, y_axis_title, STYLE_POS_DL, self.dir,plot=analyse_plot )
         
         saveFig(fig,**kwargs)
-        return B_factor_pos, 
+        return B_factor_pos
     
         #################################################################################################    
 
+    def RanSev(self, Epot:float,*args, **kwargs):
+        """.
+
+        Args:
+            Epot (float): Potential at which the current will be used.
+
+        Returns:
+            List : Slope of 
+        """
+    
+        data_plot, analyse_plot,fig = create_RanSev_data_analysis_plot()
+       
+        #########################################################
+        # Make plot
+        cv_kwargs = kwargs
+        cv_kwargs["plot"] = data_plot
+        
+        rate = [float(val) for val in self.rate]
+        E =[Epot for val in self.rate]
+       
+ 
+        self.plot(*args, **cv_kwargs)
+        
+        y = self.get_i_at_E(Epot,*args, **kwargs)
+        #PLOT
+        data_plot.plot(E, y, STYLE_POS_DL)
+        y_axis_title =y[0].quantity
+        y_axis_unit = y[0].unit
+        # print(y_axis_title)
+        B_factor_pos=0
+        B_factor_pos = sweep_rate_analysis(rate, y, y_axis_unit, y_axis_title, STYLE_POS_DL, self.dir,plot=analyse_plot )
+        
+        saveFig(fig,**kwargs)
+        return B_factor_pos 
+    
+        #################################################################################################   
     
     def Levich(self, Epot:float, *args, **kwargs):
         """Levich analysis. Creates plot of the data and a Levich plot.

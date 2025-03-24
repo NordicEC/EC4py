@@ -17,7 +17,7 @@ from .analysis_ran_sev   import ran_sev
 from .analysis_rate   import sweep_rate_analysis
 
 
-from .util_voltammetry import create_Tafel_data_analysis_plot,create_RanSev_data_analysis_plot,create_Rate_data_analysis_plot
+from .util_voltammetry import Voltammetry,create_Tafel_data_analysis_plot,create_RanSev_data_analysis_plot,create_Rate_data_analysis_plot
 from .lsv_datas import LSV_Datas
 #from .analysis_tafel import Tafel as Tafel_calc
 
@@ -177,6 +177,7 @@ class CV_Datas:
         
         
         LSVs = LSV_Datas()
+        LSVs.dir = sweep
         for cv in self.datas:
             LSVs.append(cv.get_sweep(sweep))
         return LSVs
@@ -242,43 +243,59 @@ class CV_Datas:
         Returns:
             List : Slope of data based on positive and negative sweep.
         """
-        dir="all"
-        data_plot, analyse_plot,fig = create_RanSev_data_analysis_plot()
+        dir = Voltammetry()._direction(*args)
+        #print("AA",Voltammetry()._direction(*args))
+        if dir == "":
+            dir = "all"
+        #op.update(kwargs)
        
-        #########################################################
-        # Make plot
-        cv_kwargs = kwargs
-        cv_kwargs["plot"] = data_plot
+        if(dir.casefold() !="all".casefold()):
+            lsvs = self.get_sweep(dir)
+            return lsvs.RanSev(Epot,*args,**kwargs)
+            #lsvs.plot(*args,**cv_kwargs)
+            
+            #y = lsvs.get_i_at_E(Epot,*args, **kwargs)
+            #data_plot.plot(E, y, STYLE_POS_DL)
+            #y_axis_title =y[0].quantity
+            #y_axis_unit = y[0].unit
+            #slope_factor = ran_sev(rate, y, y_axis_unit, y_axis_title, STYLE_POS_DL, POS, plot=analyse_plot )
+            #saveFig(fig,**kwargs)
+            # print("aaDIR",dir)
+            #return slope_factor
+        else:
+                    
+            data_plot, analyse_plot,fig = create_RanSev_data_analysis_plot()
         
-        rate = [float(val) for val in self.rate]
-        E =[Epot for val in self.rate]
-       
- 
-        plot =self.plot(*args, **kwargs)
-       
+            #########################################################
+            # Make plot
+            cv_kwargs = kwargs
+            cv_kwargs["plot"] = data_plot
+            
+            rate = [float(val) for val in self.rate]
+            E =[Epot for val in self.rate]
+            plot =self.plot(*args, **kwargs)
+            
+            yu,yn = self.get_i_at_E(Epot,"all",*args, **kwargs)
+            #[print(x) for x in yu]
+            #print("yn")
+            #[print(x) for x in yn]
+            #print(yu[0])
+            # rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **cv_kwargs)
+            plot.plot(E, yu, STYLE_POS_DL)
+            plot.plot(E, yn, STYLE_NEG_DL)
+            y_axis_title =yu[0].quantity
+            y_axis_unit = yu[0].unit
+            B_factor_pos=0
+            B_factor_pos = ran_sev(rate, yn, y_axis_unit, y_axis_title, STYLE_POS_DL, POS, plot=analyse_plot )
+            B_factor_neg = ran_sev(rate, yu, y_axis_unit, y_axis_title, STYLE_NEG_DL, NEG, plot=analyse_plot )
 
-        
-        yu,yn = self.get_i_at_E(Epot,"all",*args, **kwargs)
-        #[print(x) for x in yu]
-        #print("yn")
-        #[print(x) for x in yn]
-        #print(yu[0])
-        # rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **cv_kwargs)
-        plot.plot(E, yu, STYLE_POS_DL)
-        plot.plot(E, yn, STYLE_NEG_DL)
-        y_axis_title =yu[0].quantity
-        y_axis_unit = yu[0].unit
-        B_factor_pos=0
-        B_factor_pos = ran_sev(rate, yn, y_axis_unit, y_axis_title, STYLE_POS_DL, POS, plot=analyse_plot )
-        B_factor_neg = ran_sev(rate, yu, y_axis_unit, y_axis_title, STYLE_NEG_DL, NEG, plot=analyse_plot )
-
-        print("RanSev analysis" )
-        print("dir", "\tpos     ", "\tneg     " )
-        print(" :    ",f"\t{y_axis_unit} / V^0.5 s^-0.5",f"\t{y_axis_unit} / V^0.5")
-        print("slope:", "\t{:.2e}".format(B_factor_pos.value) , "\t{:.2e}".format(B_factor_neg.value))
-        
-        saveFig(fig,**kwargs)
-        return B_factor_pos, B_factor_neg
+            print("RanSev analysis" )
+            print("dir", "\tpos     ", "\tneg     " )
+            print(" :    ",f"\t{y_axis_unit} / V^0.5 s^-0.5",f"\t{y_axis_unit} / V^0.5")
+            print("slope:", "\t{:.2e}".format(B_factor_pos.value) , "\t{:.2e}".format(B_factor_neg.value))
+            
+            saveFig(fig,**kwargs)
+            return B_factor_pos, B_factor_neg
     #################################################################################################  
       
     def RateAnalysis(self, Epot:float,*args, **kwargs):
@@ -290,43 +307,56 @@ class CV_Datas:
         Returns:
             List : Slope of data based on positive and negative sweep.
         """
-        dir="all"
-        data_plot, analyse_plot,fig = create_Rate_data_analysis_plot()
-       
-        #########################################################
-        # Make plot
-        cv_kwargs = kwargs
-        cv_kwargs["plot"] = data_plot
+        dir = Voltammetry()._direction(*args)
+        #print("AA",Voltammetry()._direction(*args))
+        if dir == "":
+            dir = "all"
+        #op.update(kwargs)
         
         rate = [float(val) for val in self.rate]
         E =[Epot for val in self.rate]
        
  
-        plot =self.plot(*args, **kwargs)
+        #
        
-
+        #print("DIR",dir)
+        if(dir.casefold() !="all".casefold()):
+            lsvs = self.get_sweep(dir)
+            return lsvs.RateAnalysis(Epot,*args,**kwargs)
+            #lsvs.plot(*args,**kwargs)
+            
+            #y = lsvs.get_i_at_E(Epot,*args, **kwargs)
+            #data_plot.plot(E, y, STYLE_POS_DL)
+            #y_axis_title =y[0].quantity
+            #y_axis_unit = y[0].unit
+            #slope_factor = sweep_rate_analysis(rate, y, y_axis_unit, y_axis_title, STYLE_POS_DL, POS, plot=analyse_plot )
+            #saveFig(fig,**kwargs)
+            # print("aaDIR",dir)
+            #return slope_factor
+        else:
+            data_plot, analyse_plot,fig = create_Rate_data_analysis_plot()
+            #########################################################
+            # Make plot
+            cv_kwargs = kwargs
+            cv_kwargs["plot"] = data_plot
+            plot =self.plot(*args, **cv_kwargs)            
+            yp,yn = self.get_i_at_E(Epot,"all",*args, **kwargs)
         
-        yu,yn = self.get_i_at_E(Epot,"all",*args, **kwargs)
-        #[print(x) for x in yu]
-        #print("yn")
-        #[print(x) for x in yn]
-        #print(yu[0])
-        # rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **cv_kwargs)
-        plot.plot(E, yu, STYLE_POS_DL)
-        plot.plot(E, yn, STYLE_NEG_DL)
-        y_axis_title =yu[0].quantity
-        y_axis_unit = yu[0].unit
-        B_factor_pos=0
-        B_factor_pos = sweep_rate_analysis(rate, yn, y_axis_unit, y_axis_title, STYLE_POS_DL, POS, plot=analyse_plot )
-        B_factor_neg = sweep_rate_analysis(rate, yu, y_axis_unit, y_axis_title, STYLE_NEG_DL, NEG, plot=analyse_plot )
+            plot.plot(E, yp, STYLE_POS_DL)
+            plot.plot(E, yn, STYLE_NEG_DL)
+            y_axis_title =yp[0].quantity
+            y_axis_unit = yp[0].unit
+            B_factor_pos=0
+            B_factor_pos = sweep_rate_analysis(rate, yp, y_axis_unit, y_axis_title, STYLE_POS_DL, POS, plot=analyse_plot )
+            B_factor_neg = sweep_rate_analysis(rate, yn, y_axis_unit, y_axis_title, STYLE_NEG_DL, NEG, plot=analyse_plot )
 
-        print("Sweep Rate analysis" )
-        print("dir", "\tpos     ", "\tneg     " )
-        print(" :    ",f"\t{B_factor_pos.unit}",f"\t{B_factor_neg.unit}")
-        print("slope:", "\t{:.2e}".format(B_factor_pos.value) , "\t{:.2e}".format(B_factor_neg.value))
+            print("Sweep Rate analysis" )
+            print("dir", "\tpos     ", "\tneg     " )
+            print(" :    ",f"\t{B_factor_pos.unit}",f"\t{B_factor_neg.unit}")
+            print("slope:", "\t{:.2e}".format(B_factor_pos.value) , "\t{:.2e}".format(B_factor_neg.value))
         
-        saveFig(fig,**kwargs)
-        return B_factor_pos, B_factor_neg
+            saveFig(fig,**kwargs)
+            return B_factor_pos, B_factor_neg
     
     
     def Levich(self, Epot:float, *args, **kwargs):

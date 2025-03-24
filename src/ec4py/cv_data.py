@@ -18,7 +18,7 @@ from .lsv_data import LSV_Data
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
-from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot
+from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot,POS,NEG,AVG,DIF
 
 
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, Legend
@@ -28,10 +28,10 @@ from .analysis_levich import diffusion_limit_corr
 STYLE_POS_DL = "bo"
 STYLE_NEG_DL = "ro"
 
-POS = "pos"
-NEG = "neg"
-AVG = "avg"
-DIF = "dif"
+#POS = "pos"
+#NEG = "neg"
+#AVG = "avg"
+#DIF = "dif"
 
 class CV_Data(Voltammetry):
     """# Class to analyze a single CV data. 
@@ -379,8 +379,15 @@ class CV_Data(Voltammetry):
         Returns:
             line, ax: description
         '''
+        
+        dir = Voltammetry()._direction(*args,**kwargs)
+        if dir == POS or dir == NEG or dir == AVG or dir == DIF:
+            lsv = self.get_sweep(dir)
+            return lsv.plot(*args,**kwargs)
+        
         data = copy.deepcopy(self)
         options = plot_options(kwargs)
+        options.options["dir"]=dir
         #print("AAAAAAAAAAAAAAAAAAAAAAA")
         #print(options.get_y_smooth())
         # print(options.get_legend(),self.legend(**kwargs))
