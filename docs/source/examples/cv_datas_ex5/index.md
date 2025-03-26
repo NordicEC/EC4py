@@ -1,9 +1,9 @@
 ---
-title: Example 4 - Rate Analysis using of CVs
+title: Example 5 - Rate Analysis using of CVs
 parent: CV_Datas
 grand_parent: Examples
 ---
-# Example 4: class CV_Datas and LSV_Datas - RATE Analysis
+# Example 5: class CV_Datas and LSV_Datas - RATE Analysis
 
 The aim is to extract the capacitance from the surface.
 
