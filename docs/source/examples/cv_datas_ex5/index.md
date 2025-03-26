@@ -39,6 +39,7 @@ and save it an appropriate folder.
 ![Plot of CVs](./cv_datas_ex5_fig1.png)
 
 ## Rate Analysis
+Analyse the current at a specific voltage using the RHE-potential.
 ```python
    datas.RateAnalysis(0.5,RHE)
 ```
@@ -58,11 +59,11 @@ It can be seen in the graph above that the there is an offset in the data. The c
 ![Plot of CVs](./cv_datas_ex5_fig3.png)
 
 ## Rate Analysis of the difference
-A technique to remove any offset is to take the difference between positive and negative scan. 
+A technique to remove any offset is to take the difference between positive and negative scan(DIF). 
 
 ```python
 
 datas.RateAnalysis(0.45,RHE,DIF,savefig="cv_datas_ex5_fig4.png")
 ```
 
-![Plot of CVs](./cv_datas_ex3_fig4.png)
+![Plot of CVs](./cv_datas_ex5_fig4.png)

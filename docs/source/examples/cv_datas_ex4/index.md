@@ -21,7 +21,7 @@ and save it an appropriate folder.
 ## Import the class:
 
 ```python
-   from ec4py import CV_Data
+   from ec4py import *
 ```
 ## Load a file:
 
@@ -42,7 +42,7 @@ and save it an appropriate folder.
 ## Datas
 
 ```python
-   datas.plot(legend="rot")
+   datas.plot(LEGEND.ROT)
 ```
 
 ![Plot of CVs](./cv_datas_ex4_fig1.png)
@@ -51,7 +51,7 @@ and save it an appropriate folder.
 
 ```python
    LSVs = datas.get_sweep(AVG)
-   LSVs.plot(legend="rot", savefig="cv_datas_ex3_fig2.png")
+   LSVs.plot(LEGEND.ROT, savefig="cv_datas_ex3_fig2.png")
 ```
 
 ![Plot of CVs](./cv_datas_ex4_fig2.png)
@@ -74,9 +74,9 @@ and save it an appropriate folder.
 ```python
 
    Epot = -0.5
-   slopes = datas.Levich(Epot, "area_cm")
+   slopes = datas.Levich(Epot, AREA_CM)
    print(slopes[0] )
    print(slopes[1] )
 ```
 
-![Plot of CVs](./cv_datas_ex3_fig4.png)
+![Plot of CVs](./cv_datas_ex4_fig4.png)

@@ -342,6 +342,7 @@ class LSV_Datas:
             print("dir", f"\t{self.dir}     " )
             print(" :    ",f"\t{B_factor.unit}")
             print("slope:", "\t{:.2e}".format(B_factor.value) )
+        saveFig(fig,**kwargs)
         return B_factor
 
     #######################################################################################################
@@ -419,6 +420,7 @@ class LSV_Datas:
         line, = analyse_plot.plot(x_fit, y_fit, line_style )
         line.set_label(f"pos: m={B_pos.value:3.3e}")
 
+        saveFig(fig,**kwargs)
         ####################################
         """
         fig = make_plot_2x("Koutechy-Levich Analysis")

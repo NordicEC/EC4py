@@ -21,7 +21,7 @@ and save it an appropriate folder.
 ## Import the class:
 
 ```python
-   from ec4py import CV_Data
+   from ec4py import *
 ```
 ## Load a file:
 
@@ -42,7 +42,7 @@ and save it an appropriate folder.
 ## Datas
 
 ```python
-   datas.plot(legend="rot")
+   datas.plot(LEGEND.ROT)
 ```
 
 ![Plot of CVs](./cv_datas_ex3_fig1.png)
@@ -50,7 +50,7 @@ and save it an appropriate folder.
 ## Plot of data normalized to the square root of rotation.
 
 ```python
-   datas.plot("sqrt_rot",legend="rot")
+   datas.plot("sqrt_rot",LEGEND.ROT)
 ```
 
 ![Plot of CVs](./cv_datas_ex3_fig2.png)
@@ -72,7 +72,7 @@ and save it an appropriate folder.
 
 ```python
    Epot = -0.5
-   slopes = datas.Levich(Epot, "area_cm")
+   slopes = datas.Levich(Epot, AREA_CM)
    print(slopes[0] )
    print(slopes[1] )
 ```

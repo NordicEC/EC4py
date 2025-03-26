@@ -65,7 +65,9 @@ def make_plot_1x(Title:str):
     fig.set_figheight(5)
     fig.set_figwidth(6)
     plt.suptitle(Title)
+    fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=1.0, hspace=0.8)
     plot1 = fig.subplots()
+    
     return Figure(fig,[plot1])
 
 def make_plot_2x(Title:str,Vertical = False):
@@ -95,7 +97,7 @@ def make_plot_2x_1(Title:str):
     ax_left_bottom = fig.add_subplot(223)
     ax_left_bottom.label_outer()
     ax_left_top.label_outer()
-    fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=.5, hspace=0.2)
+    fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=1.0, hspace=0.8)
     #plot1,plot2 = fig.subplots(1,2)
     return Figure(fig,[ax_left_top, ax_left_bottom, ax_right ])
     # return ax_left_top, ax_left_bottom, ax_right
@@ -342,7 +344,7 @@ def saveFig(fig:Figure,**kwargs):
     if fig is not None:
             name = kwargs.get("savefig",None)
             if name is not None:
-                fig.fig.savefig(name, dpi='figure', format=None)
+                fig.fig.savefig(name, dpi='figure', format=None, bbox_inches ="tight")
     else:
         # print("fig is non")
         pass
