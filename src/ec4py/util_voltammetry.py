@@ -13,12 +13,28 @@ import copy
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x, ANALYSE_PLOT, DATA_PLOT
 
 
 OFFSET_AT_E_MIN ="offset_at_emin"
 OFFSET_AT_E_MAX ="offset_at_emax"
 OFFSET_LINE ="line"
 
+POS = "pos"
+NEG = "neg"
+AVG = "avg"
+DIF = "dif"
+
+STYLE_POS_DL = "bo"
+STYLE_NEG_DL = "ro"
+STYLE_AVG_DL = "go"
+STYLE_DIF_DL = "go"
+
+
+STYLE_POS_L = "b-"
+STYLE_NEG_L = "r-"
+STYLE_AVG_L = "g-"
+STYLE_DIF_L = "g-"
 
 
 class Voltammetry(EC_Setup):
@@ -38,10 +54,32 @@ class Voltammetry(EC_Setup):
                     }
         self.xmin = -2.5 # View range
         self.xmax = 2.5  # view renage
+        self.dir ="Direction"
+        
         self.E_axis.update(kwargs)
         self.E = self.make_E_axis()
         self.E_shifted_by = None
+    
+    
+    
+    def copy_from(self, source:Voltammetry):
+        """Voltammetry copy from source voltammetry
+
+        Args:
+            source (Voltammetry): Any voltammetry class
+        """
+        self.E              = source.E
+        self.E_label        = source.E_label
+        self.E_unit         = source.E_unit
+        self.E_axis         = source.E_axis
+        self.E_shifted_by   = source.E_shifted_by
+        self.xmin = source.xmin
+        self.xmax = source.xmax
+        self.i_label = source.i_label
+        self.i_unit = source.i_unit
+        EC_Setup.copy_from(self,source)
         
+    
     #############################################################################
     def make_E_axis(self, Emin = None, Emax = None):
         if Emin is not None:
@@ -94,7 +132,12 @@ class Voltammetry(EC_Setup):
         
         return m+k*i_threashold
 
-
+    #####################################################################################################    
+    def _smooth(self, current, smooth_width:int):
+        try:
+            smoothed_current = savgol_filter(current, smooth_width+1, 1)
+        finally:
+            return smoothed_current
     
     def interpolate(self, E_data, y_data ):
         return np.interp(self.E, E_data, y_data)
@@ -114,7 +157,21 @@ class Voltammetry(EC_Setup):
         """
         return self.E*k+ m
     
-    
+    def _direction(self,*args, **kwargs):
+        direction = ""
+        for arg in args:
+            # print(arg)
+            test = str(arg).casefold()
+            if test == POS.casefold():
+                direction = POS  
+            if test == NEG.casefold():
+                direction = NEG   
+            if test == AVG.casefold():
+                direction = AVG 
+            if test == DIF.casefold():
+                direction = DIF 
+        direction = kwargs.get("dir",direction)
+        return direction
     
     def _integrate(self, start_E:float, end_E:float,current:list(float), *args, **kwargs):
         """Integrate Current between the voltage limit using cumulative_simpson
@@ -263,6 +320,7 @@ class Voltammetry(EC_Setup):
         #print(norm_factor)"""
         norm_factor = self.get_norm_factors(norm_to)
         i_shifted = None
+        qv = QV(0,"","")
         if norm_factor is not None:
             i_shifted = current.copy()
             if isinstance(current, list):
@@ -328,4 +386,102 @@ class Voltammetry(EC_Setup):
             #shift back to original.
             self.E = self.E + self.E_shifted_by
             self.E_label = "E vs "+ self.RE
-            self.E_unit = self.E_unit = "V"    
+            self.E_unit = self.E_unit = "V"   
+    
+    def get_point_color(self):
+        point_color ="bo"
+        if self.dir == POS:
+            point_color=STYLE_POS_DL
+        elif self.dir == NEG:
+            point_color = STYLE_NEG_DL
+        elif self.dir == AVG:
+            point_color = STYLE_AVG_DL
+        elif self.dir == DIF:
+            point_color = STYLE_DIF_DL
+        
+        return point_color
+            
+    def get_line_color(self):
+        point_color ="b-"
+        if self.dir == POS:
+            point_color=STYLE_POS_L
+        elif self.dir == NEG:
+            point_color = STYLE_NEG_L
+        elif self.dir == AVG:
+            point_color = STYLE_AVG_L
+        elif self.dir == DIF:
+            point_color = STYLE_DIF_L
+        
+        return point_color
+            
+
+
+
+def create_Levich_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
+    Tafel_op= {"data_plot": None,ANALYSE_PLOT: None}
+    Tafel_op.update(kwargs)
+    data_plot = Tafel_op["data_plot"]
+    analyse_plot = Tafel_op[ANALYSE_PLOT]
+    fig = None
+    if Tafel_op["data_plot"] is None and Tafel_op[ANALYSE_PLOT] is None:
+        fig = make_plot_2x("Levich Analysis")
+        data_plot = fig.plots[0]
+        analyse_plot =  fig.plots[1]
+        data_plot.title.set_text(data_plot_title)
+        analyse_plot.title.set_text('Levich Plot')
+    return data_plot,analyse_plot,fig
+
+def create_KouLev_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
+    Tafel_op= {"data_plot": None,ANALYSE_PLOT: None}
+    Tafel_op.update(kwargs)
+    data_plot = Tafel_op["data_plot"]
+    analyse_plot = Tafel_op[ANALYSE_PLOT]
+    fig = None
+    if Tafel_op["data_plot"] is None and Tafel_op[ANALYSE_PLOT] is None:
+        fig = make_plot_2x("KouLev Analysis")
+        data_plot = fig.plots[0]
+        analyse_plot =  fig.plots[1]
+        data_plot.title.set_text(data_plot_title)
+        analyse_plot.title.set_text('KouLev Plot')
+    return data_plot,analyse_plot,fig          
+            
+def create_Tafel_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
+    Tafel_op= {"data_plot": None,ANALYSE_PLOT: None}
+    Tafel_op.update(kwargs)
+    data_plot = Tafel_op["data_plot"]
+    analyse_plot = Tafel_op[ANALYSE_PLOT]
+    fig = None
+    if Tafel_op["data_plot"] is None and Tafel_op[ANALYSE_PLOT] is None:
+        fig = make_plot_2x("Tafel Analysis")
+        data_plot = fig.plots[0]
+        analyse_plot =  fig.plots[1]
+        data_plot.title.set_text(data_plot_title)
+        analyse_plot.title.set_text('Tafel Plot')
+    return data_plot,analyse_plot,fig
+
+def create_RanSev_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
+    Tafel_op= {"data_plot": None,"analyse_plot": None}
+    Tafel_op.update(kwargs)
+    data_plot = Tafel_op["data_plot"]
+    analyse_plot = Tafel_op["analyse_plot"]
+    fig = None
+    if Tafel_op["data_plot"] is None and Tafel_op["analyse_plot"] is None:
+        fig = make_plot_2x("RanSev Analysis")
+        data_plot = fig.plots[0]
+        analyse_plot =  fig.plots[1]
+        data_plot.title.set_text(data_plot_title)
+        analyse_plot.title.set_text('RanSev Plot')
+    return data_plot,analyse_plot,fig
+
+def create_Rate_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
+    op= {"data_plot": None,"analyse_plot": None}
+    op.update(kwargs)
+    data_plot = op["data_plot"]
+    analyse_plot = op["analyse_plot"]
+    if op["data_plot"] is None and op["analyse_plot"] is None:
+        fig = make_plot_2x("Rate Analysis")
+        data_plot = fig.plots[0]
+        analyse_plot =  fig.plots[1]
+        data_plot.title.set_text(data_plot_title)
+        analyse_plot.title.set_text('Rate Plot')
+    return data_plot,analyse_plot,fig

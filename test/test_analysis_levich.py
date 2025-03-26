@@ -13,7 +13,7 @@ rot =np.array([300,400,500])
 def  rn(value):
     return round(value*1000000)/1000000
 
-class Test_Levich(unittest.TestCase):
+class Test_Analysis_Levich(unittest.TestCase):
     
     def test_linear_slope(self):
         

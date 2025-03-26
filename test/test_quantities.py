@@ -45,6 +45,17 @@ class Test_Quantity_Value_Unit(unittest.TestCase):
         self.assertEqual(q.unit, "m^2 s")
         with self.assertRaises(Exception):
             a*dict
+            
+    def test_div(self):
+        q = a/b
+        self.assertEqual(q.value, 2.5)
+        self.assertEqual(q.unit, "")
+        q = q / 5
+        self.assertEqual(q.value, 0.5)
+        self.assertEqual(q.unit, "")
+        q = q/c
+        self.assertEqual(q.value, 0.5 / c.value)
+        self.assertEqual(q.unit, "s^-1")
     
     def test_pow(self):
         q = a**3

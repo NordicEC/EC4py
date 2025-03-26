@@ -1,7 +1,7 @@
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
 
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, Legend
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, ENUM_legend
 
 
 

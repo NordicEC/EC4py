@@ -5,16 +5,17 @@
 from __future__ import annotations
 import math
 import numpy as np
-from scipy import integrate
+# from scipy import integrate
 from scipy.signal import savgol_filter 
 
 import copy
 
 from .ec_data import EC_Data
 from .ec_data_util import EC_Channels
+from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
-from .util import Quantity_Value_Unit as Q_V
+from .util import Quantity_Value_Unit as QV
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x
 from .analysis_tafel import Tafel
 from .analysis_levich import diffusion_limit_corr
@@ -22,7 +23,7 @@ from .analysis_levich import diffusion_limit_corr
 STYLE_POS_DL = "bo"
 STYLE_NEG_DL = "ro"
 
-class LSV_Data(EC_Setup):
+class LSV_Data(Voltammetry):
     """# Class to analyze a single LS data, linear sweep. 
     Class Functions:
     - .plot() - plot data    
@@ -41,11 +42,10 @@ class LSV_Data(EC_Setup):
 
     def __init__(self,*args, **kwargs):
         super().__init__()
-        self.E=[]
         self.i=[]
         self.i_label = "i"
         self.i_unit = "A"
-        self.dir =""
+       
         self.rate_V_s = 1
 
         """max voltage""" 
@@ -145,7 +145,7 @@ class LSV_Data(EC_Setup):
     #####################################################################################################    
     def smooth(self, smooth_width:int):
         try:
-            self.i = savgol_filter(self.i, smooth_width, 1)    
+            self.i = self._smooth(self.i, smooth_width)    
         finally:
             return
 
@@ -264,23 +264,41 @@ class LSV_Data(EC_Setup):
         self.i = y_pos     
     
    ######################################################################################### 
-    def norm(self, norm_to:str):
-         
-        norm_factor = self.get_norm_factor(norm_to)
+    def norm(self, norm_to:str| tuple):
+        """Normalize lsv current
+
+        Args:
+            norm_to (str): _description_
+        """
+        
+        r,qv = Voltammetry.norm(self, norm_to,[self.i ] )
+        #print("CCCC",r)
+        #print("CCCC",qv)
+                #n = Voltammetry.norm(self, norm_to,self.i_n )
+        
+        if r is not None:
+            v= r[0]
+            #print("AAAAAAA",v)
+            #print("BBBBBBB",v)
+            if v is not None:
+                self.i = v
+        return 
+        
+        #norm_factor = self.get_norm_factor(norm_to)
         #print(norm_factor)
-        if norm_factor:
-            self.i = self.i / float(norm_factor)
+        #if norm_factor:
+        #    self.i = self.i / float(norm_factor)
              
         #norm_factor_inv = norm_factor ** -1
-            current = Q_V(1,self.i_unit, self.i_label) / norm_factor
+        #    current = QV(1,self.i_unit, self.i_label) / norm_factor
          
-            self.i_label = current.quantity
-            self.i_unit = current.unit
+        #    self.i_label = current.quantity
+        #    self.i_unit = current.unit
         
-        return 
+        #return 
     
     ############################################################################        
-    def plot(self,**kwargs):
+    def plot(self,*args, **kwargs):
         '''
         plots y_channel vs x_channel.\n
         to add to a existing plot, add the argument: \n
@@ -288,20 +306,40 @@ class LSV_Data(EC_Setup):
         "x_smooth= number" - smoothing of the x-axis. \n
         "y_smooth= number" - smoothing of the y-axis. \n
         
-        '''
+        Returns:
+            line, ax: line and ax handlers
         
+        '''
+        data = copy.deepcopy(self)
         options = plot_options(kwargs)
         options.set_title(self.setup_data.name)
         options.name = self.setup_data.name
-        options.legend = self.legend(**kwargs)
-        
-        options.x_data = self.E
-        options.y_data = self.i
+        options.legend = self.legend(*args, **kwargs)
+        #if options.legend == "_" :
+        #        data_plot_kwargs["legend"] = data.setup_data.name
+        #data
+        data.norm(args)
+        data.set_active_RE(args)
+        options.x_data = data.E
+        options.y_data = data.i
                 
-        options.set_x_txt("E", "V")
-        options.set_y_txt(self.i_label, self.i_unit) 
+        options.set_x_txt(data.E_label, data.E_unit)
+        options.set_y_txt(data.i_label, data.i_unit) 
         
+            
         return options.exe()
+    
+    
+    def set_active_RE(self,shift_to:str|tuple = None):
+        end_norm_factor = None
+        # print("argeLIST", type(norm_to))
+        
+        a = Voltammetry.set_active_RE(self,shift_to, [self.i])
+        if a is not None:
+            a,b = a
+            self.i = b[0]
+            # print("pot_shift",a, "REEE",self.E_label)
+        return 
     
     ####################################################################################################
     def get_index_of_E(self, E:float):
@@ -314,63 +352,48 @@ class LSV_Data(EC_Setup):
         return index
     
     ########################################################################################################
-    def get_i_at_E(self, E:float, dir:str = "all"):
-        """Get the current at a specific voltage.
+    def get_i_at_E(self, E:float, *args,**kwargs):
+        """Get the current at a specific voltage. The current can be normalized. 
 
         Args:
             E (float): potential where to get the current. 
-            dir (str): direction, "pos,neg or all"
         Returns:
             _type_: _description_
         """
+        lsv = copy.deepcopy(self)
+        lsv.norm(args)
+        lsv.set_active_RE(args)  
+        smooth_length = kwargs.get("y_smooth",None)
+        if smooth_length is not None:
+            lsv.smooth(smooth_length)
+        
         index = self.get_index_of_E(E)
                 
-        return self.i[index]
+        return QV(lsv.i[index],lsv.i_unit,lsv.i_label)
     ###########################################################################################
 
-    def integrate(self, start_E:float, end_E:float, dir:str = "all", show_plot: bool = False, *args, **kwargs):
+    def integrate(self, start_E:float, end_E:float, show_plot: bool = False, *args, **kwargs):
         """Integrate Current between the voltage limit using cumulative_simpson
 
         Args:
             start_E (float): potential where to get the current.
             end_E(float) 
-            dir (str): direction, "pos,neg or all"
+            "show_plot" or "no_plot" to show or hide plot.
         Returns:
             [float]: charge
         """
-        index1 = self.get_index_of_E(start_E)
-        index2 = self.get_index_of_E(end_E)
-        imax = max(index1,index2)
-        imin = min(index1,index2)
-        #print("INDEX",index1,index2)
-        #try:
-        i = self.i[imin:imax+1].copy()
-        i[np.isnan(i)] = 0
-       
-        array_Q = integrate.cumulative_simpson(i, x=self.E[imin:imax+1], initial=0) / float(self.rate)    
         
-        Q_unit =self.i_unit.replace("A","C")
-        #yn= np.concatenate(i_p,i_n,axis=0)
-        
-        y = [np.max(i), np.min(i)]
-        x1 = [self.E[imin],self.E[imin]]
-        x2 = [self.E[imax+1],self.E[imax+1]]  
-        dataPlot_kwargs = kwargs  
-        if show_plot:
-            dataPlot_kwargs["dir"] = dir
-            line, ax = self.plot(**dataPlot_kwargs)
-            ax.plot(x1,y,'r',x2,y,'r')
-           
-            ax.fill_between(self.E[imin:imax+1],i,color='C0',alpha=0.2)
-           
-            
-        #except ValueError as e:
-        #    print("the integration did not work on this dataset")
-        #    return None
-        end = len(array_Q)-1
-        Q = Q_V(array_Q[end]-array_Q[0],Q_unit,"Q")        
-         
-        print(Q)
+        show_plot = True
+        for arg in args:
+            if "show_plot".casefold() == str(arg).casefold():
+                show_plot = True
+            if "no_plot".casefold() == str(arg).casefold():
+                show_plot = False
+                           
+        data = copy.deepcopy(self)
+        data.norm(args)
+        data.set_active_RE(args)
+        Q, d  =  data._integrate(  start_E, end_E, data.i, *args, **kwargs)
         
         return Q
         
@@ -383,58 +406,51 @@ class LSV_Data(EC_Setup):
             E_for_idl (float,optional.): potential that used to determin the diffusion limited current. This is optional.
             
         """
-        Tafel_op= {"LSV_plot": None,"analyse_plot": None}
-        Tafel_op.update(kwargs)
-        data_plot = Tafel_op["LSV_plot"]
-        analyse_plot = Tafel_op["analyse_plot"]
-        if Tafel_op["LSV_plot"] is None and Tafel_op["analyse_plot"] is None:
-            fig = make_plot_2x("Tafel Analysis")
-            data_plot = fig.plots[0]
-            analyse_plot =  fig.plots[1]
-            data_plot.title.set_text('LSV')
-            analyse_plot.title.set_text('Tafel Plot')
-            
+        
+        data_plot,analyse_plot,fig = create_Tafel_data_analysis_plot('LSV',**kwargs)
         
         rot=[]
         y = []
         E = []
         #Epot=-0.5
-        LSV = copy.deepcopy(self)
+        lsv = copy.deepcopy(self)
         lsv_kwargs = kwargs
+        lsv_kwargs["plot"] = data_plot
+
         plot_color2= []
         
-        rot.append( math.sqrt(LSV.rotation))
-    
+        rot.append( math.sqrt(lsv.rotation))
+        lsv_kwargs["legend"] = str(f"{float(lsv.rotation):.0f}")
+
+        line,a = lsv.plot(*args,**lsv_kwargs)
+        
+        lsv.set_active_RE(args)
         for arg in args:
             #if arg == "area":
-            LSV.norm(arg)
-        lsv_kwargs["legend"] = str(f"{float(LSV.rotation):.0f}")
-        lsv_kwargs["plot"] = data_plot
-        line,a = LSV.plot(**lsv_kwargs)
+            lsv.norm(arg)
         plot_color2.append(line.get_color())
         plot_color =line.get_color()
         #.get_color()
         #color = line.get_color()
-        xmin = LSV.get_index_of_E(min(lims))
-        xmax = LSV.get_index_of_E(max(lims))
-            
-            
-            
+        xmin = lsv.get_index_of_E(min(lims))
+        xmax = lsv.get_index_of_E(max(lims))
+           
+        y_data=[] 
         if E_for_idl != None:
-            i_dl = LSV.get_i_at_E(E_for_idl)
-            y.append(LSV.get_i_at_E(E_for_idl))
+            i_dl = lsv.get_i_at_E(E_for_idl)
+            y.append(lsv.get_i_at_E(E_for_idl))
             E.append(E_for_idl)
-            with np.errstate(divide='ignore'):
-                y_data = [math.log10(abs(1/(1/i-1/i_dl))) for i in LSV.i]
-        else:
-            y_data = [math.log10(abs(i)) for i in LSV.i]
             
-                
-        Tafel_slope = Tafel(LSV.E[xmin:xmax],y_data[xmin:xmax],LSV.i_unit,LSV.i_label,plot_color,"Pos",LSV.E, y_data,plot=analyse_plot)
+            y_data =(np.abs(diffusion_limit_corr(lsv.i,i_dl)))
+          
+        else:
+            y_data = lsv.i 
+            
+        Tafel_slope = Tafel(lsv.E[xmin:xmax],y_data[xmin:xmax],lsv.i_unit,lsv.i_label,plot_color,lsv.dir,lsv.E, y_data,plot=analyse_plot, x_label = "E vs "+ self.setup_data.getACTIVE_RE())
        
         y_values = np.array(y)
         if E_for_idl is not None:
-            data_plot.plot(E,y_values[:,0], STYLE_POS_DL, E,y_values[:,1],STYLE_NEG_DL)
+            data_plot.plot(E,y_values, STYLE_POS_DL)
         data_plot.legend()
     
         return Tafel_slope

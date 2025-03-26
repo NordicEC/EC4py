@@ -18,7 +18,7 @@ and save it an appropriate folder.
 ## Import the class:
 
 ```python
-   from ec4py import Step_Data
+   from ec4py import Step_Data, AREA
 ```
 ## Load a file:
 
@@ -31,9 +31,25 @@ and save it an appropriate folder.
 
 ## Plot file
 
+Plots the data an shows that there are 11 step.
+
 ```python
    data.plot()
+   print(data.nr_of_steps)
 ```
 
 ![Plot of Step](./step_data_ex1_fig1.png)
 
+## Plot the different steps on a relative time axis
+The data is also normalized to
+
+```python
+
+p = None
+for x in range(2,data.nr_of_steps):
+    line, p=data[x].plot("Time","i", AREA, plot=p )
+```
+
+![Plot of Step](./step_data_ex1_fig2.png)
+
+![Plot of Step](./step_data_ex1_fig1.png)

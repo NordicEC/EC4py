@@ -1,0 +1,26 @@
+2025-03-14 12:43:06	MacroStartTime
+00:00:00	HC	Current Range	-2	Rotation	0	Control Mode	WE	Cell Status	On										
+00:00:00	Complete	Done
+00:00:00	CV P	Start(V)	0.5	V1(V)	1.5	V2(V)	1.2	Rate(V/s)	0.5	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+00:00:02	File ref in memoryApply Periodic: Task Done	Start: 0.500 | V1: 1.500 | V2: 1.200 | Rate: 0.500 | Nr of Sweeps: 1.00 | Start.Delay(s): 0.00 | AC_Freq(Hz): 5000 | AC_Amp: 15.00E-3 | 
+00:00:02	CV P	Start(V)	0.5	V1(V)	1.5	V2(V)	1.2	Rate(V/s)	0.5	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+00:00:04	File ref in memoryApply Periodic: Task Done	Start: 0.500 | V1: 1.500 | V2: 1.200 | Rate: 0.500 | Nr of Sweeps: 1.00 | Start.Delay(s): 0.00 | AC_Freq(Hz): 5000 | AC_Amp: 15.00E-3 | 
+00:00:04	CV P	Start(V)	0.5	V1(V)	1.5	V2(V)	1.2	Rate(V/s)	0.5	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+00:00:07	File ref in memoryApply Periodic: Event Save Done	Start: 0.500 | V1: 1.500 | V2: 1.200 | Rate: 0.500 | Nr of Sweeps: 1.00 | Start.Delay(s): 0.00 | AC_Freq(Hz): 5000 | AC_Amp: 15.00E-3 | 
+00:00:07	CV P	Start(V)	0.5	V1(V)	1.5	V2(V)	1.2	Rate(V/s)	0.4	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+00:00:09	File ref in memoryApply Periodic: Event Save Done	Start: 0.500 | V1: 1.500 | V2: 1.200 | Rate: 0.400 | Nr of Sweeps: 1.00 | Start.Delay(s): 0.00 | AC_Freq(Hz): 5000 | AC_Amp: 15.00E-3 | 
+00:00:09	CV P	Start(V)	0.5	V1(V)	1.5	V2(V)	1.2	Rate(V/s)	0.4	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+00:00:12	File ref in memoryApply Periodic: Event Save Done	Start: 0.500 | V1: 1.500 | V2: 1.200 | Rate: 0.400 | Nr of Sweeps: 1.00 | Start.Delay(s): 0.00 | AC_Freq(Hz): 5000 | AC_Amp: 15.00E-3 | 
+00:00:12	CV P	Start(V)	0.5	V1(V)	1.5	V2(V)	1.2	Rate(V/s)	0.4	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+00:00:15	File ref in memoryApply Periodic: Event Save Done	Start: 0.500 | V1: 1.500 | V2: 1.200 | Rate: 0.400 | Nr of Sweeps: 1.00 | Start.Delay(s): 0.00 | AC_Freq(Hz): 5000 | AC_Amp: 15.00E-3 | 
+00:00:15	CV P	Start(V)	0.5	V1(V)	1.5	V2(V)	1.2	Rate(V/s)	0.3	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+00:00:18	File ref in memoryApply Periodic: Event Save Done	Start: 0.500 | V1: 1.500 | V2: 1.200 | Rate: 0.300 | Nr of Sweeps: 1.00 | Start.Delay(s): 0.00 | AC_Freq(Hz): 5000 | AC_Amp: 15.00E-3 | 
+00:00:18	CV P	Start(V)	0.5	V1(V)	1.5	V2(V)	1.2	Rate(V/s)	0.3	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+00:00:21	File ref in memoryApply Periodic: Event Save Done	Start: 0.500 | V1: 1.500 | V2: 1.200 | Rate: 0.300 | Nr of Sweeps: 1.00 | Start.Delay(s): 0.00 | AC_Freq(Hz): 5000 | AC_Amp: 15.00E-3 | 
+00:00:21	CV P	Start(V)	0.5	V1(V)	1.5	V2(V)	1.2	Rate(V/s)	0.3	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+00:00:24	File ref in memoryApply Periodic: Event Save Done	Start: 0.500 | V1: 1.500 | V2: 1.200 | Rate: 0.300 | Nr of Sweeps: 1.00 | Start.Delay(s): 0.00 | AC_Freq(Hz): 5000 | AC_Amp: 15.00E-3 | 
+00:00:24	CV P	Start(V)	0.5	V1(V)	1.5	V2(V)	1.2	Rate(V/s)	0.3	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+00:00:27	File ref in memoryApply Periodic: Task Done	Start: 0.500 | V1: 1.500 | V2: 1.200 | Rate: 0.300 | Nr of Sweeps: 1.00 | Start.Delay(s): 0.00 | AC_Freq(Hz): 5000 | AC_Amp: 15.00E-3 | 
+00:00:27	HC	Current Range	-2	Rotation	0	Control Mode	WE	Cell Status	Off										
+00:00:28	Complete	Done
+28.430	MacroDuration

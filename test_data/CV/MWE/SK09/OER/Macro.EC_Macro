@@ -1,0 +1,10 @@
+HC	Current Range	-2	Rotation	0	Control Mode	WE	Cell Status	On										
+CV P	Start(V)	0.5	V1(V)	1.900	V2(V)	1.2	Rate(V/s)	0.02	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+CV P	Start(V)	0.5	V1(V)	1.900	V2(V)	1.2	Rate(V/s)	0.02	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+CV P	Start(V)	0.5	V1(V)	1.900	V2(V)	1.2	Rate(V/s)	0.02	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+CV P	Start(V)	0.5	V1(V)	1.900	V2(V)	1.2	Rate(V/s)	0.02	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+CV P	Start(V)	0.5	V1(V)	1.900	V2(V)	1.2	Rate(V/s)	0.02	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+CV P	Start(V)	0.5	V1(V)	1.900	V2(V)	1.2	Rate(V/s)	0.02	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+CV P	Start(V)	0.5	V1(V)	1.900	V2(V)	1.2	Rate(V/s)	0.02	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+CV P	Start(V)	0.5	V1(V)	1.900	V2(V)	1.2	Rate(V/s)	0.02	Nr of Sweeps	1	Start.Delay(s)	0.00	AC_Freq(Hz)	5000	AC_Amp(mV)	15		
+HC	Current Range	-2	Rotation	0	Control Mode	WE	Cell Status	Off										

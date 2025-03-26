@@ -1,7 +1,7 @@
 ---
 title: CV_Data
 parent: Examples
-nav_order: 1
+nav_order: 3
 ---
  
 ## Class CV_Data:

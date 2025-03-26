@@ -5,7 +5,7 @@
 from __future__ import annotations
 import math
 import numpy as np
-from scipy import integrate
+# from scipy import integrate
 from scipy.signal import savgol_filter 
 
 import copy
@@ -13,21 +13,25 @@ import copy
 from .ec_data import EC_Data
 from .ec_data_util import EC_Channels
 
+from .lsv_data import LSV_Data
+
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
-from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE
+from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot,POS,NEG,AVG,DIF
 
 
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, Legend
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, LEGEND
 from .analysis_tafel import Tafel
 from .analysis_levich import diffusion_limit_corr
 
 STYLE_POS_DL = "bo"
 STYLE_NEG_DL = "ro"
 
-POS = "pos"
-NEG = "neg"
+#POS = "pos"
+#NEG = "neg"
+#AVG = "avg"
+#DIF = "dif"
 
 class CV_Data(Voltammetry):
     """# Class to analyze a single CV data. 
@@ -166,8 +170,8 @@ class CV_Data(Voltammetry):
     #####################################################################################################    
     def smooth(self, smooth_width:int):
         try:
-            self.i_p = savgol_filter(self.i_p, smooth_width, 1)
-            self.i_n = savgol_filter(self.i_n, smooth_width, 1)     
+            self.i_p = self._smooth(self.i_p,smooth_width)
+            self.i_n = self._smooth(self.i_n,smooth_width)      
         finally:
             return
 
@@ -213,7 +217,10 @@ class CV_Data(Voltammetry):
                 self.E_label ="E"
 
         except ValueError:
-            print("no_data")
+            if(self.is_MWE):
+                print("select a current channel")
+            else:
+                print("no_data")
         
         #self.setup = data.setup
         #self.set_area(data._area, data._area_unit)
@@ -372,8 +379,17 @@ class CV_Data(Voltammetry):
         Returns:
             line, ax: description
         '''
+        
+        dir = Voltammetry()._direction(*args,**kwargs)
+        if dir == POS or dir == NEG or dir == AVG or dir == DIF:
+            lsv = self.get_sweep(dir)
+            return lsv.plot(*args,**kwargs)
+        
         data = copy.deepcopy(self)
         options = plot_options(kwargs)
+        options.options["dir"]=dir
+        #print("AAAAAAAAAAAAAAAAAAAAAAA")
+        #print(options.get_y_smooth())
         # print(options.get_legend(),self.legend(**kwargs))
         
         options.set_title(data.setup_data.name)
@@ -385,10 +401,10 @@ class CV_Data(Voltammetry):
         # print(args)
         data.set_active_RE(args)
         options.x_data = data.E
-        if(options.get_dir() == "pos"):  
+        if(options.get_dir() == POS.casefold()):  
             options.y_data = data.i_p
         
-        elif(options.get_dir() == "neg"):  
+        elif(options.get_dir() == NEG.casefold()):  
             options.y_data = data.i_n
             
         else:
@@ -400,6 +416,8 @@ class CV_Data(Voltammetry):
         options.set_y_txt(data.i_label, data.i_unit) 
         
         # print(options.get_legend())
+        #print("AAAAAAAAAAAAAAAAAAAAAAA")
+        #print(options.get_y_smooth())
         return options.exe()
     
     ####################################################################################################
@@ -423,14 +441,27 @@ class CV_Data(Voltammetry):
             float: current
         """
         
-        index = self.get_index_of_E(E)
-                
-        if dir == "pos":
-            return float(self.i_p[index])
-        elif dir == "neg":
-            return self.i_n[index]
+        
+        cv = copy.deepcopy(self)
+        cv.norm(args)
+        cv.set_active_RE(args)  
+        smooth_length = kwargs.get("y_smooth",None)
+        if smooth_length is not None:
+            cv.smooth(smooth_length)
+        index = cv.get_index_of_E(E)
+        # print("INDEX",index,cv.i_n[index],cv.i_unit)
+        # print(cv.get_sweep(NEG).get_i_at_E(1.4))
+        i_p = QV(cv.i_p[index],cv.i_unit,cv.i_label)
+        i_n = QV(cv.i_n[index],cv.i_unit,cv.i_label)
+        
+
+        
+        if dir.casefold() == POS.casefold():
+            return i_p
+        elif dir.casefold() == NEG.casefold():
+            return i_n
         else:
-            return [self.i_p[index] , self.i_n[index]]
+            return [i_p , i_n]
     
     ###########################################################################################
 
@@ -450,10 +481,10 @@ class CV_Data(Voltammetry):
                    }
         options.update(kwargs)
                        
-        if dir == "pos":
+        if dir.casefold() == POS.casefold():
             
             return self._get_E_at_i(self.i_p, i, **kwargs)
-        elif dir == "neg":
+        elif dir.casefold() == NEG.casefold():
             
             return self._get_E_at_i(self.i_n, i, **kwargs)
         else:
@@ -463,6 +494,44 @@ class CV_Data(Voltammetry):
     ###########################################################################################
 
 
+    def get_sweep(self,sweep:str, update_label = True):
+        """_summary_
+
+        Args:
+            sweep (str): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        lsv = LSV_Data()
+        # lsv.setup_data =  copy.deepcopy(self.setup_data)
+        lsv.copy_from(self)
+        
+        if str(sweep).casefold() == POS.casefold():
+            lsv.i = copy.deepcopy(self.i_p)
+            lsv.i_label = self.i_label+"$_{+}$"
+            lsv.dir = POS
+        elif str(sweep).casefold() == NEG.casefold():
+            lsv.i = copy.deepcopy(self.i_n)
+            lsv.i_label = self.i_label+"$_{-}$"
+            lsv.dir = NEG
+        elif str(sweep).casefold() == AVG.casefold():
+            lsv.i = copy.deepcopy((self.i_n+self.i_p)/2)
+            lsv.i_label = "( " + self.i_label+"$_{+} $+ " + self.i_label+"$_{-}$)/2"
+            lsv.dir = AVG
+        elif str(sweep).casefold() == DIF.casefold():
+            lsv.i = (self.i_p-self.i_n)
+            lsv.i_label = "( " + self.i_label+"$_{+}$ - " + self.i_label+"$_{-}$ )"
+            lsv.dir = DIF
+        else:
+            print("use pos,neg,avg or dif")
+        if not update_label:
+            lsv.i_label =self.i_label
+        return lsv
+        
+        
+
+    ###########################################################################################
 
     def integrate(self, start_E:float, end_E:float, *args, **kwargs):
         """Integrate Current between the voltage limit using cumulative_simpson
@@ -487,19 +556,11 @@ class CV_Data(Voltammetry):
                 show_plot = False
             
             if POS.casefold() == str(arg).casefold():
-                kwargs["dir"] ="pos"
+                kwargs["dir"] =POS
             if NEG.casefold() == str(arg).casefold():
-                kwargs["dir"] ="neg"
+                kwargs["dir"] =NEG
                            
         data = copy.deepcopy(self)
-        #  options = plot_options(kwargs)
-        # print(options.get_legend(),self.legend(**kwargs))
-        #options.set_title(data.setup_data.name)
-    
-        index1 = data.get_index_of_E(start_E)
-        index2 = data.get_index_of_E(end_E)
-        imax = max(index1,index2)
-        imin = min(index1,index2)
   
         
         if kwargs.get("plot",None) is None:
@@ -510,35 +571,18 @@ class CV_Data(Voltammetry):
         data.norm(args)
         data.set_active_RE(args)
         dir = kwargs.get("dir", "all")
-        if dir != "neg":   
+        if dir != NEG:   
             Q_p, d_p  =  data._integrate(  start_E, end_E, data.i_p, *args, **kwargs)
-        if dir != "pos":
+        if dir != POS:
             Q_n, d_n  =  data._integrate(  start_E, end_E, data.i_n, *args, **kwargs)
 
         
         #Q_unit =self.i_unit.replace("A","C")
-        #yn= np.concatenate(i_p,i_n,axis=0)
+        #yn= np.concatenate(i_p,i_n,axis=0)      
         
-        """        y = [max(np.max(d_p[1]),np.max(d_n[1])), min(np.min(d_p[1]),np.min(d_n[1]))]
-        x1 = [data.E[imin],data.E[imin]]
-        x2 = [data.E[imax+1],data.E[imax+1]]  
-        cv_kwargs = kwargs  
-        if show_plot:
-            cv_kwargs["dir"] = dir
-            line, ax = data.plot(**cv_kwargs)
-            ax.plot(x1,y,'r',x2,y,'r')
-            if dir != "neg":
-                ax.fill_between(d_p[0],d_p[1],d_p[3],color='C0',alpha=0.2)
-                #ax.fill_between(self.E[imin:imax+1],i_p,color='C0',alpha=0.2)
-            if dir != "pos":
-                ax.fill_between(d_n[0],d_n[1],d_p[3],color='C1',alpha=0.2)
-
-                #ax.fill_between(self.E[imin:imax+1],i_n,color='C1',alpha=0.2)
-        """         
-        
-        if dir == "pos":
+        if dir == POS:
             return Q_p#[Q_p[end]-Q_p[0],Q_unit] 
-        elif dir == "neg":
+        elif dir == NEG:
             return  Q_n #[Q_n[end]-Q_n[0],Q_unit]
         else:
             return [Q_p, Q_n] #[Q_p[end]-Q_p[0] ,Q_unit, Q_n[end]-Q_n[0],Q_unit]
@@ -553,40 +597,51 @@ class CV_Data(Voltammetry):
             E_for_idl (float,optional.): potential that used to determin the diffusion limited current. This is optional.
             
         """
-        Tafel_op= {"cv_plot": None,"analyse_plot": None}
-        Tafel_op.update(kwargs)
         
-        CV_plot = Tafel_op["cv_plot"]
-        analyse_plot = Tafel_op["analyse_plot"]
-        fig = None
-        if Tafel_op["cv_plot"] is None and Tafel_op["analyse_plot"] is None:
-            fig = make_plot_2x("Tafel Analysis")
-            CV_plot = fig.plots[0] 
-            analyse_plot = fig.plots[1]
-            CV_plot.title.set_text('CV')
-            analyse_plot.title.set_text('Tafel Plot')
-        
-            
-        
+        data_plot,analyse_plot,fig = create_Tafel_data_analysis_plot("CV", **kwargs)   
+        Tafel_kwargs = kwargs
+        Tafel_kwargs["data_plot"]=data_plot
+        Tafel_kwargs["analyse_plot"]=analyse_plot
+        dir = self._direction(*args,**kwargs)
+
         rot=[]
         y = []
         E = []
-        Tafel_pos =[]
-        Tafel_neg =[]
         #Epot=-0.5
         y_axis_title =""
+        
+        Tafel_pos = None
+        Tafel_neg = None
+        
+        if(dir ==""):
+            lsv_pos =self.get_sweep(POS,False)
+            Tafel_pos = lsv_pos.Tafel(lims,E_for_idl,*args, **Tafel_kwargs)
+            lsv_neg =self.get_sweep(NEG,False)
+            Tafel_neg = lsv_neg.Tafel(lims,E_for_idl,*args, **Tafel_kwargs)
+        elif(dir == POS):
+            lsv_pos =self.get_sweep(POS,True)
+            Tafel_pos = lsv_pos.Tafel(lims,E_for_idl,*args, **Tafel_kwargs)
+        elif(dir == NEG):
+            lsv_neg =self.get_sweep(NEG,True)
+            Tafel_neg = lsv_neg.Tafel(lims,E_for_idl,*args, **Tafel_kwargs)
+        
+            
+        
+        """
         cv = copy.deepcopy(self)
         cv.norm(args)
         cv.set_active_RE(args)
         
         cv_kwargs = kwargs
+        Tafel_kwargs = kwargs
+
         dir = kwargs.get("dir", "all")
         plot_color2= []
         
         rot.append( math.sqrt(cv.rotation))
     
         cv_kwargs["legend"] = str(f"{float(cv.rotation):.0f}")
-        cv_kwargs["plot"] = CV_plot
+        cv_kwargs["plot"] = data_plot
         line,a = cv.plot(**cv_kwargs)
         plot_color2.append(line.get_color())
         plot_color =line.get_color()
@@ -612,14 +667,15 @@ class CV_Data(Voltammetry):
         Tafel_pos = Tafel(cv.E[xmin:xmax],y_data_p[xmin:xmax],cv.i_unit,cv.i_label,plot_color,"Pos",cv.E, y_data_p, plot=analyse_plot, x_label = "E vs "+ self.setup_data.getACTIVE_RE())
         Tafel_neg = Tafel(cv.E[xmin:xmax],y_data_n[xmin:xmax],cv.i_unit,cv.i_label,plot_color,"Neg",cv.E, y_data_n, plot=analyse_plot, x_label = "E vs "+ self.setup_data.getACTIVE_RE())
         
+        
+        
         y_values = np.array(y)
         if E_for_idl is not None:
-            CV_plot.plot(E,y_values[:,0], STYLE_POS_DL, E,y_values[:,1],STYLE_NEG_DL)
-        CV_plot.legend()
-
+            data_plot.plot(E,y_values[:,0], STYLE_POS_DL, E,y_values[:,1],STYLE_NEG_DL)
+        data_plot.legend()
+        """
         saveFig(fig,**kwargs)
 
-        
         return Tafel_pos, Tafel_neg
     
 

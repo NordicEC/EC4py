@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 
 ### Changed
 
+## [0.4.10] - 
+### Added
+  - Steps -
+  - Quantity and Values: added set_unit and set_quantity
+  - Randles–Sevcik analysis
+### Changed
+
 
 ## [0.4.9] - 2024-02-25
 ### Added
