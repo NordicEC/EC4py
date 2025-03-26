@@ -1,13 +1,13 @@
 ---
-title: CV_Datas
+title: LSV_Data
 parent: Examples
 nav_order: 4
 ---
 
  
-## Class CV_Datas:
+## Class LSV_Data:
 ### Import the class:
 ```python
-   from ec4py import CV_Datas
+   from ec4py import LSV_Data
 ```
 

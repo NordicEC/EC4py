@@ -62,6 +62,8 @@ def sweep_rate_analysis(rate_values, current, y_axis_unit:str="A", y_axis_title:
         
         #Levich Plot
         p = plot_options(kwargs)
+        p.no_smooth()
+        
         p.set_title("Sweep Rate",1)
         p.set_x_txt("$v$", f"{rate_unit}")
         p.set_y_txt(y_axis_title, y_axis_unit)

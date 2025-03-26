@@ -173,12 +173,12 @@ class plot_options:
         y_smooth = self.get_y_smooth()
         # print("SA VALUE")
         # print(y_smooth)
-        if(y_smooth > 0):
+        if(y_smooth > 0) and len(ydata)>2:
             ydata_array= np.isnan(ydata)
             for i in range(len(ydata_array)):
                 if ydata_array[i]:
                     ydata[i]=0
-            ydata = savgol_filter(ydata, y_smooth, 1)
+            ydata = savgol_filter(ydata, y_smooth+1, 1)
             for i in range(len(ydata_array)):
                 if ydata_array[i]:
                     ydata[i]=np.nan
@@ -220,11 +220,17 @@ class plot_options:
             fig = make_plot_1x(self.options['title'])
             ax = fig.plots[0]
 
+    def no_smooth(self):
+        self.options["y_smooth"]=0
+        self.options["x_smooth"]=0
+        self.options["y_median"]=0
+        return
+    
     def exe(self):
         """_summary_
 
         Returns:
-            line, ax: _description_
+            line, ax: Line and ax handlers
         """
         ax = self.options['plot']
         fig = None

@@ -12,7 +12,7 @@ import copy
 from .util import Quantity_Value_Unit as QV
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT
 
-from .util_voltammetry import create_Tafel_data_analysis_plot,create_RanSev_data_analysis_plot,create_Rate_data_analysis_plot
+from .util_voltammetry import create_Tafel_data_analysis_plot,create_RanSev_data_analysis_plot,create_Rate_data_analysis_plot,create_Levich_data_analysis_plot,create_KouLev_data_analysis_plot
 
 
 from .analysis_levich import Levich
@@ -185,7 +185,9 @@ class LSV_Datas:
         """
         #CV_plot = make_plot_1x("CVs")
         p = plot_options(kwargs)
+        p.no_smooth()
         p.set_title("LSVs")
+        
         line, data_plot = p.exe()
         legend = p.legend
         
@@ -231,12 +233,14 @@ class LSV_Datas:
 
         y = self.get_i_at_E(Epot,*args, **kwargs)
         #PLOT
-        data_plot.plot(E, y, STYLE_POS_DL)
+        style = self.datas[0].get_point_color()
+
+        data_plot.plot(E, y, style)
         y_axis_title =y[0].quantity
         y_axis_unit = y[0].unit
         # print(y_axis_title)
         B_factor_pos=0
-        B_factor_pos = sweep_rate_analysis(rate, y, y_axis_unit, y_axis_title, STYLE_POS_DL, self.dir,plot=analyse_plot )
+        B_factor_pos = sweep_rate_analysis(rate, y, y_axis_unit, y_axis_title, style, self.dir,plot=analyse_plot )
         
         saveFig(fig,**kwargs)
         return B_factor_pos
@@ -268,15 +272,17 @@ class LSV_Datas:
         
         y = self.get_i_at_E(Epot,*args, **kwargs)
         #PLOT
-        data_plot.plot(E, y, STYLE_POS_DL)
+        style = self.datas[0].get_point_color()
+
+        data_plot.plot(E, y, style)
         y_axis_title =y[0].quantity
         y_axis_unit = y[0].unit
         # print(y_axis_title)
-        B_factor_pos=0
-        B_factor_pos = sweep_rate_analysis(rate, y, y_axis_unit, y_axis_title, STYLE_POS_DL, self.dir,plot=analyse_plot )
+        B_factor=0
+        B_factor = ran_sev(rate, y, y_axis_unit, y_axis_title, style, self.dir,plot=analyse_plot )
         
         saveFig(fig,**kwargs)
-        return B_factor_pos 
+        return B_factor 
     
         #################################################################################################   
     
@@ -289,33 +295,37 @@ class LSV_Datas:
         Returns:
             List : Slope of data based on positive and negative sweep.
         """
-        fig = make_plot_2x("Levich Analysis")
-        data_plot = fig.plots[0]
-        analyse_plot =  fig.plots[1]
+        data_plot, analyse_plot, fig = create_Levich_data_analysis_plot("Data",*args,**kwargs)
         
-        # CV_plot, analyse_plot = fig.subplots(1,2)
-        data_plot.title.set_text('CVs')
-
-        analyse_plot.title.set_text('Levich Plot')
-
+      
         #########################################################
         # Make plot
         dataPlot_kwargs = kwargs
         dataPlot_kwargs["plot"] = data_plot
+        self.plot(*args,**dataPlot_kwargs)
 
-        rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **dataPlot_kwargs)
-        # rot = np.array(rot)
-        # y = np.array(y)
-        # rot_max = max(rot) 
+        # rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **dataPlot_kwargs)
+        y_axis_unit="AAA"
+        y = self.get_i_at_E(Epot,*args,**kwargs)
+        y_axis_unit = y[0].unit
+        y_axis_title = y[0].quantity
+        
+        rot = [lsv.rotation for lsv in self.datas ]
+        E = [Epot for x in y]
+        style = self.datas[0].get_point_color()
+        #print(style)
+        #print(E)
+        #print(y)
+        data_plot.plot(E,[float(i) for i in y],style)
+       
         # Levich analysis
-        B_factor_pos = Levich(rot, y[:,0], y_axis_unit, y_axis_title, STYLE_POS_DL, "pos", plot=analyse_plot )
-        B_factor_neg = Levich(rot, y[:,1], y_axis_unit, y_axis_title, STYLE_NEG_DL, "neg", plot=analyse_plot )
-
-        print("Levich analysis" )
-        print("dir", "\tpos     ", "\tneg     " )
-        print(" :    ",f"\t{y_axis_unit} / rpm^0.5",f"\t{y_axis_unit} / rpm^0.5")
-        print("slope:", "\t{:.2e}".format(B_factor_pos.value) , "\t{:.2e}".format(B_factor_neg.value))
-        return B_factor_pos, B_factor_neg
+        B_factor = Levich(rot, y, y_axis_unit, y_axis_title, style, self.dir, plot=analyse_plot )
+        if fig is not None:
+            print("Levich analysis" )
+            print("dir", f"\t{self.dir}     " )
+            print(" :    ",f"\t{B_factor.unit}")
+            print("slope:", "\t{:.2e}".format(B_factor.value) )
+        return B_factor
 
     #######################################################################################################
     
@@ -329,6 +339,67 @@ class LSV_Datas:
 
         Returns:
             _type_: _description_
+        """
+        data_plot, analyse_plot, fig = create_KouLev_data_analysis_plot("Data",*args,**kwargs)
+
+         #########################################################
+        # Make plot
+        dataPlot_kwargs = kwargs
+        dataPlot_kwargs["plot"] = data_plot
+        self.plot(*args,**dataPlot_kwargs)
+
+        # rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **dataPlot_kwargs)
+        y_axis_unit="AAA"
+        y = self.get_i_at_E(Epot,*args,**kwargs)
+        y_axis_unit = y[0].unit
+        y_axis_title = y[0].quantity
+        
+        E = [Epot for x in y]
+        style = self.datas[0].get_point_color()
+        #print(style)
+        #print(E)
+        #print(y)
+        data_plot.plot(E,[float(i) for i in y],style)
+        
+        rot_inv = [(lsv.rotation)**-0.5 for lsv in self.datas ]
+        y_inv = [y_val**-1 for y_val in y]
+        
+        x_values = [x.value for x in rot_inv]
+        y_values = [y.value for y in y_inv]
+        
+        
+        point_style = self.datas[0].get_point_color()
+        
+        pkwargs={"plot" : analyse_plot,
+                 "style" : point_style}
+        p = plot_options(pkwargs)
+        p.options["plot"]=analyse_plot
+        p.set_x_txt(rot_inv[0].quantity,rot_inv[0].unit)
+        p.set_y_txt(y_inv[0].quantity,y_inv[0].unit)
+
+        p.x_data=x_values
+        p.y_data=y_values
+        # analyse_plot.plot(rot_inv, y_inv, style)
+        p.exe()
+        
+        line_style = self.datas[0].get_line_color()
+
+        x_fit = np.insert(x_values, 0, 0)  
+        x_qv = QV(1, "rpm^0.5","w")
+        x_u =  QV(1, x_qv.unit,x_qv.quantity)** -0.5
+
+        # FIT pos
+
+        m_pos, b = np.polyfit(x_values, y_values, 1)
+        dydx_qv= y_inv[0] / rot_inv[0]
+        y_fit= m_pos * x_fit + b
+        slope_pos = QV(m_pos, dydx_qv.unit, dydx_qv.quantity)
+
+        B_pos = slope_pos**-1
+        line, = analyse_plot.plot(x_fit, y_fit, line_style )
+        line.set_label(f"pos: m={B_pos.value:3.3e}")
+
+        ####################################
         """
         fig = make_plot_2x("Koutechy-Levich Analysis")
         data_plot = fig.plots[0]
@@ -354,7 +425,6 @@ class LSV_Datas:
         # print(x_plot) 
         y_values = np.array(y)
         y_inv = 1/ y_values
-
         y_qv = QV(1, y_axis_unit.strip(), y_axis_title.strip())**-1
         # print(rot)
         # print(y[:,0])
@@ -389,11 +459,13 @@ class LSV_Datas:
 
         analyse_plot.legend()
         analyse_plot.set_xlim(left=0, right=None)
+        
         print("KouLev analysis" )
         print("dir","\tpos     ", "\tneg     " )
         print(" :", f"\trpm^0.5 /{y_axis_unit}", f"\trpm^0.5 /{y_axis_unit}")
         print("slope:", "\t{:.2e}".format(B_pos) , "\t{:.2e}".format(B_neg))
-        return slope_pos,slope_neg
+        """
+        return slope_pos
     
     ##################################################################################################################
     

@@ -31,6 +31,8 @@ def Tafel(x_data, y_data, y_axis_unit, y_axis_title, plot_color, lineName="", x_
    
  
     p = plot_options(kwargs)
+    p.no_smooth()
+    
     p.set_title("Tafel")
     p.x_label = kwargs.get("x_label","E")
     p.x_unit = kwargs.get("x_unit","V")
