@@ -18,7 +18,7 @@ and save it an appropriate folder.
 ## Import the class:
 
 ```python
-   from ec4py import CV_Data
+   from ec4py import *
 ```
 ## Load a file:
 
