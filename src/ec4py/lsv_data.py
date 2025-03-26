@@ -145,7 +145,7 @@ class LSV_Data(Voltammetry):
     #####################################################################################################    
     def smooth(self, smooth_width:int):
         try:
-            self.i = savgol_filter(self.i, smooth_width, 1)    
+            self.i = self._smooth(self.i, smooth_width)    
         finally:
             return
 
@@ -306,12 +306,15 @@ class LSV_Data(Voltammetry):
         "x_smooth= number" - smoothing of the x-axis. \n
         "y_smooth= number" - smoothing of the y-axis. \n
         
+        Returns:
+            line, ax: line and ax handlers
+        
         '''
         data = copy.deepcopy(self)
         options = plot_options(kwargs)
         options.set_title(self.setup_data.name)
         options.name = self.setup_data.name
-        options.legend = self.legend(**kwargs)
+        options.legend = self.legend(*args, **kwargs)
         #if options.legend == "_" :
         #        data_plot_kwargs["legend"] = data.setup_data.name
         #data
@@ -360,6 +363,9 @@ class LSV_Data(Voltammetry):
         lsv = copy.deepcopy(self)
         lsv.norm(args)
         lsv.set_active_RE(args)  
+        smooth_length = kwargs.get("y_smooth",None)
+        if smooth_length is not None:
+            lsv.smooth(smooth_length)
         
         index = self.get_index_of_E(E)
                 
@@ -389,40 +395,6 @@ class LSV_Data(Voltammetry):
         data.set_active_RE(args)
         Q, d  =  data._integrate(  start_E, end_E, data.i, *args, **kwargs)
         
-        #index1 = self.get_index_of_E(start_E)
-        #index2 = self.get_index_of_E(end_E)
-        #imax = max(index1,index2)
-        #imin = min(index1,index2)
-        #print("INDEX",index1,index2)
-        #try:
-        #i = self.i[imin:imax+1].copy()
-        #i[np.isnan(i)] = 0
-       
-        #array_Q = integrate.cumulative_simpson(i, x=self.E[imin:imax+1], initial=0) / float(self.rate)    
-        
-        #Q_unit =self.i_unit.replace("A","C")
-        #yn= np.concatenate(i_p,i_n,axis=0)
-        
-        #y = [np.max(i), np.min(i)]
-        #x1 = [self.E[imin],self.E[imin]]
-        #x2 = [self.E[imax+1],self.E[imax+1]]  
-        #dataPlot_kwargs = kwargs  
-        #if show_plot:
-        #    dataPlot_kwargs["dir"] = dir
-        #    line, ax = self.plot(**dataPlot_kwargs)
-        #    ax.plot(x1,y,'r',x2,y,'r')
-        #   
-        #    ax.fill_between(self.E[imin:imax+1],i,color='C0',alpha=0.2)
-           
-            
-        #except ValueError as e:
-        #    print("the integration did not work on this dataset")
-        #    return None
-        #end = len(array_Q)-1
-        #Q = Q_V(array_Q[end]-array_Q[0],Q_unit,"Q")        
-         
-        #print(Q)
-        
         return Q
         
    ##################################################################################################################
@@ -434,18 +406,8 @@ class LSV_Data(Voltammetry):
             E_for_idl (float,optional.): potential that used to determin the diffusion limited current. This is optional.
             
         """
-        #Tafel_op= {"LSV_plot": None,"analyse_plot": None}
-        #Tafel_op.update(kwargs)
-        #data_plot = Tafel_op["LSV_plot"]
-        #analyse_plot = Tafel_op["analyse_plot"]
-        #if Tafel_op["LSV_plot"] is None and Tafel_op["analyse_plot"] is None:
-        #    fig = make_plot_2x("Tafel Analysis")
-        #    data_plot = fig.plots[0]
-        #    analyse_plot =  fig.plots[1]
-        #    data_plot.title.set_text('LSV')
-        #    analyse_plot.title.set_text('Tafel Plot')
-            
-        data_plot,analyse_plot,fig = create_Tafel_data_analysis_plot('LSV')
+        
+        data_plot,analyse_plot,fig = create_Tafel_data_analysis_plot('LSV',**kwargs)
         
         rot=[]
         y = []
@@ -453,23 +415,27 @@ class LSV_Data(Voltammetry):
         #Epot=-0.5
         lsv = copy.deepcopy(self)
         lsv_kwargs = kwargs
+        lsv_kwargs["plot"] = data_plot
+
         plot_color2= []
         
         rot.append( math.sqrt(lsv.rotation))
+        lsv_kwargs["legend"] = str(f"{float(lsv.rotation):.0f}")
+
+        line,a = lsv.plot(*args,**lsv_kwargs)
+        
         lsv.set_active_RE(args)
         for arg in args:
             #if arg == "area":
             lsv.norm(arg)
-        lsv_kwargs["legend"] = str(f"{float(lsv.rotation):.0f}")
-        lsv_kwargs["plot"] = data_plot
-        line,a = lsv.plot(**lsv_kwargs)
         plot_color2.append(line.get_color())
         plot_color =line.get_color()
         #.get_color()
         #color = line.get_color()
         xmin = lsv.get_index_of_E(min(lims))
         xmax = lsv.get_index_of_E(max(lims))
-            
+           
+        y_data=[] 
         if E_for_idl != None:
             i_dl = lsv.get_i_at_E(E_for_idl)
             y.append(lsv.get_i_at_E(E_for_idl))
@@ -477,21 +443,9 @@ class LSV_Data(Voltammetry):
             
             y_data =(np.abs(diffusion_limit_corr(lsv.i,i_dl)))
           
-
         else:
             y_data = lsv.i 
             
-    #   if E_for_idl != None:
-    #        i_dl = lsv.get_i_at_E(E_for_idl)
-    #        y.append(lsv.get_i_at_E(E_for_idl))
-     #       E.append(E_for_idl)
-     #       with np.errstate(divide='ignore'):
-    #            y_data = [math.log10(abs(1/(1/i-1/i_dl))) for i in lsv.i]
-    #    else:
-    #        y_data = [math.log10(abs(i)) for i in lsv.i]
-            
-      #  Tafel_pos = Tafel(cv.E[xmin:xmax],y_data_p[xmin:xmax],cv.i_unit,cv.i_label,plot_color,"Pos",cv.E, y_data_p, plot=analyse_plot, x_label = "E vs "+ self.setup_data.getACTIVE_RE())
-  
         Tafel_slope = Tafel(lsv.E[xmin:xmax],y_data[xmin:xmax],lsv.i_unit,lsv.i_label,plot_color,lsv.dir,lsv.E, y_data,plot=analyse_plot, x_label = "E vs "+ self.setup_data.getACTIVE_RE())
        
         y_values = np.array(y)

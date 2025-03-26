@@ -26,8 +26,12 @@ Figure = namedtuple("Figure", ["fig", "plots"])
     - plots :  subplots of the figure
 """
 
+ANALYSE_PLOT = "analyse_plot"
+DATA_PLOT = "data_plot"
+PLOT = "plot"
 
-class Legend(StrEnum):
+class ENUM_legend(StrEnum):
+    NONE ="_"
     NAME = "legend_name"
     DATE = "legend_date"
     TIME = "legend_time"
@@ -38,7 +42,23 @@ class Legend(StrEnum):
     V1 = "legend_v1"
     V2 = "legend_v2"
 
-LEGEND = Legend
+LEGEND = ENUM_legend
+
+def update_legend(*args,**kwargs):
+    loc_args = list(args) 
+    #loc_args.insert(0,listargs)
+    default_legend=kwargs.get("default_legend",None)
+    if default_legend is not None:
+         loc_args.insert(0,default_legend)
+   
+    for arg in loc_args:
+        if isinstance(arg,ENUM_legend):
+            kwargs["legend"]=str(arg).replace("legend_","")
+        if isinstance(arg,str):
+            if arg.startswith("legend"):
+                kwargs["legend"]=str(arg).replace("legend_","")
+    return kwargs
+
 
 def make_plot_1x(Title:str):
     fig = plt.figure()
@@ -111,7 +131,7 @@ class plot_options:
             'y_median'   : 0,
             'yscale':None,
             'xscale':None,
-            'plot' : NEWPLOT,
+            PLOT : NEWPLOT,
             'dir' : "all",
             'legend' : "_",
             'xlabel' : "def",
@@ -166,19 +186,19 @@ class plot_options:
     def get_plot(self):
         
         
-        return self.options['plot']
+        return self.options[PLOT]
     
     def smooth_y(self, ydata =[]):
         #try:
         y_smooth = self.get_y_smooth()
         # print("SA VALUE")
         # print(y_smooth)
-        if(y_smooth > 0):
+        if(y_smooth > 0) and len(ydata)>2:
             ydata_array= np.isnan(ydata)
             for i in range(len(ydata_array)):
                 if ydata_array[i]:
                     ydata[i]=0
-            ydata = savgol_filter(ydata, y_smooth, 1)
+            ydata = savgol_filter(ydata, y_smooth+1, 1)
             for i in range(len(ydata_array)):
                 if ydata_array[i]:
                     ydata[i]=np.nan
@@ -213,20 +233,26 @@ class plot_options:
     
     def fig(self, **kwargs):
         try:
-            ax = kwargs['plot']
+            ax = kwargs[PLOT]
         except KeyError("plot keyword was not found"):
             #fig = plt.figure()
             #  plt.subtitle(self.name)
             fig = make_plot_1x(self.options['title'])
             ax = fig.plots[0]
 
+    def no_smooth(self):
+        self.options["y_smooth"]=0
+        self.options["x_smooth"]=0
+        self.options["y_median"]=0
+        return
+    
     def exe(self):
         """_summary_
 
         Returns:
-            line, ax: _description_
+            line, ax: Line and ax handlers
         """
-        ax = self.options['plot']
+        ax = self.options[PLOT]
         fig = None
         if ax == NEWPLOT or ax is None:
            # fig = plt.figure()
@@ -271,7 +297,7 @@ class plot_options:
             line, = ax.plot(self.x_data, self.y_data, self.options['style'])
             #line,=analyse_plot.plot(rot,y_pos,'-' )
             if self.x_data is not None:
-                line.set_label( self.get_legend() )
+                line.set_label( quantity_plot_fix(self.get_legend()) )
                 if self.get_legend()[0] != "_":
                     ax.legend()
             
@@ -286,7 +312,7 @@ class plot_options:
         return line, ax
     
     def render_plot(self):
-        ax = self.options['plot']
+        ax = self.options[PLOT]
         if ax == NEWPLOT or ax is None:
             return
         else:

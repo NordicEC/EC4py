@@ -25,9 +25,11 @@ def Levich(rot, y_data, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str
         #p.set_ylabel(f"{quantity_plot_fix(y_axis_title)} ({quantity_plot_fix(y_axis_unit)})" )
         
         
-        
-        rot_sqrt = np.sqrt(np.array(rot))
+        # rate = (np.array([float(val) for val in rate_values]))
+
+        rot_sqrt = np.sqrt(np.array([float(val) for val in rot]))
         y_data = np.array([float(val) for val in y_data])
+
         # analyse_plot.plot(rot_sqrt, y_data, STYLE_DL_plot)
         x_qv = Q_V(1, rot_unit, "w")
         x_qv = x_qv**0.5
@@ -46,6 +48,8 @@ def Levich(rot, y_data, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str
         
         #Levich Plot
         p = plot_options(kwargs)
+        p.no_smooth()
+       
         p.set_title("Levich",1)
         p.set_x_txt("$\omega$^0.5", f"{rot_unit}^0.5")
         p.set_y_txt(y_axis_title, y_axis_unit)
@@ -54,7 +58,7 @@ def Levich(rot, y_data, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str
         p.y_data = y_data
         p.x_data = rot_sqrt 
         line, analyse_plot = p.exe()        
-        print(p.get_x_txt())
+        #print(p.get_x_txt())
         STYLE_DL= STYLE_DL[0] + "-"
         line, = analyse_plot.plot(x_plot, y_pos, STYLE_DL )
         line.set_label(f"{line_title} B={m :3.3e}")
@@ -66,6 +70,7 @@ def Levich(rot, y_data, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str
 
 def diffusion_limit_corr(current, idl:float):
     if idl is not None:
+        idl = float(idl)
         with np.errstate(divide='ignore'):
                 y_data_corr = [1/(1/i-1/idl) for i in current]      
     else:

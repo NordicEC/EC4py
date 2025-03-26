@@ -176,7 +176,7 @@ class EC_Data(EC_Setup):
         return index_at_time(self.Time, time_s_)
 
 
-    def plot(self, x_channel: str, y_channel: str, **kwargs):
+    def plot(self, x_channel: str, y_channel: str, *args,**kwargs):
         '''
         plots y_channel vs x_channel.\n
         to add to a existing plot, add the argument: \n
@@ -196,6 +196,8 @@ class EC_Data(EC_Setup):
         range.update(kwargs)
 
         options = plot_options(kwargs)
+        options.legend = self.legend(*args, **kwargs)
+
         index_min = 0
         if range["limit_min"] > 0:
             index_min = self.index_at_time(range["limit_min"])
