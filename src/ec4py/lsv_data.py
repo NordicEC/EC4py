@@ -314,7 +314,7 @@ class LSV_Data(Voltammetry):
         options = plot_options(kwargs)
         options.set_title(self.setup_data.name)
         options.name = self.setup_data.name
-        options.legend = self.legend(**kwargs)
+        options.legend = self.legend(*args, **kwargs)
         #if options.legend == "_" :
         #        data_plot_kwargs["legend"] = data.setup_data.name
         #data

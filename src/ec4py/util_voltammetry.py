@@ -13,7 +13,7 @@ import copy
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x, ANALYSE_PLOT, DATA_PLOT
 
 
 OFFSET_AT_E_MIN ="offset_at_emin"
@@ -418,12 +418,12 @@ class Voltammetry(EC_Setup):
 
 
 def create_Levich_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
-    Tafel_op= {"data_plot": None,"analyse_plot": None}
+    Tafel_op= {"data_plot": None,ANALYSE_PLOT: None}
     Tafel_op.update(kwargs)
     data_plot = Tafel_op["data_plot"]
-    analyse_plot = Tafel_op["analyse_plot"]
+    analyse_plot = Tafel_op[ANALYSE_PLOT]
     fig = None
-    if Tafel_op["data_plot"] is None and Tafel_op["analyse_plot"] is None:
+    if Tafel_op["data_plot"] is None and Tafel_op[ANALYSE_PLOT] is None:
         fig = make_plot_2x("Levich Analysis")
         data_plot = fig.plots[0]
         analyse_plot =  fig.plots[1]
@@ -432,12 +432,12 @@ def create_Levich_data_analysis_plot(data_plot_title:str="data",*args, **kwargs)
     return data_plot,analyse_plot,fig
 
 def create_KouLev_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
-    Tafel_op= {"data_plot": None,"analyse_plot": None}
+    Tafel_op= {"data_plot": None,ANALYSE_PLOT: None}
     Tafel_op.update(kwargs)
     data_plot = Tafel_op["data_plot"]
-    analyse_plot = Tafel_op["analyse_plot"]
+    analyse_plot = Tafel_op[ANALYSE_PLOT]
     fig = None
-    if Tafel_op["data_plot"] is None and Tafel_op["analyse_plot"] is None:
+    if Tafel_op["data_plot"] is None and Tafel_op[ANALYSE_PLOT] is None:
         fig = make_plot_2x("KouLev Analysis")
         data_plot = fig.plots[0]
         analyse_plot =  fig.plots[1]
@@ -446,12 +446,12 @@ def create_KouLev_data_analysis_plot(data_plot_title:str="data",*args, **kwargs)
     return data_plot,analyse_plot,fig          
             
 def create_Tafel_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
-    Tafel_op= {"data_plot": None,"analyse_plot": None}
+    Tafel_op= {"data_plot": None,ANALYSE_PLOT: None}
     Tafel_op.update(kwargs)
     data_plot = Tafel_op["data_plot"]
-    analyse_plot = Tafel_op["analyse_plot"]
+    analyse_plot = Tafel_op[ANALYSE_PLOT]
     fig = None
-    if Tafel_op["data_plot"] is None and Tafel_op["analyse_plot"] is None:
+    if Tafel_op["data_plot"] is None and Tafel_op[ANALYSE_PLOT] is None:
         fig = make_plot_2x("Tafel Analysis")
         data_plot = fig.plots[0]
         analyse_plot =  fig.plots[1]

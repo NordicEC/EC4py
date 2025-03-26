@@ -10,7 +10,7 @@ from .cv_data import CV_Data,STYLE_POS_DL,STYLE_NEG_DL, POS, NEG
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT,LEGEND
 
 from .analysis_levich import Levich
 from .analysis_ran_sev   import ran_sev
@@ -265,7 +265,7 @@ class CV_Datas:
             
             rate = [float(val) for val in self.rate]
             E =[Epot for val in self.rate]
-            plot =self.plot(*args, **kwargs)
+            plot =self.plot(LEGEND.RATE,*args, **kwargs)
             
             yu,yn = self.get_i_at_E(Epot,"all",*args, **kwargs)
             #[print(x) for x in yu]
@@ -322,7 +322,7 @@ class CV_Datas:
             # Make plot
             cv_kwargs = kwargs
             cv_kwargs["plot"] = data_plot
-            plot =self.plot(*args, **cv_kwargs)            
+            plot =self.plot(LEGEND.RATE, *args, **cv_kwargs)            
             yp,yn = self.get_i_at_E(Epot,"all",*args, **kwargs)
         
             plot.plot(E, yp, STYLE_POS_DL)
@@ -361,23 +361,17 @@ class CV_Datas:
 
             #########################################################
             # Make plot
-            
-            #cv_kwargs = kwargs
-            #cv_kwargs["plot"] = data_plot
+            data_kwargs = kwargs
+            data_kwargs["plot"] = data_plot
+            #if kwargs.get("legend",None) is None:
+                # data_kwargs["legend"] = LEGEND.ROT
+            self.plot(LEGEND.ROT,*args, **data_kwargs)
             
             lsv_pos = self.get_sweep(POS,False)
             B_factor_pos =lsv_pos.Levich(Epot,*args,data_plot=data_plot,analyse_plot=analyse_plot,**kwargs)
             lsv_neg = self.get_sweep(NEG,False)
             B_factor_neg =lsv_neg.Levich(Epot,*args,data_plot=data_plot,analyse_plot=analyse_plot,**kwargs)
             
-            #rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **cv_kwargs)
-            # rot = np.array(rot)
-            # y = np.array(y)
-            # rot_max = max(rot) 
-            # Levich analysis
-            #B_factor_pos = Levich(rot, y[:,0], y_axis_unit, y_axis_title, STYLE_POS_DL, POS, plot=analyse_plot )
-            #B_factor_neg = Levich(rot, y[:,1], y_axis_unit, y_axis_title, STYLE_NEG_DL, NEG, plot=analyse_plot )
-
             print("Levich analysis" )
             print("dir", "\tpos     ", "\tneg     " )
             print(" :    ",f"\t{B_factor_pos.unit}",f"\t{B_factor_neg.unit}")
@@ -407,6 +401,11 @@ class CV_Datas:
             return lsvs.KoutLev(Epot,*args,**kwargs)
         else:
             data_plot, analyse_plot, fig = create_KouLev_data_analysis_plot("Data",*args,**kwargs)
+            data_kwargs = kwargs
+            data_kwargs["plot"] = data_plot
+            #if kwargs.get("legend",None) is None:
+            #    data_kwargs["legend"] = LEGEND.ROT
+            self.plot(LEGEND.ROT,*args, **data_kwargs)
             lsv_pos = self.get_sweep(POS,False)
             B_factor_pos =lsv_pos.KouLev(Epot,*args,data_plot=data_plot,analyse_plot=analyse_plot,**kwargs)
             lsv_neg = self.get_sweep(NEG,False)
@@ -459,7 +458,7 @@ class CV_Datas:
         return
 
 #########################################################################
-
+"""
 def plots_for_rotations(datas: CV_Datas, Epot: float, *args, **kwargs):
     rot = []
     y = []
@@ -491,3 +490,4 @@ def plots_for_rotations(datas: CV_Datas, Epot: float, *args, **kwargs):
     CV_plot.plot(E, y[:, 0], STYLE_POS_DL, E, y[:, 1], STYLE_NEG_DL)
     CV_plot.legend()
     return rot, y, E, y_axis_title, y_axis_unit
+"""

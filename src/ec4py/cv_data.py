@@ -21,7 +21,7 @@ from .util import Quantity_Value_Unit as QV
 from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot,POS,NEG,AVG,DIF
 
 
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, Legend
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, LEGEND
 from .analysis_tafel import Tafel
 from .analysis_levich import diffusion_limit_corr
 

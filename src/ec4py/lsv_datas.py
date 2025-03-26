@@ -10,7 +10,7 @@ from .lsv_data import LSV_Data
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT,LEGEND,ANALYSE_PLOT,DATA_PLOT,update_legend
 
 from .util_voltammetry import create_Tafel_data_analysis_plot,create_RanSev_data_analysis_plot,create_Rate_data_analysis_plot,create_Levich_data_analysis_plot,create_KouLev_data_analysis_plot
 
@@ -184,22 +184,28 @@ class LSV_Datas:
             
         """
         #CV_plot = make_plot_1x("CVs")
-        p = plot_options(kwargs)
+        data_plot_kwargs = update_legend(LEGEND.NAME,*args,**kwargs)
+        #if data_plot_kwargs.get("legend",None) is None:
+            #data_plot_kwargs["legend"] = LEGEND.NAME
+        #    data_plot_kwargs = update_legend(LEGEND.NAME,**kwargs)
+
+        p = plot_options(data_plot_kwargs)
         p.no_smooth()
         p.set_title("LSVs")
-        
+        p.x_data= None
         line, data_plot = p.exe()
         legend = p.legend
         
         datas = copy.deepcopy(self.datas)
-        data_plot_kwargs = kwargs
+        #data_plot_kwargs = kwargs
         data_plot_kwargs["plot"] = data_plot
         for data in datas:
             #rot.append(math.sqrt(cv.rotation))
   
             data_plot_kwargs["name"] = data.setup_data.name
-            if legend == "_" :
-                data_plot_kwargs["legend"] = data.setup_data.name
+            # print(data_plot_kwargs["legend"])
+            #if legend == "_"  :
+            #    data_plot_kwargs["legend"] = data.setup_data.name
 
             p = data.plot(*args, **data_plot_kwargs)
 
@@ -228,8 +234,8 @@ class LSV_Datas:
         rate = [float(val) for val in self.rate]
         E =[Epot for val in self.rate]
        
- 
-        self.plot(*args, **cv_kwargs)
+        if fig is not None:
+            self.plot(LEGEND.RATE,*args, **cv_kwargs)
 
         y = self.get_i_at_E(Epot,*args, **kwargs)
         #PLOT
@@ -261,14 +267,18 @@ class LSV_Datas:
        
         #########################################################
         # Make plot
-        cv_kwargs = kwargs
-        cv_kwargs["plot"] = data_plot
-        
+        dataPlot_kwargs = kwargs
+        dataPlot_kwargs["plot"] = data_plot
+        if fig is not None:
+            #if kwargs.get("legend",None) is None:
+            #    dataPlot_kwargs["legend"] = LEGEND.RATE
+            self.plot(LEGEND.RATE,*args, **dataPlot_kwargs)
+                
         rate = [float(val) for val in self.rate]
         E =[Epot for val in self.rate]
        
  
-        self.plot(*args, **cv_kwargs)
+        
         
         y = self.get_i_at_E(Epot,*args, **kwargs)
         #PLOT
@@ -300,9 +310,15 @@ class LSV_Datas:
       
         #########################################################
         # Make plot
-        dataPlot_kwargs = kwargs
-        dataPlot_kwargs["plot"] = data_plot
-        self.plot(*args,**dataPlot_kwargs)
+        data_Plot_kwargs = kwargs
+        data_Plot_kwargs["plot"] = data_plot
+        data_plot_kwargs = update_legend(LEGEND.ROT,*args,**data_Plot_kwargs)
+
+        #only plot raw data if not called
+        if fig is not None:
+       #     if kwargs.get("legend",None) is None:
+       #         dataPlot_kwargs["legend"] = LEGEND.ROT
+            self.plot(*args,**data_Plot_kwargs)
 
         # rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **dataPlot_kwargs)
         y_axis_unit="AAA"
@@ -346,7 +362,10 @@ class LSV_Datas:
         # Make plot
         dataPlot_kwargs = kwargs
         dataPlot_kwargs["plot"] = data_plot
-        self.plot(*args,**dataPlot_kwargs)
+
+        if fig is not None:
+            #dataplot_kwargs = update_legend(LEGEND.ROT,*args,**dataPlot_kwargs)
+            self.plot(LEGEND.ROT,*args,**dataPlot_kwargs)
 
         # rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **dataPlot_kwargs)
         y_axis_unit="AAA"
