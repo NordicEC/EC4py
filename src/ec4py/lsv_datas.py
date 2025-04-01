@@ -498,7 +498,22 @@ class LSV_Datas:
             Tafel_pos.append(a)
         return Tafel_pos
 ##################################################################################################################
+    def export_Array(self):
+        """Exports a Numpy Array
 
+        Returns:
+            Tuplet: Numpy Array of current data, Voltage 
+        """
+        size = [len(Voltammetry().E),len(self.datas)]
+        m = np.zeros(size)
+        col_names= list("E")
+        #print(m.shape,len(self.datas))
+        for x in range(0,len(self.datas)):
+            #print(x,self.datas[x].i.shape)
+            m[:,x+1] = self.datas[x].i
+            col_names.append(f"{self.datas[x].i_label}_{self.datas[x].name} / {self.datas[x].i_unit}")
+        #print(col_names)
+        return m,Voltammetry().E
 
     def export_DataFrame(self):
         size = [len(Voltammetry().E),len(self.datas)+1]
