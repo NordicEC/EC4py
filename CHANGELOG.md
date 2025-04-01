@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.11] - 
 ### Added
-
+Export to Pandas for CV_Datas and LSV_Datas
 ### Changed
 
 ## [0.4.10] - 

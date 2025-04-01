@@ -173,6 +173,7 @@ class Voltammetry(EC_Setup):
         direction = kwargs.get("dir",direction)
         return direction
     
+        
     def _integrate(self, start_E:float, end_E:float,current:list(float), *args, **kwargs):
         """Integrate Current between the voltage limit using cumulative_simpson
 
@@ -242,6 +243,8 @@ class Voltammetry(EC_Setup):
         #print(Q_p)
         return loc_Q, [loc_E,loc_i,array_Q, offset ] 
     
+    
+    
     def clean_up_edges(self, current):
         for i in range(1,current.size):
             if current[i-1] == current[i]:
@@ -309,15 +312,7 @@ class Voltammetry(EC_Setup):
     
     
     def norm(self, norm_to:str|tuple, current:list):
-        """norm_factor = QV(1,)
-        if isinstance(norm_to, tuple):
-            for arg in norm_to:
-                x = self.get_norm_factor(arg)
-                if x is not None:   
-                    norm_factor = norm_factor * (x)
-        else:        
-            norm_factor = self.get_norm_factor(norm_to)
-        #print(norm_factor)"""
+        
         norm_factor = self.get_norm_factors(norm_to)
         i_shifted = None
         qv = QV(0,"","")

@@ -245,7 +245,7 @@ class EC_Setup:
     def name(self):
         """returns dataset name"""
 
-        return self.setup_data.name
+        return str(self.setup_data.name)
     
     def set_area(self,value:float,unit:str = ""):
         self.setup_data._area = value
@@ -327,7 +327,7 @@ class EC_Setup:
             elif item == RATE.casefold()or item == LEGEND.RATE.casefold():
                 txt = f"{self.rate.value:.3f}"
                 left_padding = txt.rjust(5) # ('{: <5}'.format(txt))
-                return f"{left_padding}  {self.rate.unit}"
+                return f"{left_padding} {self.rate.unit}"
             elif item == "rot_rate".casefold() or item == "rotation".casefold() or item == "rot".casefold() or item == LEGEND.ROT.casefold():
                 txt = f"{self.rotation.value:.0f}"
                 left_padding = txt.rjust(5) #('{: <5}'.format(txt))

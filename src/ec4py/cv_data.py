@@ -431,37 +431,46 @@ class CV_Data(Voltammetry):
         return index
     """
     ########################################################################################################
-    def get_i_at_E(self, E:float, dir:str = "all",*args, **kwargs):
+    def get_i_at_E(self, E:float, direction:str = "all",*args, **kwargs):
         """Get the current at a specific voltage.
 
         Args:
             E (float): potential where to get the current. 
             dir (str): direction, "pos,neg or all"
         Returns:
-            float: current
+            Quantity_Value_Unit: current of selected sweep
+            or 
+            List[Quantity_Value_Unit,Quantity_Value_Unit] of positive and negative sweep. 
         """
-        
-        
-        cv = copy.deepcopy(self)
-        cv.norm(args)
-        cv.set_active_RE(args)  
-        smooth_length = kwargs.get("y_smooth",None)
-        if smooth_length is not None:
-            cv.smooth(smooth_length)
-        index = cv.get_index_of_E(E)
+        #if args is not None:
+        try:
+            loc_args = tuple(list(args).append(direction))
+        except TypeError:
+            loc_args = tuple(direction)
+        dir = self._direction(*loc_args,**kwargs)
+        #cv = copy.deepcopy(self)
+        #cv.norm(args)
+        #cv.set_active_RE(args)  
+        #smooth_length = kwargs.get("y_smooth",None)
+        #if smooth_length is not None:
+        #    cv.smooth(smooth_length)
+        #index = cv.get_index_of_E(E)
         # print("INDEX",index,cv.i_n[index],cv.i_unit)
         # print(cv.get_sweep(NEG).get_i_at_E(1.4))
-        i_p = QV(cv.i_p[index],cv.i_unit,cv.i_label)
-        i_n = QV(cv.i_n[index],cv.i_unit,cv.i_label)
         
-
-        
-        if dir.casefold() == POS.casefold():
-            return i_p
-        elif dir.casefold() == NEG.casefold():
-            return i_n
+        if dir == "" or dir == "all".casefold():
+            lsv_pos = self.get_sweep(POS)
+            lsv_neg = self.get_sweep(NEG)
+            return [lsv_pos.get_i_at_E(E,*args,**kwargs) , lsv_neg.get_i_at_E(E,*args,**kwargs)]
         else:
-            return [i_p , i_n]
+            lsv = self.get_sweep(dir)
+            return lsv.get_i_at_E(E,*args,**kwargs)
+        #if dir.casefold() == POS.casefold():
+        #    return i_p
+        #elif dir.casefold() == NEG.casefold():
+        #    return i_n
+        #else:
+        #    return [i_p , i_n]
     
     ###########################################################################################
 
@@ -493,15 +502,55 @@ class CV_Data(Voltammetry):
     
     ###########################################################################################
 
-
-    def get_sweep(self,sweep:str, update_label = True):
-        """_summary_
+    def get_E_of_max_i(self, E1:float,E2:float,*args,**kwargs):
+        """get the potential of maximum current in a range.
 
         Args:
-            sweep (str): _description_
+            E1 (float): _description_
+            E2 (float): _description_
 
         Returns:
             _type_: _description_
+        """
+        dir = self._direction(*args, **kwargs)
+        
+        if dir is "" or dir is "ALL".casefold():
+            lsv_p = self.get_sweep(POS)
+            lsv_n = self.get_sweep(NEG)
+            return lsv_p.get_E_of_max_i(E1,E2),lsv_n.get_E_of_max_i(E1,E2)
+        else:
+            lsv = self.get_sweep(dir)
+            return lsv.get_E_of_max_i(E1,E2)
+        
+    def get_E_of_min_i(self, E1:float,E2:float,*args,**kwargs):
+        """get the potential of maximum current in a range.
+
+        Args:
+            E1 (float): _description_
+            E2 (float): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        dir = self._direction(*args, **kwargs)
+        
+        if dir is "" or dir is "ALL".casefold():
+            lsv_p = self.get_sweep(POS)
+            lsv_n = self.get_sweep(NEG)
+            return lsv_p.get_E_of_min_i(E1,E2),lsv_n.get_E_of_min_i(E1,E2)
+        else:
+            lsv = self.get_sweep(dir)
+            return lsv.get_E_of_min_i(E1,E2)           
+
+
+    def get_sweep(self,sweep:str, update_label = True):
+        """Creates a single voltammogram from a CV.
+
+        Args:
+            sweep (str): the direction,use POS,NEG,AVG or DIF"
+
+        Returns:
+            LSV_Data: The sweep as LSV_data
         """
         lsv = LSV_Data()
         # lsv.setup_data =  copy.deepcopy(self.setup_data)

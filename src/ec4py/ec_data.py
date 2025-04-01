@@ -10,7 +10,7 @@ from scipy import integrate
 from . import util
 from .util_graph import plot_options
 from .ec_setup import EC_Setup
-from .util import Quantity_Value_Unit as Q
+from .util import Quantity_Value_Unit as QV
 from .ec_data_util import EC_Channels
 
 
@@ -174,6 +174,33 @@ class EC_Data(EC_Setup):
 
     def index_at_time(self, time_s_: float):
         return index_at_time(self.Time, time_s_)
+    
+    ##################################################################################
+    def _norm(self, current:list, quantityUnit:QV, norm_to:str|tuple=None):
+        
+        norm_factor = self.get_norm_factors(norm_to)
+        i_shifted = None
+        qv = QV(0,"","")
+        if norm_factor is not None:
+            i_shifted = current.copy()
+            if isinstance(current, list):
+                i_shifted = current.copy()
+                for i in range(len(current)):
+                    # print("aaaa-shifting",i)
+                    
+                    i_shifted[i] = current[i] / float(norm_factor)
+            else:
+                i_shifted = current / float(norm_factor)
+        #norm_factor_inv = norm_factor ** -1
+            #qv = QV(1, i_unit, i_label) / norm_factor
+            qv = quantityUnit/ norm_factor
+            #self.i_unit = qv.unit
+            #self.i_label = qv.quantity
+            # print("aaaa-shifting",self.i_unit)
+            return i_shifted, qv
+        else:
+            return current,quantityUnit
+    
 
 
     def plot(self, x_channel: str, y_channel: str, *args,**kwargs):
@@ -207,11 +234,22 @@ class EC_Data(EC_Setup):
 
         try:
             x_data, options.x_label, options.x_unit = self.get_channel(x_channel)
+            if(options.y_unit == "A"):
+                loc_args = args
+                x_data,qv = self._norm(x_data,QV(1,options.x_unit,options.x_label),*loc_args)
+                options.x_label = qv.quantity
+                options.x_unit = qv.unit
+                
             options.x_data = x_data[index_min:index_max]
         except NameError:
             print(f"xchannel {x_channel} not supported")
         try:
             y_data, options.y_label, options.y_unit = self.get_channel(y_channel)
+            if(options.y_unit == "A"):
+                loc_args = args
+                y_data,qv = self._norm(y_data,QV(1,options.y_unit,options.y_label),*loc_args)
+                options.y_label = qv.quantity
+                options.y_unit = qv.unit
             options.y_data = y_data[index_min:index_max]
         except NameError:
             print(f"ychannel {y_channel} not supported")
@@ -256,7 +294,7 @@ class EC_Data(EC_Setup):
         idxmax=self.index_at_time(t_end)+1
         y,quantity,unit = self.get_channel(y_channel)
         array_Q = integrate.cumulative_simpson(y[idxmin:idxmax], x=self.Time[idxmin:idxmax], initial=0)
-        Charge = Q(array_Q[len(array_Q)-1]-array_Q[0],unit,quantity)*Q(1,"s","t")
+        Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],unit,quantity)*QV(1,"s","t")
         return Charge 
     
     def IR_comp_value(self, y_channel: str = "i", comp_value = None ,**kwargs):

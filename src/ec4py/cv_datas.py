@@ -20,6 +20,8 @@ from .analysis_rate   import sweep_rate_analysis
 from .util_voltammetry import Voltammetry,create_Tafel_data_analysis_plot,create_RanSev_data_analysis_plot
 from .util_voltammetry import create_Rate_data_analysis_plot,create_Levich_data_analysis_plot,create_KouLev_data_analysis_plot
 from .lsv_datas import LSV_Datas
+
+import pandas as pd
 #from .analysis_tafel import Tafel as Tafel_calc
 
 
@@ -108,6 +110,8 @@ class CV_Datas:
                 new_cv.i_n = new_cv.i_n - other.i_n
         return new_CVs
 
+    def __len__(self):
+        return len(self.datas)
 
     #############################################################################
     
@@ -152,21 +156,27 @@ class CV_Datas:
     
 ################################################################   
 
-    def get_i_at_E(self, E:float, dir:str = "all",*args, **kwargs):
+    def get_i_at_E(self, E:float, direction:str = "all",*args, **kwargs):
         """Get the current at a specific voltage.
 
         Args:
             E (float): potential where to get the current. 
             dir (str): direction, "pos,neg or all"
         Returns:
-            float: current
+            list of current
         """
+        loc_args = tuple(str(direction))
+        try:
+            loc_args = tuple(list(args).insert(0,direction))
+        except TypeError:
+            loc_args = tuple(str(direction))
         i_at_E_pos=[]
         i_at_E_neg=[]
+        print(loc_args)
         for x in self.datas:
             cv = copy.deepcopy(x)
             
-            a =cv.get_i_at_E(E,"all",*args,**kwargs)
+            a =cv.get_i_at_E(E,"all",*loc_args,**kwargs)
             i_at_E_pos.append(a[0])
             i_at_E_neg.append(a[1])
         return i_at_E_pos,i_at_E_neg
@@ -174,7 +184,15 @@ class CV_Datas:
     ########################################################################################################
 
     def get_sweep(self,sweep:str,update_label=True):
-        """_summary_"""
+        """_summary_
+
+        Args:
+            sweep (str): use "POS","NEG", "AVG" or "DIF" 
+            update_label (bool, optional): Change the label of the current according to the sweep. Defaults to True.
+
+        Returns:
+            LSV_Datas
+        """
         
         
         LSVs = LSV_Datas()
@@ -190,6 +208,54 @@ class CV_Datas:
             
             rate.append(cv.rate)
         return rate
+    
+    @property
+    def area(self):
+        return [x.area for x in self.datas]
+
+    @property
+    def name(self):
+        return [x.name for x in self.datas]
+    
+    @property
+    def pressure(self):
+        """
+        Returns:
+            list[Quantity_Value_Unit]
+        """
+        return [x.pressure for x in self.datas]
+    
+    @property
+    def temp0(self):
+        return [x.temp0 for x in self.datas]
+    
+    @property
+    def RE(self):
+        return [x.RE for x in self.datas]
+
+    def get_E_of_max_i(self, E1:float,E2:float,*args,**kwargs):
+        """get the potential of maximum current in a range.
+
+        Args:
+            E1 (float): _description_
+            E2 (float): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        return [cv.get_E_of_max_i(E1,E2,*args, **kwargs) for cv in self.datas]
+    
+    def get_E_of_min_i(self, E1:float,E2:float,*args,**kwargs):
+        """get the potential of maximum current in a range.
+
+        Args:
+            E1 (float): _description_
+            E2 (float): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        return [cv.get_E_of_min_i(E1,E2,*args, **kwargs) for cv in self.datas]
 
     def plot(self, *args, **kwargs):
         """Plot CVs.
@@ -458,6 +524,11 @@ class CV_Datas:
         return
 
 #########################################################################
+
+    def export_DataFrame(self,direction,*args, **kwargs):
+        LSVs=self.get_sweep(direction,False)
+        self.set_active_RE(*args)
+        return LSVs.export_DataFrame()
 """
 def plots_for_rotations(datas: CV_Datas, Epot: float, *args, **kwargs):
     rot = []

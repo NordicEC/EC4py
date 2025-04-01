@@ -5,6 +5,7 @@
 from __future__ import annotations
 import math
 import numpy as np
+import pandas as pd
 # from scipy import integrate
 from scipy.signal import savgol_filter 
 
@@ -358,7 +359,7 @@ class LSV_Data(Voltammetry):
         Args:
             E (float): potential where to get the current. 
         Returns:
-            _type_: _description_
+             Quantity_Value_Unit: The current, units and label.
         """
         lsv = copy.deepcopy(self)
         lsv.norm(args)
@@ -372,6 +373,69 @@ class LSV_Data(Voltammetry):
         return QV(lsv.i[index],lsv.i_unit,lsv.i_label)
     ###########################################################################################
 
+    def get_E_of_max_i(self, E1:float,E2:float,*args,**kwargs):
+        """get the potential of maximum current in a range.
+
+        Args:
+            E1 (float): _description_
+            E2 (float): _description_
+
+        Returns:
+             (Quantity_Value_Unit | None): _description_
+        """
+        
+        index1 = self.get_index_of_E(E1)
+        index2 = self.get_index_of_E(E2)
+        index_max=max(index1,index2)
+        index_min=min(index1,index2)
+        #print(index_min,index_max)
+        index_of_max=index_min
+        max_i =-1e100
+        for index in range(index_min,index_max):
+            if max_i<self.i[index] and not np.isnan(self.i[index]) :
+                index_of_max = index
+                max_i =self.i[index]
+        if max_i > -1e100:    
+            index_E = index_of_max
+            #index_E = self.i[index_min:index_max].argmax()
+            #print("index",index_E,"E", self.E[index_E])
+            return QV(self.E[index_E],self.E_unit,self.E_label)
+        else:
+            return None
+    ###########################################################################################
+
+    def get_E_of_min_i(self, E1:float,E2:float,*args,**kwargs):
+        """get the potential of minimum current in a range.
+
+        Args:
+            E1 (float): Start potential
+            E2 (float): End potential
+
+        Returns:
+           (Quantity_Value_Unit | None): The voltage of min, or None, if not found
+        """
+                
+        index1 = self.get_index_of_E(E1)
+        index2 = self.get_index_of_E(E2)
+        index_max=max(index1,index2)
+        index_min=min(index1,index2)
+        #print(index_min,index_max)
+        index_of_min=index_min
+        min_i =1e100
+        for index in range(index_min,index_max):
+            if self.i[index]<min_i and not np.isnan(self.i[index]) :
+                index_of_min = index
+                min_i =self.i[index]
+        if min_i < 1e100:    
+            index_E = index_of_min
+            #index_E = self.i[index_min:index_max].argmax()
+            #print("index",index_E,"E", self.E[index_E])
+            return QV(self.E[index_E],self.E_unit,self.E_label)
+        else:
+            return None
+    
+    ##################################################################################################
+    
     def integrate(self, start_E:float, end_E:float, show_plot: bool = False, *args, **kwargs):
         """Integrate Current between the voltage limit using cumulative_simpson
 
@@ -454,3 +518,19 @@ class LSV_Data(Voltammetry):
         data_plot.legend()
     
         return Tafel_slope
+    
+    
+    def export_DataFrame(self):
+        size = [len(Voltammetry().E),2]
+        m = np.zeros(size)
+        col_names= list("E")
+        #print(m.shape,len(self.datas))
+        m[:,0]=Voltammetry().E
+        
+        
+            #print(x,self.datas[x].i.shape)
+        m[:,1] = self.i
+        col_names.append(f"{self.i_label}_{self.name} / {self.i_unit}")
+        #print(col_names)
+        df = pd.DataFrame.from_records(m,columns=col_names)
+        return df

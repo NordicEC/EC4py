@@ -4,6 +4,8 @@
 """
 import math
 import numpy as np
+import pandas as pd
+
 from .ec_data import EC_Data
 from .lsv_data import LSV_Data
 
@@ -13,12 +15,15 @@ from .util import Quantity_Value_Unit as QV
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT,LEGEND,ANALYSE_PLOT,DATA_PLOT,update_legend
 
 from .util_voltammetry import create_Tafel_data_analysis_plot,create_RanSev_data_analysis_plot,create_Rate_data_analysis_plot,create_Levich_data_analysis_plot,create_KouLev_data_analysis_plot
+from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE
 
 
 from .analysis_levich import Levich
 from .analysis_tafel import Tafel
 from .analysis_ran_sev   import ran_sev
 from .analysis_rate   import sweep_rate_analysis
+
+
 
 
 STYLE_POS_DL = "bo"
@@ -110,6 +115,8 @@ class LSV_Datas:
 
 
     #############################################################################
+    def __len__(self):
+        return len(self.datas)
     
     def append(self,LSV = LSV_Data):
         self.datas.append(LSV)
@@ -156,7 +163,7 @@ class LSV_Datas:
             E (float): potential where to get the current. 
             dir (str): direction, "pos,neg or all"
         Returns:
-            float: current
+            list[Quantity_Value_Unit]: current
         """
         i_at_E=[]
         for x in self.datas:
@@ -166,7 +173,49 @@ class LSV_Datas:
             i_at_E.append(a)
             
         return i_at_E
-################################################################   
+    
+    ################################################################  
+
+    def get_E_of_max_i(self, E1:float,E2:float,*args,**kwargs):
+        """get the potential of minimum current in a range.
+
+        Args:
+            E1 (float): _description_
+            E2 (float): _description_
+
+        Returns:
+            list: (Quantity_Value_Unit | None) of found potentials.
+        """
+        return [lsv.get_E_of_max_i(E1,E2,*args,*kwargs) for lsv in self.datas]
+    
+################################################################  
+
+    def get_E_of_min_i(self, E1:float,E2:float,*args,**kwargs):
+        """get the potential of minimum current in a range.
+
+        Args:
+            E1 (float): _description_
+            E2 (float): _description_
+
+        Returns:
+            list: (Quantity_Value_Unit | None) of found potentials.
+        """
+        return [lsv.get_E_of_min_i(E1,E2,*args,*kwargs) for lsv in self.datas]
+
+##################################################################################################################
+
+    def set_active_RE(self,*args):     
+        """Set active reference electrode for plotting.
+        
+        - RHE    - if values is not already set, use ".set_RHE()"
+        
+        - SHE    - if values is not already set, use ".set_RHE()"
+        - None to use the exerimental 
+        """
+        for x in self.datas:
+            x.norm(args)
+        return
+################################################################  
 
     def plot(self, *args, **kwargs):
         """Plot LSVs.
@@ -321,7 +370,7 @@ class LSV_Datas:
        #         dataPlot_kwargs["legend"] = LEGEND.ROT
             self.plot(*args,**data_Plot_kwargs)
 
-        # rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **dataPlot_kwargs)
+        
         y_axis_unit="AAA"
         y = self.get_i_at_E(Epot,*args,**kwargs)
         y_axis_unit = y[0].unit
@@ -369,7 +418,7 @@ class LSV_Datas:
             #dataplot_kwargs = update_legend(LEGEND.ROT,*args,**dataPlot_kwargs)
             self.plot(LEGEND.ROT,*args,**dataPlot_kwargs)
 
-        # rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **dataPlot_kwargs)
+        
         y_axis_unit="AAA"
         y = self.get_i_at_E(Epot,*args,**kwargs)
         y_axis_unit = y[0].unit
@@ -423,65 +472,6 @@ class LSV_Datas:
         saveFig(fig,**kwargs)
         ####################################
         """
-        fig = make_plot_2x("Koutechy-Levich Analysis")
-        data_plot = fig.plots[0]
-        analyse_plot =  fig.plots[1]
-
-
-        data_plot.title.set_text('CVs')
-
-        analyse_plot.title.set_text('Koutechy-Levich Plot')
-        
-        # CV_plot.plot(E,y_values[:,0], STYLE_POS_DL, E,y_values[:,1],STYLE_NEG_DL)
-        # CV_plot.legend()
-        dataPlot_kwargs = kwargs
-        dataPlot_kwargs["plot"] = data_plot
-        rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas, Epot, *args, **dataPlot_kwargs)
-
-        # rot = np.array(rot)
-
-        rot = 1 / rot 
-        x_plot = np.insert(rot, 0, 0)  
-        x_qv = QV(1, "rpm^0.5","w")
-        x_u =  QV(1, x_qv.unit,x_qv.quantity)** -0.5
-        # print(x_plot) 
-        y_values = np.array(y)
-        y_inv = 1/ y_values
-        y_qv = QV(1, y_axis_unit.strip(), y_axis_title.strip())**-1
-        # print(rot)
-        # print(y[:,0])
-
-        analyse_plot.plot(rot, y_inv[:, 0], STYLE_POS_DL, rot, y_inv[:,1], STYLE_NEG_DL)
-        # print("AAAA", x_qv.quantity,x_qv)
-        # print("AAAA", x_u.quantity, x_u)
-#        analyse_plot.set_xlabel(str("$\omega^{-0.5}$" + "("+ "rpm$^{-0.5}$" +")"))
-        analyse_plot.set_xlabel(f"{quantity_plot_fix(x_u.quantity)} ( {quantity_plot_fix(x_u.unit)} )")
-
-        analyse_plot.set_ylabel(str( f"(1 / ({quantity_plot_fix(y_axis_title)}) ({quantity_plot_fix(y_qv.unit)})"))
-
-        # FIT pos
-
-        dydx_qv = y_qv / x_u
-        m_pos, b = np.polyfit(rot, y_inv[:,0], 1)
-
-        y_pos= m_pos * x_plot + b
-        slope_pos = QV(m_pos, dydx_qv.unit, dydx_qv.quantity)
-
-        B_pos = 1 / m_pos
-        line, = analyse_plot.plot(x_plot, y_pos, 'b-' )
-        line.set_label(f"pos: m={B_pos:3.3e}")
-        # FIT neg
-        m_neg, b = np.polyfit(rot, y_inv[:,1], 1)
-        slope_neg = QV(m_neg,dydx_qv.unit,dydx_qv.quantity)
-        y_neg= m_neg * x_plot + b
-        B_neg = 1/m_neg
-        line,=analyse_plot.plot(x_plot,y_neg, 'r-' )
-        line.set_label(f"neg: m={B_neg:3.3e}")
-
-
-        analyse_plot.legend()
-        analyse_plot.set_xlim(left=0, right=None)
-        
         print("KouLev analysis" )
         print("dir","\tpos     ", "\tneg     " )
         print(" :", f"\trpm^0.5 /{y_axis_unit}", f"\trpm^0.5 /{y_axis_unit}")
@@ -510,108 +500,20 @@ class LSV_Datas:
 ##################################################################################################################
 
 
-    """
-    def Tafel(self, lims=[-1,1], E_for_idl:float=None , *args, **kwargs):
-        ""_summary_
-
-        Args:
-            lims (list):  The range where the tafel slope should be calculated 
-            E_for_idl (float,optional.): potential that used to determin the diffusion limited current. This is optional.
-            
-        ""
-        CV_plot, analyse_plot = make_plot_2x("Tafel Analysis")
-        CV_plot.title.set_text('CVs')
-
-        analyse_plot.title.set_text('Tafel Plot')
-
-        rot=[]
-        y = []
-        E = []
-        Tafel_pos =[]
-        Tafel_neg =[]
-        #Epot=-0.5
-        y_axis_title =""
-        CVs = copy.deepcopy(self.datas)
-        cv_kwargs = kwargs
-        dir = kwargs.get("dir", "all")
-        plot_color2= []
-        for cv in CVs:
-            rot.append( math.sqrt(cv.rotation))
-
-            for arg in args:
-                #if arg == "area":
-                cv.norm(arg)
-            cv_kwargs["legend"] = str(f"{float(cv.rotation):.0f}")
-            cv_kwargs["plot"] = CV_plot
-            line,a = cv.plot(**cv_kwargs)
-            plot_color2.append(line.get_color())
-            plot_color =line.get_color()
-            #.get_color()
-            #color = line.get_color()
-            xmin = cv.get_index_of_E(min(lims))
-            xmax = cv.get_index_of_E(max(lims))
-            
-            if E_for_idl != None:
-                i_dl_p,i_dl_n = cv.get_i_at_E(E_for_idl)
-                y.append(cv.get_i_at_E(E_for_idl))
-                with np.errstate(divide='ignore'):
-                    y_data_p = [math.log10(abs(1/(1/i-1/i_dl_p))) for i in cv.i_p]
-                    y_data_n = [math.log10(abs(1/(1/i-1/i_dl_n))) for i in cv.i_n]
-            else:
-                y_data_p = [math.log10(abs(i)) for i in cv.i_p]
-                y_data_n = [math.log10(abs(i)) for i in cv.i_n]
-            #y_data = cv.i_p[xmin:xmax]
-            
-            ##FIT    
-            m_pos, b = np.polyfit(cv.E[xmin:xmax], y_data_p[xmin:xmax], 1)
-            y_pos= m_pos*cv.E[xmin:xmax]+b
-            Tafel_pos.append(QV(1/ m_pos,"V/dec","dE"))
-            m_neg, b = np.polyfit(cv.E[xmin:xmax], y_data_n[xmin:xmax], 1)
-            y_neg= m_neg*cv.E[xmin:xmax]+b
-            Tafel_neg.append(QV(1/ m_neg,"V/dec","dE"))
-            
-            print("Tafel", 1./ m_pos , "V/dec")
-            if E_for_idl != None:
-                E.append([E_for_idl, E_for_idl])
-            
-            y_axis_title= cv.i_label
-            y_axis_unit= cv.i_unit
-            if dir!="neg":
-                analyse_plot.plot(cv.E, y_data_p,c= plot_color)
-                line, = analyse_plot.plot(cv.E[xmin:xmax], y_pos,linewidth=3.0, c= plot_color)
-                #line.set_color(plot_color)
-                line.set_label(f"pos: m={1000/m_pos:3.1f}mV/dec")
-            if dir!="pos":
-                analyse_plot.plot(cv.E, y_data_n,c= plot_color)
-                line, = analyse_plot.plot(cv.E[xmin:xmax], y_neg,linewidth=3.0,c= plot_color)
-                line.set_label(f"neg: m={1000/m_neg:3.1f}mV/dec")
-            
-            #print(cv.setup)
-        #print(rot)
-
-        y_values = np.array(y)
-        if E_for_idl != None:
-            CV_plot.plot(E,y_values[:,0], STYLE_POS_DL, E,y_values[:,1],STYLE_NEG_DL)
-        CV_plot.legend()
-
-
-        analyse_plot.set_xlim(lims[0]-0.1,lims[1]+0.1)
-
-        analyse_plot.set_xlabel("E ( V )")
-        analyse_plot.set_ylabel(f"log( {y_axis_title} / {y_axis_unit} )" )
-        #m_pos, b = np.polyfit(rot, y_inv[:,0], 1)
-        #y_pos= m_pos*rot+b
-        #line,=analyse_plot.plot(rot,y_pos,'-' )
-        #line.set_label(f"pos: m={m_pos:3.3e}")
-        #m_neg, b = np.polyfit(rot, y_inv[:,1], 1)
-        #y_neg= m_neg*rot+b
-        #line, = analyse_plot.plot(rot,y_neg,'-' )
-        #line.set_label(f"neg: m={m_neg:3.3e}")
-        analyse_plot.legend()
-        #print("Tafel",m_pos,m_neg)
-        #return m_pos,m_neg
-        return Tafel_pos, Tafel_neg
-        """
+    def export_DataFrame(self):
+        size = [len(Voltammetry().E),len(self.datas)+1]
+        m = np.zeros(size)
+        col_names= list("E")
+        #print(m.shape,len(self.datas))
+        m[:,0]=Voltammetry().E
+        for x in range(0,len(self.datas)):
+        
+            #print(x,self.datas[x].i.shape)
+            m[:,x+1] = self.datas[x].i
+            col_names.append(f"{self.datas[x].i_label}_{self.datas[x].name} / {self.datas[x].i_unit}")
+        #print(col_names)
+        df = pd.DataFrame.from_records(m,columns=col_names)
+        return df
 
 
 def plots_for_rotations(datas: LSV_Datas, Epot: float, *args, **kwargs):

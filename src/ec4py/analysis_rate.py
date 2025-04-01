@@ -1,6 +1,7 @@
 
 import numpy as np
 from .util import Quantity_Value_Unit as Q_V
+from .util import QV_UNIT_FARAD, QV_UNIT_COULOMB
 from .util_graph import plot_options, quantity_plot_fix
 
 
@@ -57,7 +58,7 @@ def sweep_rate_analysis(rate_values, current, y_axis_unit:str="A", y_axis_title:
         ##print("AAA",x_rot, "BBB", x_rot.quantity)
 
         B_factor = Q_V(m , y_axis_unit, y_axis_title) / x_rot
-        B_factor = B_factor * Q_V(1, "C V /A /s") 
+        B_factor = B_factor * QV_UNIT_FARAD * QV_UNIT_COULOMB #  Q_V(1, "C V /A /s") 
         ##print("AAA",B_factor_pos, "BBB", B_factor_pos.quantity)
         
         #Levich Plot

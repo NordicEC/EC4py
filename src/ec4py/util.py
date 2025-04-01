@@ -142,6 +142,9 @@ class Quantity_Value_Unit:
     def __float__(self) -> float:
         return self.value
     
+    def __repr__(self):
+        return f"{self._quantity} = {self.value:.3e} {self._unit}"    
+    
     def __add__(self, other: object):
         v = Quantity_Value_Unit()
         if isinstance(other,Quantity_Value_Unit):
@@ -192,6 +195,8 @@ class Quantity_Value_Unit:
         else:
             raise TypeError("Must be a number, i.e. float or int")
             return
+        
+
         
     def set_quantity(self, new_quantity_label:str):
         """Set the quantity of label.
@@ -260,3 +265,9 @@ def quantity_fix(s:str, factor:float = 1):
     return sr.strip()
 
 ###################################
+
+
+QV_UNIT_FARAD = Quantity_Value_Unit(1,"F V /C")
+"""Farad = Coulomb per Volt"""
+QV_UNIT_COULOMB = Quantity_Value_Unit(1,"C /A /s")
+"""Coulomb = Ampere Sec."""
