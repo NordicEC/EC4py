@@ -32,9 +32,9 @@ class Test_Analysis_RanSevich(unittest.TestCase):
         y_data = 1*rot
         unit = "AAA"
         result = ran_sev(rot, y_data, "", "", "bo")
-        self.assertEqual(result.unit, "rpm^-0.5")
+        self.assertEqual(result.unit, "V^-0.5 s^0.5")
         result = ran_sev(rot, y_data, unit, "", "bo")
-        self.assertEqual(result.unit, unit+" rpm^-0.5")
+        self.assertEqual(result.unit, unit+" V^-0.5 s^0.5")
         # self.assertEqual(result.unit, "m")
     
     def test_quantity_slope(self):

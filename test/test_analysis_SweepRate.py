@@ -28,13 +28,13 @@ class Test_Analysis_SweepRate(unittest.TestCase):
 
         
     def test_units_slope(self):
-        
+        rate = [QVU(x,"V /s") for x in range(0,10)]
         y_data = 1*rate
-        unit = "AAA"
-        result = sweep_rate_analysis(rate, y_data, "", "", "bo")
-        self.assertEqual(result.unit, "rpm^-0.5")
+        unit = "X"
+        result = sweep_rate_analysis(rate, y_data, "A", "", "bo")
+        self.assertEqual(result.unit, "F")
         result = sweep_rate_analysis(rate, y_data, unit, "", "bo")
-        self.assertEqual(result.unit, unit+" rpm^-0.5")
+        self.assertEqual(result.unit, unit+" F")
         # self.assertEqual(result.unit, "m")
     
     def test_quantity_slope(self):
