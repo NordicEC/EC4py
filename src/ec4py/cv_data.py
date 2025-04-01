@@ -514,7 +514,7 @@ class CV_Data(Voltammetry):
         """
         dir = self._direction(*args, **kwargs)
         
-        if dir is "" or dir is "ALL".casefold():
+        if dir == "" or dir == "ALL".casefold():
             lsv_p = self.get_sweep(POS)
             lsv_n = self.get_sweep(NEG)
             return lsv_p.get_E_of_max_i(E1,E2),lsv_n.get_E_of_max_i(E1,E2)
