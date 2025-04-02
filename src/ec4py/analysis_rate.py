@@ -2,7 +2,7 @@
 import numpy as np
 from .util import Quantity_Value_Unit as Q_V
 from .util import QV_UNIT_FARAD, QV_UNIT_COULOMB
-from .util_graph import plot_options, quantity_plot_fix
+from .util_graph import plot_options, quantity_plot_fix,should_plot_be_made
 
 
 
@@ -62,24 +62,25 @@ def sweep_rate_analysis(rate_values, current, y_axis_unit:str="A", y_axis_title:
         ##print("AAA",B_factor_pos, "BBB", B_factor_pos.quantity)
         
         #Levich Plot
-        p = plot_options(kwargs)
-        p.no_smooth()
-        
-        p.set_title("Sweep Rate",1)
-        p.set_x_txt("$v$", f"{rate_unit}")
-        p.set_y_txt(y_axis_title, y_axis_unit)
+        if should_plot_be_made(*args):
+            p = plot_options(kwargs)
+            p.no_smooth()
+            
+            p.set_title("Sweep Rate",1)
+            p.set_x_txt("$v$", f"{rate_unit}")
+            p.set_y_txt(y_axis_title, y_axis_unit)
 
-        p.options["style"]=STYLE_DL[0]+"o"
-        p.y_data = y_data
-        p.x_data = rate
-        line, analyse_plot = p.exe()        
-        # print(p.get_x_txt())
-        STYLE_DL= STYLE_DL[0] + "-"
-        line, = analyse_plot.plot(x_plot, y_pos, STYLE_DL )
-        line.set_label(f"{line_title} {m :3.3e} {B_factor.unit}")
-        #ax.xlim(left=0)
-        analyse_plot.legend()
-        #analyse_plot.set_xlim(left=0, right =None)
+            p.options["style"]=STYLE_DL[0]+"o"
+            p.y_data = y_data
+            p.x_data = rate
+            line, analyse_plot = p.exe()        
+            # print(p.get_x_txt())
+            STYLE_DL= STYLE_DL[0] + "-"
+            line, = analyse_plot.plot(x_plot, y_pos, STYLE_DL )
+            line.set_label(f"{line_title} {m :3.3e} {B_factor.unit}")
+            #ax.xlim(left=0)
+            analyse_plot.legend()
+            #analyse_plot.set_xlim(left=0, right =None)
 
         return B_factor
 

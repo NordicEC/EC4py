@@ -17,7 +17,7 @@ from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFF
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,should_plot_be_made
 from .analysis_tafel import Tafel
 from .analysis_levich import diffusion_limit_corr
 
@@ -285,18 +285,6 @@ class LSV_Data(Voltammetry):
                 self.i = v
         return 
         
-        #norm_factor = self.get_norm_factor(norm_to)
-        #print(norm_factor)
-        #if norm_factor:
-        #    self.i = self.i / float(norm_factor)
-             
-        #norm_factor_inv = norm_factor ** -1
-        #    current = QV(1,self.i_unit, self.i_label) / norm_factor
-         
-        #    self.i_label = current.quantity
-        #    self.i_unit = current.unit
-        
-        #return 
     
     ############################################################################        
     def plot(self,*args, **kwargs):
@@ -311,24 +299,28 @@ class LSV_Data(Voltammetry):
             line, ax: line and ax handlers
         
         '''
-        data = copy.deepcopy(self)
-        options = plot_options(kwargs)
-        options.set_title(self.setup_data.name)
-        options.name = self.setup_data.name
-        options.legend = self.legend(*args, **kwargs)
-        #if options.legend == "_" :
-        #        data_plot_kwargs["legend"] = data.setup_data.name
-        #data
-        data.norm(args)
-        data.set_active_RE(args)
-        options.x_data = data.E
-        options.y_data = data.i
-                
-        options.set_x_txt(data.E_label, data.E_unit)
-        options.set_y_txt(data.i_label, data.i_unit) 
-        
-            
-        return options.exe()
+        if should_plot_be_made(*args):
+            data = copy.deepcopy(self)
+            options = plot_options(kwargs)
+            if self.is_MWE:
+                options.set_title(f"{self.setup_data.name}#{self.setup_data._MWE_CH}")
+            else:
+                options.set_title(self.setup_data.name)
+            #options.name = self.setup_data.name
+            options.legend = self.legend(*args, **kwargs)
+            #if options.legend == "_" :
+            #        data_plot_kwargs["legend"] = data.setup_data.name
+            #data
+            data.norm(args)
+            data.set_active_RE(args)
+            options.x_data = data.E
+            options.y_data = data.i
+                    
+            options.set_x_txt(data.E_label, data.E_unit)
+            options.set_y_txt(data.i_label, data.i_unit) 
+            return options.exe()
+        else:
+            return None,None
     
     
     def set_active_RE(self,shift_to:str|tuple = None):

@@ -110,7 +110,7 @@ class EC_Data(EC_Setup):
                 ch_names.append(ch_name)
         return ch_names
 
-    def get_channel(self, datachannel: str) -> tuple[list, str, str]:
+    def get_channel(self, datachannel: str) -> tuple[list, str, str,float]:
         """
         Get the channel of the EC4 DAQ file.
 
@@ -124,45 +124,48 @@ class EC_Data(EC_Setup):
         - Z_E. Z_U
 
         """
+        info=[None,"","",self.rawdata["Time"].properties.get("wf_increment", 1)]
         match datachannel:
             case "Time":
-                return self.Time, "t", "s"
+                info[0:3] = [self.Time, "t", "s"]
             # case "E":
             #    return self.E, "E", "V"
             case "U":
-                return self.U, "U", "V"
+                info[0:3] = [ self.U, "U", "V"]
             case "i":
-                return self.i, "i", "A"
+                info[0:3] = [ self.i, "i", "A"]
             case "j":
-                return self.i/self._area, "j", f"A/{self._area_unit}"
-            case "Z_E":
-                return self.Z_E, "Z_E", "Ohm"
+                info[0:3] = [ self.i/self._area, "j", f"A/{self._area_unit}"]
+            case "Z_E1":
+                info[0:3] = [ self.Z_E, "Z_E", "Ohm"]
             case "Z_U":
-                return self.Z_U, "Z_U", "Ohm"
+                info[0:3] = [ self.Z_U, "Z_U", "Ohm"]
             case "Phase_E":
-                return self.Phase_E, "Phase_E", "rad"
+                info[0:3] = [ self.Phase_E, "Phase_E", "rad"]
             case "Phase_U":
-                return self.Phase_U, "Phase_U", "rad"
+                info[0:3] = [ self.Phase_U, "Phase_U", "rad"]
             case "R_E":
                 # cosValue=self.Phase_E/self.Phase_E
                 # index=0
                 # for i in self.Phase_E:
                 #    cosValue[index] = math.cos(self.Phase_E[index])
                 #    index=index+1
-                return self.Z_E * self.cosVal(self.Phase_E), "R_WE", "Ohm"
+                info[0:3] = [ self.Z_E * self.cosVal(self.Phase_E), "R_WE", "Ohm"]
             case "E-IZ":
-                return self.E - self.i*self.Z_E, "E-IZ", "V"
+                info[0:3] = [ self.E - self.i*self.Z_E, "E-IZ", "V"]
 
             case "E-IR":
-                return self.E - self.i*self.Z_E, "E-IR", "V"
+                info[0:3] = [ self.E - self.i*self.Z_E, "E-IR", "V"]
             case _:
                 # if datachannel in self.rawdata.channels():
                 try:
                     unit = self.rawdata[datachannel].properties.get("unit_string", "")
                     quantity = self.rawdata[datachannel].properties.get("Quantity", "")
-                    return self.rawdata[datachannel].data, str(quantity) , str(unit)
+                    dT = self.rawdata[datachannel].properties.get("wf_increment", 1)
+                    info = [ self.rawdata[datachannel].data, str(quantity) , str(unit), dT]
                 except KeyError:
                     raise NameError("Error:" + datachannel + " channel name is not supported")
+        return tuple(info)
                 # return np.array([2]), "No channel", "No channel"
 
     def cosVal(self, phase: float):
@@ -233,7 +236,7 @@ class EC_Data(EC_Setup):
             index_max = self.index_at_time(range["limit_max"])
 
         try:
-            x_data, options.x_label, options.x_unit = self.get_channel(x_channel)
+            x_data, options.x_label, options.x_unit,x_dT = self.get_channel(x_channel)
             if(options.y_unit == "A"):
                 loc_args = args
                 x_data,qv = self._norm(x_data,QV(1,options.x_unit,options.x_label),*loc_args)
@@ -244,7 +247,7 @@ class EC_Data(EC_Setup):
         except NameError:
             print(f"xchannel {x_channel} not supported")
         try:
-            y_data, options.y_label, options.y_unit = self.get_channel(y_channel)
+            y_data, options.y_label, options.y_unit,y_dT = self.get_channel(y_channel)
             if(options.y_unit == "A"):
                 loc_args = args
                 y_data,qv = self._norm(y_data,QV(1,options.y_unit,options.y_label),*loc_args)

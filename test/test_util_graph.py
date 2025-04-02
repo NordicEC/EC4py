@@ -1,5 +1,6 @@
 
-from ec4py.util_graph import plot_options
+from ec4py.util_graph import plot_options,should_plot_be_made
+from ec4py.util_graph import NO_PLOT
 
 from pathlib import Path
 import numpy as np
@@ -34,6 +35,12 @@ class test_util_graph( unittest.TestCase ):
         #print("HEJ")
         # opt.smooth_y(gdata_u)
         self.assertTrue(True)
+        
+    def test_should_plot_be_made(self):
+        self.assertTrue(should_plot_be_made())
+        self.assertTrue(should_plot_be_made(5,"avd","53"))
+        self.assertFalse(should_plot_be_made(NO_PLOT))
+        self.assertFalse(should_plot_be_made(5,"fdfd",NO_PLOT))
        
         
     

@@ -10,7 +10,7 @@ from .cv_data import CV_Data,STYLE_POS_DL,STYLE_NEG_DL, POS, NEG
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT,LEGEND
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT,LEGEND,should_plot_be_made
 
 from .analysis_levich import Levich
 from .analysis_ran_sev   import ran_sev
@@ -156,7 +156,7 @@ class CV_Datas:
     
 ################################################################   
 
-    def get_i_at_E(self, E:float, direction:str = "all",*args, **kwargs):
+    def get_i_at_E(self, E:float, direction:str,*args, **kwargs):
         """Get the current at a specific voltage.
 
         Args:
@@ -165,14 +165,13 @@ class CV_Datas:
         Returns:
             list of current
         """
-        loc_args = tuple(str(direction))
-        try:
-            loc_args = tuple(list(args).insert(0,direction))
-        except TypeError:
-            loc_args = tuple(str(direction))
+        list_args=[arg for arg in args]
+        list_args.insert(0,direction)
+        loc_args=tuple(list_args)
+        
         i_at_E_pos=[]
         i_at_E_neg=[]
-        print(loc_args)
+        #print(loc_args)
         for x in self.datas:
             cv = copy.deepcopy(x)
             
@@ -276,29 +275,31 @@ class CV_Datas:
             
         """
         #CV_plot = make_plot_1x("CVs")
-        
-        p = plot_options(kwargs)
-        p.set_title("CVs")
-        line, CV_plot = p.exe()
-        # legend = p.legend
-        
-        CVs = copy.deepcopy(self.datas)
-        
-        cv_kwargs = kwargs
-        lines = []
-        for cv in CVs:
-            #rot.append(math.sqrt(cv.rotation))
-
-
-            cv_kwargs["plot"] = CV_plot
-            cv_kwargs["name"] = cv.setup_data.name
-
-            line, ax = cv.plot(*args, **cv_kwargs)
-            lines.append(line)
+        if should_plot_be_made(*args,**kwargs):
+            p = plot_options(kwargs)
+            p.set_title("CVs")
+            line, CV_plot = p.exe()
+            # legend = p.legend
             
-        CV_plot.legend()
-        p.saveFig(**kwargs)
-        return CV_plot
+            CVs = copy.deepcopy(self.datas)
+            
+            cv_kwargs = kwargs
+            lines = []
+            for cv in CVs:
+                #rot.append(math.sqrt(cv.rotation))
+
+
+                cv_kwargs["plot"] = CV_plot
+                cv_kwargs["name"] = cv.setup_data.name
+
+                line, ax = cv.plot(*args, **cv_kwargs)
+                lines.append(line)
+                
+            CV_plot.legend()
+            p.saveFig(**kwargs)
+            return CV_plot
+        else:
+            return None
     #################################################################################################    
     
     def RanSev(self, Epot:float,*args, **kwargs):
@@ -341,7 +342,7 @@ class CV_Datas:
             # rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas,Epot,*args, **cv_kwargs)
             plot.plot(E, yu, STYLE_POS_DL)
             plot.plot(E, yn, STYLE_NEG_DL)
-            y_axis_title =yu[0].quantity
+            y_axis_title =str(yu[0].quantity).replace("$_{+}$","")
             y_axis_unit = yu[0].unit
             B_factor_pos=0
             B_factor_pos = ran_sev(rate, yn, y_axis_unit, y_axis_title, STYLE_POS_DL, POS, plot=analyse_plot )
@@ -367,37 +368,37 @@ class CV_Datas:
         """
         dir = Voltammetry()._direction(*args)
         #print("AA",Voltammetry()._direction(*args))
-        if dir == "":
-            dir = "all"
-        #op.update(kwargs)
-        
+                
         rate = [float(val) for val in self.rate]
         E =[Epot for val in self.rate]
-       
- 
-        #
-       
+        rate_unit = self.rate[0].unit
         #print("DIR",dir)
-        if(dir.casefold() !="all".casefold()):
+        if(dir !=""):
             lsvs = self.get_sweep(dir)
             return lsvs.RateAnalysis(Epot,*args,**kwargs)
            
         else:
-            data_plot, analyse_plot,fig = create_Rate_data_analysis_plot()
+            data_plot, analyse_plot,fig = create_Rate_data_analysis_plot(*args,**kwargs)
             #########################################################
             # Make plot
             cv_kwargs = kwargs
             cv_kwargs["plot"] = data_plot
-            plot =self.plot(LEGEND.RATE, *args, **cv_kwargs)            
-            yp,yn = self.get_i_at_E(Epot,"all",*args, **kwargs)
-        
-            plot.plot(E, yp, STYLE_POS_DL)
-            plot.plot(E, yn, STYLE_NEG_DL)
-            y_axis_title =yp[0].quantity
+            plot =self.plot(LEGEND.RATE, *args, **cv_kwargs) 
+            
+            analyse_kwargs = kwargs
+            
+            analyse_kwargs["update_label"]=True          
+            yp,yn = self.get_i_at_E(Epot,"",*args, **kwargs)
+            if plot is not None:
+                plot.plot(E, yp, STYLE_POS_DL)
+                plot.plot(E, yn, STYLE_NEG_DL)
+            self.datas[0].get_i_at_E(Epot,"",*args,**analyse_kwargs)
+            y_axis_title =y_axis_title =str(yp[0].quantity).replace("$_{+}$","")
             y_axis_unit = yp[0].unit
             B_factor_pos=0
-            B_factor_pos = sweep_rate_analysis(rate, yp, y_axis_unit, y_axis_title, STYLE_POS_DL, POS, plot=analyse_plot )
-            B_factor_neg = sweep_rate_analysis(rate, yn, y_axis_unit, y_axis_title, STYLE_NEG_DL, NEG, plot=analyse_plot )
+            analyse_kwargs["plot"] = analyse_plot
+            B_factor_pos = sweep_rate_analysis(rate, yp, y_axis_unit, y_axis_title, STYLE_POS_DL, POS,rate_unit, *args, **analyse_kwargs )
+            B_factor_neg = sweep_rate_analysis(rate, yn, y_axis_unit, y_axis_title, STYLE_NEG_DL, NEG,rate_unit,*args, **analyse_kwargs )
 
             print("Sweep Rate analysis" )
             print("dir", "\tpos     ", "\tneg     " )
@@ -520,15 +521,24 @@ class CV_Datas:
         - None to use the exerimental 
         """
         for cv in self.datas:
-            cv.norm(args)
+            cv.set_active_RE(args)
         return
 
 #########################################################################
 
     def export_DataFrame(self,direction,*args, **kwargs):
         LSVs=self.get_sweep(direction,False)
-        self.set_active_RE(*args)
+        LSVs.set_active_RE(args)
+        LSVs.norm(*args)
         return LSVs.export_DataFrame()
+    
+    #########################################################################
+
+    def export_Array(self,direction,*args, **kwargs):
+        LSVs=self.get_sweep(direction,False)
+        LSVs.set_active_RE(args)
+        LSVs.norm(*args)
+        return LSVs.export_Array()
 """
 def plots_for_rotations(datas: CV_Datas, Epot: float, *args, **kwargs):
     rot = []

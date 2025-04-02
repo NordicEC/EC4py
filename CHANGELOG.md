@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.11] - 
 ### Added
-Export to Pandas for CV_Datas and LSV_Datas
+  - Export to Pandas for CV_Datas and LSV_Datas
+  - CV_Data and CV_Datas can now do IR-compensation
 ### Changed
 
 ## [0.4.10] - 

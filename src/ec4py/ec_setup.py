@@ -31,7 +31,15 @@ class ec_setup_data:
             self._SHE = None
             self._RE = ""
             self._currentElectrode = 0
+            self._MWE_CH = ""
             self.dateTime = np.datetime64('2020-01-01 00:00:01')
+            self._batch = None
+            self._Serial = None
+            self._Support = None
+            self._Electrode = None
+            self._Serial = None
+            self._Support = None
+            self._Loading = None
             return
 
         def setACTIVE_RE(self,ref):
@@ -56,6 +64,29 @@ class ec_setup_data:
             else:
                 active_reference_electrode = self._RE
             return active_reference_electrode
+        
+        def reset_SWE(self):
+                self._Batch = self._setup.get('Electrode.Cat.Batch',"")
+                self._Serial = self._setup.get('Electrode.Cat.Serial',"")
+                self._Support = self._setup.get('Electrode.Cat.Support',"")
+                self._Substrate = self._setup.get('Electrode.Cat.Substrate',"")
+                self._Electrode = self._setup.get('Electrode.ExElectrode',"")
+                self._Loading = self._setup.get('Electrode.Cat.Loading',"")
+                self._Weight = self._setup.get('Electrode.Cat.Weight',"")
+                self._totWeight = self._setup.get('Electrode.Cat.totWeight',"")
+                self._totWeight = self._setup.get('Electrode.Cat.totWeight',"")
+                self._cat_w_ratio = self._setup.get('Electrode.Cat.w%',"")
+
+        def select_MWE_CH(self,ch_number:int):
+            if self._setup.get('AddOn',False):
+                self._MWE_CH = int(ch_number)
+                
+                self._batch = self._setup.get('MWE_{ch_number}.Batch',"")
+                self._Serial = self._setup.get('MWE_{ch_number}.Serial',"")
+                self._Support = self._setup.get('MWE_{ch_number}.Support',"")
+                self._Electrode = self._setup.get('MWE_{ch_number}.Electrode',"")
+                self._Loading = self._setup.get('MWE_{ch_number}.Loading',"")
+                        
 
 class EC_Setup:
     """Describes the setup.
@@ -89,10 +120,8 @@ class EC_Setup:
             self.setup_data._SHE = self.setup_data._setup['SHE']
         if 'Ref.Electrode' in self.setup_data._setup:
             self.setup_data._RE = self.setup_data._setup['Ref.Electrode']
-        #if 'Inst.Convection.Speed' in self.setup_data._setup:
-        #    v,u = extract_value_unit(self.setup_data._setup['Inst.Convection.Speed'])
-        #    self.set_rotation(v,u)
-            #self.setup_data._area_unit = u
+            
+        self.setup_data.reset_SWE()
     
     
     def copy_from(self, source):
@@ -338,6 +367,11 @@ class EC_Setup:
                 return  np.datetime_as_string(self.setup_data.dateTime, unit='D')
             elif item.casefold() =="time".casefold():
                 return  np.datetime_as_string(self.setup_data.dateTime, unit='D')
+            elif item.casefold() =="MWE".casefold():
+                if self.is_MWE:
+                    return  str(self.setup_data._MWE_CH)
+                else:
+                    return "not a MWE"
             elif item in self.setup_data._setup:
                 print("items was found", item)
                 s = self.setup_data._setup[item]

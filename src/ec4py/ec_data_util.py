@@ -17,7 +17,8 @@ class EC_Channels:
             'E' : "E",
             'i' : "i",
             'Z' : "Z_E",
-            'Phase' : "Phase_E"
+            'Phase' : "Phase_E",
+            'MWE_CH': None
             }
         self.update(*args, **kwargs)
         return
@@ -35,6 +36,7 @@ class EC_Channels:
                     self._channels["i"]=arg
                     self._channels["Z"]="Z"+numMatch.group()
                     self._channels["Phase"]="Phase"+numMatch.group()
+                    self._channels["MWE_CH"]=int(numMatch.group())
                 if arg[0]=='P' and numMatch!= None:
                     self._channels["E"]=arg+"_E"
                     self._channels["i"]=arg+"_i"
@@ -62,3 +64,6 @@ class EC_Channels:
     @property
     def Phase(self):
         return self._channels["Phase"]
+    @property
+    def MWE_CH(self):
+        return self._channels["MWE_CH"]

@@ -12,7 +12,7 @@ from .lsv_data import LSV_Data
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT,LEGEND,ANALYSE_PLOT,DATA_PLOT,update_legend
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT,LEGEND,ANALYSE_PLOT,DATA_PLOT,update_legend,should_plot_be_made
 
 from .util_voltammetry import create_Tafel_data_analysis_plot,create_RanSev_data_analysis_plot,create_Rate_data_analysis_plot,create_Levich_data_analysis_plot,create_KouLev_data_analysis_plot
 from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE
@@ -204,7 +204,7 @@ class LSV_Datas:
 
 ##################################################################################################################
 
-    def set_active_RE(self,*args):     
+    def set_active_RE(self,shift_to: str | tuple = None):     
         """Set active reference electrode for plotting.
         
         - RHE    - if values is not already set, use ".set_RHE()"
@@ -213,10 +213,15 @@ class LSV_Datas:
         - None to use the exerimental 
         """
         for x in self.datas:
-            x.norm(args)
+            x.set_active_RE(shift_to)
         return
 ################################################################  
 
+    def norm(self,*args, **kwargs):
+        for x in self.datas:
+            x.norm(args)
+        return
+    
     def plot(self, *args, **kwargs):
         """Plot LSVs.
             use args to normalize the data
@@ -229,38 +234,43 @@ class LSV_Datas:
             - legend = "name"
             - x_smooth = 10
             - y_smooth = 10
-            
+        
+        Returns:
+            the plot handler
             
         """
-        #CV_plot = make_plot_1x("CVs")
-        data_plot_kwargs = update_legend(LEGEND.NAME,*args,**kwargs)
-        #if data_plot_kwargs.get("legend",None) is None:
-            #data_plot_kwargs["legend"] = LEGEND.NAME
-        #    data_plot_kwargs = update_legend(LEGEND.NAME,**kwargs)
+        if should_plot_be_made(*args):
+            #CV_plot = make_plot_1x("CVs")
+            data_plot_kwargs = update_legend(LEGEND.NAME,*args,**kwargs)
+            #if data_plot_kwargs.get("legend",None) is None:
+                #data_plot_kwargs["legend"] = LEGEND.NAME
+            #    data_plot_kwargs = update_legend(LEGEND.NAME,**kwargs)
 
-        p = plot_options(data_plot_kwargs)
-        p.no_smooth()
-        p.set_title("LSVs")
-        p.x_data= None
-        line, data_plot = p.exe()
-        legend = p.legend
-        
-        datas = copy.deepcopy(self.datas)
-        #data_plot_kwargs = kwargs
-        data_plot_kwargs["plot"] = data_plot
-        for data in datas:
-            #rot.append(math.sqrt(cv.rotation))
-  
-            data_plot_kwargs["name"] = data.setup_data.name
-            # print(data_plot_kwargs["legend"])
-            #if legend == "_"  :
-            #    data_plot_kwargs["legend"] = data.setup_data.name
+            p = plot_options(data_plot_kwargs)
+            p.no_smooth()
+            p.set_title("LSVs")
+            p.x_data= None
+            line, data_plot = p.exe()
+            legend = p.legend
+            
+            datas = copy.deepcopy(self.datas)
+            #data_plot_kwargs = kwargs
+            data_plot_kwargs["plot"] = data_plot
+            for data in datas:
+                #rot.append(math.sqrt(cv.rotation))
+    
+                data_plot_kwargs["name"] = data.setup_data.name
+                # print(data_plot_kwargs["legend"])
+                #if legend == "_"  :
+                #    data_plot_kwargs["legend"] = data.setup_data.name
 
-            data.plot(*args, **data_plot_kwargs)
+                data.plot(*args, **data_plot_kwargs)
 
-        data_plot.legend()
-        p.saveFig(**kwargs)
-        return data_plot
+            data_plot.legend()
+            p.saveFig(**kwargs)
+            return data_plot
+        else:
+            return None
 
     #################################################################################################    
     
@@ -274,29 +284,33 @@ class LSV_Datas:
             List : Slope of data based on positive and negative sweep.
         """
     
-        data_plot, analyse_plot,fig = create_Rate_data_analysis_plot()
+        data_plot, analyse_plot,fig = create_Rate_data_analysis_plot(*args,**kwargs)
        
         #########################################################
         # Make plot
-        cv_kwargs = kwargs
-        cv_kwargs["plot"] = data_plot
+        loc_kwargs = kwargs
+        loc_kwargs["plot"] = data_plot
         
         rate = [float(val) for val in self.rate]
         E =[Epot for val in self.rate]
+        rate_unit = "V /s"
+        if len(self)>0:
+            rate_unit = self.rate[0].unit
        
         if fig is not None:
-            self.plot(LEGEND.RATE,*args, **cv_kwargs)
+            self.plot(LEGEND.RATE,*args, **loc_kwargs)
 
         y = self.get_i_at_E(Epot,*args, **kwargs)
         #PLOT
         style = self.datas[0].get_point_color()
-
-        data_plot.plot(E, y, style)
+        if data_plot is not None:
+            data_plot.plot(E, y, style)
         y_axis_title =y[0].quantity
         y_axis_unit = y[0].unit
         # print(y_axis_title)
-        B_factor_pos=0
-        B_factor_pos = sweep_rate_analysis(rate, y, y_axis_unit, y_axis_title, style, self.dir,plot=analyse_plot )
+        analyse_kwargs = kwargs
+        analyse_kwargs["plot"] = analyse_plot
+        B_factor_pos = sweep_rate_analysis(rate, y, y_axis_unit, y_axis_title, style, self.dir,rate_unit,*args, **analyse_kwargs )
         
         saveFig(fig,**kwargs)
         return B_factor_pos
@@ -506,7 +520,7 @@ class LSV_Datas:
         """
         size = [len(Voltammetry().E),len(self.datas)]
         m = np.zeros(size)
-        col_names= list("E")
+        col_names= [f"{self.datas[0].E_label} /{self.datas[0].E_unit}"]
         #print(m.shape,len(self.datas))
         for x in range(0,len(self.datas)):
             #print(x,self.datas[x].i.shape)
@@ -518,15 +532,20 @@ class LSV_Datas:
     def export_DataFrame(self):
         size = [len(Voltammetry().E),len(self.datas)+1]
         m = np.zeros(size)
-        col_names= list("E")
+        col_names= [f"{self.datas[0].E_label} /{self.datas[0].E_unit}"]
         #print(m.shape,len(self.datas))
         m[:,0]=Voltammetry().E
         for x in range(0,len(self.datas)):
         
             #print(x,self.datas[x].i.shape)
             m[:,x+1] = self.datas[x].i
-            col_names.append(f"{self.datas[x].i_label}_{self.datas[x].name} / {self.datas[x].i_unit}")
-        #print(col_names)
+            if self.datas[x].is_MWE:
+                name = f"{self.datas[x].name}#{self.datas[x].setup_data._MWE_CH}"
+            else:
+                name =f"{self.datas[x].name}"
+            #print(name)
+            col_names.append(f"[{name}] {self.datas[x].i_label} / {self.datas[x].i_unit}")
+        #print(len(col_names),col_names)
         df = pd.DataFrame.from_records(m,columns=col_names)
         return df
 

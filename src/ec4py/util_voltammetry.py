@@ -13,7 +13,7 @@ import copy
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x, ANALYSE_PLOT, DATA_PLOT
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x, ANALYSE_PLOT, DATA_PLOT,NO_PLOT
 
 
 OFFSET_AT_E_MIN ="offset_at_emin"
@@ -59,6 +59,7 @@ class Voltammetry(EC_Setup):
         self.E_axis.update(kwargs)
         self.E = self.make_E_axis()
         self.E_shifted_by = None
+        self.IR_COMPENSATED = False
     
     
     
@@ -73,6 +74,7 @@ class Voltammetry(EC_Setup):
         self.E_unit         = source.E_unit
         self.E_axis         = source.E_axis
         self.E_shifted_by   = source.E_shifted_by
+        self.IR_COMPENSATED = source.IR_COMPENSATED
         self.xmin = source.xmin
         self.xmax = source.xmax
         self.i_label = source.i_label
@@ -274,8 +276,10 @@ class Voltammetry(EC_Setup):
         # print(shift_to)
         last_Active_RE = self.setup_data.getACTIVE_RE()
         end_norm_factor = EC_Setup.set_active_RE(self, shift_to)
-        
-        self.E_label = "E vs "+ self.setup_data.getACTIVE_RE()      
+        E_label = "E"
+        if self.IR_COMPENSATED:
+            E_label ="E-iR"
+        self.E_label = f"{E_label} vs "+ self.setup_data.getACTIVE_RE()      
         if end_norm_factor is not None:
             if  self.E_shifted_by == end_norm_factor.value :  
                 pass #potential is already shifted.
@@ -413,70 +417,36 @@ class Voltammetry(EC_Setup):
 
 
 def create_Levich_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
-    Tafel_op= {"data_plot": None,ANALYSE_PLOT: None}
-    Tafel_op.update(kwargs)
-    data_plot = Tafel_op["data_plot"]
-    analyse_plot = Tafel_op[ANALYSE_PLOT]
-    fig = None
-    if Tafel_op["data_plot"] is None and Tafel_op[ANALYSE_PLOT] is None:
-        fig = make_plot_2x("Levich Analysis")
-        data_plot = fig.plots[0]
-        analyse_plot =  fig.plots[1]
-        data_plot.title.set_text(data_plot_title)
-        analyse_plot.title.set_text('Levich Plot')
-    return data_plot,analyse_plot,fig
+    return make_analysis_plot("Levich Analysis","Data","Levich Plot",*args, **kwargs)    
 
-def create_KouLev_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
-    Tafel_op= {"data_plot": None,ANALYSE_PLOT: None}
-    Tafel_op.update(kwargs)
-    data_plot = Tafel_op["data_plot"]
-    analyse_plot = Tafel_op[ANALYSE_PLOT]
-    fig = None
-    if Tafel_op["data_plot"] is None and Tafel_op[ANALYSE_PLOT] is None:
-        fig = make_plot_2x("KouLev Analysis")
-        data_plot = fig.plots[0]
-        analyse_plot =  fig.plots[1]
-        data_plot.title.set_text(data_plot_title)
-        analyse_plot.title.set_text('KouLev Plot')
-    return data_plot,analyse_plot,fig          
+def create_KouLev_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):  
+    return make_analysis_plot("KouLev Analysis","Data","KouLev Plot",*args, **kwargs)           
             
-def create_Tafel_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
-    Tafel_op= {"data_plot": None,ANALYSE_PLOT: None}
-    Tafel_op.update(kwargs)
-    data_plot = Tafel_op["data_plot"]
-    analyse_plot = Tafel_op[ANALYSE_PLOT]
-    fig = None
-    if Tafel_op["data_plot"] is None and Tafel_op[ANALYSE_PLOT] is None:
-        fig = make_plot_2x("Tafel Analysis")
-        data_plot = fig.plots[0]
-        analyse_plot =  fig.plots[1]
-        data_plot.title.set_text(data_plot_title)
-        analyse_plot.title.set_text('Tafel Plot')
-    return data_plot,analyse_plot,fig
+def create_Tafel_data_analysis_plot(data_plot_title:str="data",*args, **kwargs): 
+    return make_analysis_plot("Tafel Analysis","Data","Tafel Plot",*args, **kwargs)           
 
-def create_RanSev_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
-    Tafel_op= {"data_plot": None,"analyse_plot": None}
-    Tafel_op.update(kwargs)
-    data_plot = Tafel_op["data_plot"]
-    analyse_plot = Tafel_op["analyse_plot"]
-    fig = None
-    if Tafel_op["data_plot"] is None and Tafel_op["analyse_plot"] is None:
-        fig = make_plot_2x("RanSev Analysis")
-        data_plot = fig.plots[0]
-        analyse_plot =  fig.plots[1]
-        data_plot.title.set_text(data_plot_title)
-        analyse_plot.title.set_text('RanSev Plot')
-    return data_plot,analyse_plot,fig
+def create_RanSev_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):  
+    return make_analysis_plot("RanSev Analysis","Data","RanSev Plot",*args, **kwargs)         
 
-def create_Rate_data_analysis_plot(data_plot_title:str="data",*args, **kwargs):           
-    op= {"data_plot": None,"analyse_plot": None}
+def create_Rate_data_analysis_plot(*args, **kwargs):           
+    return make_analysis_plot("Rate Analysis","Data","Rate Plot",*args, **kwargs)
+
+def make_analysis_plot(fig_title:str="Fig_Title", data_plot_title:str="data",analyse_plot_title:str='analyse',*args, **kwargs):
+    op= {DATA_PLOT: None,ANALYSE_PLOT: None}
     op.update(kwargs)
-    data_plot = op["data_plot"]
-    analyse_plot = op["analyse_plot"]
-    if op["data_plot"] is None and op["analyse_plot"] is None:
-        fig = make_plot_2x("Rate Analysis")
+    data_plot = op[DATA_PLOT]
+    analyse_plot = op[ANALYSE_PLOT]
+    makePlot = True
+    fig = None
+    for arg in args:
+        a = str(arg)
+        #print("PLOT",a)
+        if a.casefold() == NO_PLOT.casefold():
+            makePlot= False
+    if op[DATA_PLOT] is None and op[ANALYSE_PLOT] is None and makePlot :
+        fig = make_plot_2x(fig_title)
         data_plot = fig.plots[0]
         analyse_plot =  fig.plots[1]
         data_plot.title.set_text(data_plot_title)
-        analyse_plot.title.set_text('Rate Plot')
+        analyse_plot.title.set_text(analyse_plot_title)
     return data_plot,analyse_plot,fig

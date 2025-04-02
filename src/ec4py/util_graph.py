@@ -41,6 +41,7 @@ class ENUM_legend(StrEnum):
     VSTART = "legend_start"
     V1 = "legend_v1"
     V2 = "legend_v2"
+    MWE_CH = "legend_MWE"
 
 LEGEND = ENUM_legend
 
@@ -113,7 +114,21 @@ def quantity_plot_fix(s:str):
             nyckel = nyckel + "$^{" + aa[1] + "}$"  
         s_out = s_out +" " + nyckel
     #print("AA", s_out.strip())
-    return s_out.strip()  
+    return s_out.strip() 
+
+
+def should_plot_be_made(*args, **kwargs):
+    """Looks in the list of args to see if a plot should be made
+
+    Returns:
+        bool: make plot? 
+    """
+    makePlot = True
+    for arg in args:
+        a=str(arg)
+        if a.casefold() == NO_PLOT.casefold():
+            makePlot = False
+    return makePlot
 
 
 class plot_options:

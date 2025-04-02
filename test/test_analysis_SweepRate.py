@@ -34,17 +34,17 @@ class Test_Analysis_SweepRate(unittest.TestCase):
         result = sweep_rate_analysis(rate, y_data, "A", "", "bo")
         self.assertEqual(result.unit, "F")
         result = sweep_rate_analysis(rate, y_data, unit, "", "bo")
-        self.assertEqual(result.unit, unit+" F")
+        self.assertEqual(result.unit, unit+" F A^-1")
         # self.assertEqual(result.unit, "m")
     
     def test_quantity_slope(self):
-       
+        rate = [QVU(x,"V /s","v") for x in range(0,10)]
         y_data = 1*rate
         result = sweep_rate_analysis(rate, y_data, "", "", "bo")
-        self.assertEqual(result.quantity, "v")
+        self.assertEqual(result.quantity, "v^-1")
         q = "AAA"
         result = sweep_rate_analysis(rate, y_data, "", q, "bo")
-        self.assertEqual(result.quantity, q+" v")
+        self.assertEqual(result.quantity, q+" v^-1")
         
     def real_data(self):
         pass
