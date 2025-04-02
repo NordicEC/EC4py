@@ -21,7 +21,7 @@ from .util import Quantity_Value_Unit as QV
 from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot,POS,NEG,AVG,DIF
 
 
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, LEGEND
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, LEGEND,should_plot_be_made
 from .analysis_tafel import Tafel
 from .analysis_levich import diffusion_limit_corr
 
@@ -38,6 +38,11 @@ class CV_Data(Voltammetry):
     Class Functions:
     - .plot() - plot data    
     - .bg_corr() to back ground correct.
+    
+    ### iR- Compensation
+    - add keyword IRCOMP = "Z" for using the absolute impedance
+    - add keyword IRCOMP = "R" for using the real-part of the impedance
+    - add keyword IRCOMP = 1.0 for manual ir compensation
     
     ### Analysis: 
     - .Tafel() - Tafel analysis data    
@@ -192,33 +197,77 @@ class CV_Data(Voltammetry):
         options = {
             'x_smooth' : 0,
             'y_smooth' : 0,
-            'IR': 0,
+            'IRCOMP': 0,
             'E' : "E",
             'i' : 'i'
         }
         options.update(kwargs)
         sel_channels = EC_Channels(*args,**kwargs)
-
+        ir_comp =False
         try:
-            data_E,q,u = ec_data.get_channel(sel_channels.Voltage)
-            data_i,q,u = ec_data.get_channel(sel_channels.Current)
+            data_E,q,u,dt_x = ec_data.get_channel(sel_channels.Voltage)
+            data_i,q,u,dt_y = ec_data.get_channel(sel_channels.Current)
         except NameError as e:
             print(e)
             raise NameError(e)
             return
+        
+        try:
+            comp = options.get("IRCOMP",None)
+            if comp is not None:
+                s_comp=str(comp).casefold()
+            if  s_comp == "Z".casefold():
+                data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
+                print(sel_channels.Impedance)
+                if(len(data_E)!=len(data_Z)):
+                    data_t,q,u,dt_t = ec_data.get_channel("Time")
+                    data_t_z =dt_Z*np.array(range(len(data_Z)))
+                    data_Z = np.interp(data_t, data_t_z, data_Z)
+                data_E = data_E - data_i*data_Z
+                ir_comp =True
+            elif  s_comp == "R".casefold():
+                data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
+                data_phase,q,u,dt_p = ec_data.get_channel(sel_channels.Phase)
+                if(len(data_E)!=len(data_Z)):
+                    data_t,q,u,dt_t = ec_data.get_channel("Time")
+                    data_t_z =dt_Z*np.array(range(len(data_Z)))
+                    data_Z = np.interp(data_t, data_t_z, data_Z)
+                    data_phase = np.interp(data_t, data_t_z, data_phase)
+                data_E = data_E - data_i*data_Z*np.cos(data_phase)
+                ir_comp =True
+
+            else:
+                Rsol = float(comp)
+                if Rsol > 0:
+                    data_E = data_E - data_i*Rsol
+                    ir_comp =True
+
             
+        except NameError as e:
+            print(e)
+            raise NameError(e)
+            return
+
         try:
             self.setup_data = copy.deepcopy(ec_data.setup_data)
             self.convert(ec_data.Time,data_E,data_i,**kwargs)
+            self.IR_COMPENSATED = ir_comp
+            E_title = "E"
+            #if ir_comp: ###NOT NEEDED
+            #    E_title ="E-iR"
             if 'Ref.Electrode' in self.setup:
-                self.E_label = "E vs " + self.RE
+                self.E_label = f"{E_title} vs " + self.RE
                 #print("aaaaa")
             else:
-                self.E_label ="E"
+                self.E_label =f"{E_title}"
+            if self.is_MWE:
+                self.setup_data.select_MWE_CH(sel_channels.MWE_CH)
+            
+            
 
         except ValueError:
             if(self.is_MWE):
-                print("select a current channel")
+                print("select a current channel, such as i_0")
             else:
                 print("no_data")
         
@@ -379,46 +428,52 @@ class CV_Data(Voltammetry):
         Returns:
             line, ax: description
         '''
-        
-        dir = Voltammetry()._direction(*args,**kwargs)
-        if dir == POS or dir == NEG or dir == AVG or dir == DIF:
-            lsv = self.get_sweep(dir)
-            return lsv.plot(*args,**kwargs)
-        
-        data = copy.deepcopy(self)
-        options = plot_options(kwargs)
-        options.options["dir"]=dir
-        #print("AAAAAAAAAAAAAAAAAAAAAAA")
-        #print(options.get_y_smooth())
-        # print(options.get_legend(),self.legend(**kwargs))
-        
-        options.set_title(data.setup_data.name)
-        options.name = data.setup_data.name
-        options.legend = data.legend(*args, **kwargs)
-        # print("AAAA",data.legend(*args, **kwargs))
-        
-        data.norm(args)
-        # print(args)
-        data.set_active_RE(args)
-        options.x_data = data.E
-        if(options.get_dir() == POS.casefold()):  
-            options.y_data = data.i_p
-        
-        elif(options.get_dir() == NEG.casefold()):  
-            options.y_data = data.i_n
+        if should_plot_be_made(*args,**kwargs):
+            dir = Voltammetry()._direction(*args,**kwargs)
+            if dir == POS or dir == NEG or dir == AVG or dir == DIF:
+                lsv = self.get_sweep(dir)
+                return lsv.plot(*args,**kwargs)
             
+            data = copy.deepcopy(self)
+            options = plot_options(kwargs)
+            options.options["dir"]=dir
+            #print("AAAAAAAAAAAAAAAAAAAAAAA")
+            #print(options.get_y_smooth())
+            # print(options.get_legend(),self.legend(**kwargs))
+            
+            if self.is_MWE:
+                options.set_title(f"{self.setup_data.name}#{self.setup_data._MWE_CH}")
+            else:
+                options.set_title(self.setup_data.name)
+                
+            options.name = data.setup_data.name
+            options.legend = data.legend(*args, **kwargs)
+            # print("AAAA",data.legend(*args, **kwargs))
+            
+            data.norm(args)
+            # print(args)
+            data.set_active_RE(args)
+            options.x_data = data.E
+            if(options.get_dir() == POS.casefold()):  
+                options.y_data = data.i_p
+            
+            elif(options.get_dir() == NEG.casefold()):  
+                options.y_data = data.i_n
+                
+            else:
+                options.x_data=np.concatenate((data.E, data.E), axis=None)
+                options.y_data=np.concatenate((data.i_p, data.i_n), axis=None)  
+            
+            # options.set_x_txt("E vs "+ data.setup_data.getACTIVE_RE(), data.E_unit)
+            options.set_x_txt(data.E_label, data.E_unit)
+            options.set_y_txt(data.i_label, data.i_unit) 
+            
+            # print(options.get_legend())
+            #print("AAAAAAAAAAAAAAAAAAAAAAA")
+            #print(options.get_y_smooth())
+            return options.exe()
         else:
-            options.x_data=np.concatenate((data.E, data.E), axis=None)
-            options.y_data=np.concatenate((data.i_p, data.i_n), axis=None)  
-        
-        # options.set_x_txt("E vs "+ data.setup_data.getACTIVE_RE(), data.E_unit)
-        options.set_x_txt(data.E_label, data.E_unit)
-        options.set_y_txt(data.i_label, data.i_unit) 
-        
-        # print(options.get_legend())
-        #print("AAAAAAAAAAAAAAAAAAAAAAA")
-        #print(options.get_y_smooth())
-        return options.exe()
+            return None,None
     
     ####################################################################################################
     """def get_index_of_E(self, E:float):
@@ -431,37 +486,34 @@ class CV_Data(Voltammetry):
         return index
     """
     ########################################################################################################
-    def get_i_at_E(self, E:float, dir:str = "all",*args, **kwargs):
+    def get_i_at_E(self, E:float, direction:str = "all",*args, **kwargs):
         """Get the current at a specific voltage.
 
         Args:
             E (float): potential where to get the current. 
             dir (str): direction, "pos,neg or all"
         Returns:
-            float: current
+            Quantity_Value_Unit: current of selected sweep
+            or 
+            List[Quantity_Value_Unit,Quantity_Value_Unit] of positive and negative sweep. 
         """
+        #if args is not None:
+        list_args=[arg for arg in args]
+        list_args.insert(0,direction)
+        loc_args=tuple(list_args)
         
+        dir = self._direction(*loc_args,**kwargs)
+       
+        update_label = kwargs.get("update_label",True)
         
-        cv = copy.deepcopy(self)
-        cv.norm(args)
-        cv.set_active_RE(args)  
-        smooth_length = kwargs.get("y_smooth",None)
-        if smooth_length is not None:
-            cv.smooth(smooth_length)
-        index = cv.get_index_of_E(E)
-        # print("INDEX",index,cv.i_n[index],cv.i_unit)
-        # print(cv.get_sweep(NEG).get_i_at_E(1.4))
-        i_p = QV(cv.i_p[index],cv.i_unit,cv.i_label)
-        i_n = QV(cv.i_n[index],cv.i_unit,cv.i_label)
-        
-
-        
-        if dir.casefold() == POS.casefold():
-            return i_p
-        elif dir.casefold() == NEG.casefold():
-            return i_n
+        if dir == "" or dir == "all".casefold():
+            lsv_pos = self.get_sweep(POS,update_label)
+            lsv_neg = self.get_sweep(NEG,update_label)
+            return [lsv_pos.get_i_at_E(E,*args,**kwargs) , lsv_neg.get_i_at_E(E,*args,**kwargs)]
         else:
-            return [i_p , i_n]
+            lsv = self.get_sweep(dir)
+            return lsv.get_i_at_E(E,*args,**kwargs)
+ 
     
     ###########################################################################################
 
@@ -493,15 +545,55 @@ class CV_Data(Voltammetry):
     
     ###########################################################################################
 
-
-    def get_sweep(self,sweep:str, update_label = True):
-        """_summary_
+    def get_E_of_max_i(self, E1:float,E2:float,*args,**kwargs):
+        """get the potential of maximum current in a range.
 
         Args:
-            sweep (str): _description_
+            E1 (float): _description_
+            E2 (float): _description_
 
         Returns:
             _type_: _description_
+        """
+        dir = self._direction(*args, **kwargs)
+        
+        if dir == "" or dir == "ALL".casefold():
+            lsv_p = self.get_sweep(POS)
+            lsv_n = self.get_sweep(NEG)
+            return lsv_p.get_E_of_max_i(E1,E2),lsv_n.get_E_of_max_i(E1,E2)
+        else:
+            lsv = self.get_sweep(dir)
+            return lsv.get_E_of_max_i(E1,E2)
+        
+    def get_E_of_min_i(self, E1:float,E2:float,*args,**kwargs):
+        """get the potential of maximum current in a range.
+
+        Args:
+            E1 (float): _description_
+            E2 (float): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        dir = self._direction(*args, **kwargs)
+        
+        if dir == "" or dir == "ALL".casefold():
+            lsv_p = self.get_sweep(POS)
+            lsv_n = self.get_sweep(NEG)
+            return lsv_p.get_E_of_min_i(E1,E2),lsv_n.get_E_of_min_i(E1,E2)
+        else:
+            lsv = self.get_sweep(dir)
+            return lsv.get_E_of_min_i(E1,E2)           
+
+
+    def get_sweep(self,sweep:str, update_label = True):
+        """Creates a single voltammogram from a CV.
+
+        Args:
+            sweep (str): the direction,use POS,NEG,AVG or DIF"
+
+        Returns:
+            LSV_Data: The sweep as LSV_data
         """
         lsv = LSV_Data()
         # lsv.setup_data =  copy.deepcopy(self.setup_data)

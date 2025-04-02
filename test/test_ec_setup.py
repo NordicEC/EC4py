@@ -68,7 +68,7 @@ class test_EC_Setup(unittest.TestCase):
         self.assertEqual( setup.legend(LEGEND.DATE), "2020-01-01")
         self.assertEqual( setup.legend(LEGEND.TIME), "2020-01-01")
 
-        self.assertEqual( setup.legend(LEGEND.RATE), "1.000e+00 V/s")
+        self.assertEqual( setup.legend(LEGEND.RATE), "1.000 V s^-1")
         
         
   

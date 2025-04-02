@@ -196,7 +196,7 @@ class Step_Data(EC_Setup):
 
         Args:
             time_s_ (float): _description_
-            dt_s_ (float, optional): _description_. Defaults to 0.
+            dt_s_ (float, optional): Defaults to 0. The return values is averaged if dt_s_ is not 0
 
         Returns:
             QV: current
