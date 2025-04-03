@@ -5,7 +5,7 @@ nav_order: 1
 ---
 
 
-# class ec4py.Quantity_Value_Unit() -- class to handle quantities, values and units.. 
+# class ec4py.Quantity_Value_Unit() -- class to handle quantities, values and units
 
 ## Basic use:
 Importing the class:
