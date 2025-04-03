@@ -14,7 +14,7 @@ The class is a parent class of EC_Data.
 
 
 EC_Setup.*area*
-A [Quantity_Value_Unit](ec4py_ec_setup) representation of the geometric area.
+A [Quantity_Value_Unit](ec4py_ec_setup.md) representation of the geometric area.
 ```python
    area = EC_Setup().area
 ```
