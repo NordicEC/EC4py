@@ -6,7 +6,17 @@ permalink: /
 ---
 
 
-# EC4py documentation
+# EC4py documentation - Data Treament of Electrochemcial data made easy
+
+**Source code:** [EC4py on Github] (https://github.com/NordicEC/EC4py)
+
+aa  | $250    |
+February | $80     |
+March    | $420    |
+
+<p>
+<img src="class_overview.svg" width="250">
+![Overview of classes](./class_overview.svg =250x)
 
    intro
    install
