@@ -1,5 +1,5 @@
 ---
-title: Keywords
+title: Arguments
 parent: Package
 nav_order: 100
 ---
