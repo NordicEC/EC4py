@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 
 ### Changed
 
+## [0.5.1] - 
+### Added
+  - POP functions to all multi-object classes.
+### Changed
+  - Fixed IRCOMP for MWE datas
+
 ## [0.4.11] - 
 ### Added
   - Export to Pandas for CV_Datas and LSV_Datas
