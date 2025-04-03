@@ -45,11 +45,11 @@ class CV_Datas:
     ### Options keywords:
     legend = "name"
     """
-    def __init__(self,*args, **kwargs):
+    def __init__(self,paths:list[Path],Path = None,*args, **kwargs):
 
         self.datas =[]
-        if args:
-            paths = args[0]
+        if paths is Not None:
+            # paths = args[0]
             if not isinstance(paths,list ):
                 path_list = [paths]
             #if isinstance(paths,Path ):
