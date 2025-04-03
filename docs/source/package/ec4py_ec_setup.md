@@ -5,65 +5,65 @@ nav_order: 1
 ---
 
 
-# class ec4py.EC_Setup() -- class to handle meta data of the electrochemical data file. 
+# class ec4py.EC_Setup() <br>-- class to handle meta data of the electrochemical data file. 
 
 ## Basic use:
 
 The class is a parent class of EC_Data.
 
-## Methods and properties¶
+## Methods and properties
 
 
-### EC_Setup.*area*
+### EC_Setup.__area__
 
 A [Quantity_Value_Unit](ec4py_util.md) representation of the geometric area.
 ```python
    area = EC_Setup().area
 ```
 
-### EC_Setup.*area_unit*
+### EC_Setup.__area_unit__
 
 A string representation of the area unit.
 ```python
    area_unit = EC_Setup().area_unit
 ```
 
-### EC_Setup.*rotation*
+### EC_Setup.__rotation__
 
 A [Quantity_Value_Unit](ec4py_util.md) representation of the rotation rate.
 ```python
    area_unit = EC_Setup().area_unit
 ```
 
-### EC_Setup.*rate*
+### EC_Setup.__rate__
 
 A [Quantity_Value_Unit](ec4py_util.md) representation of the sweep rate in the case of voltammetry data.
 ```python
    rate = EC_Setup().rate
 ```
 
-### EC_Setup.*weight*
+### EC_Setup.__weight__
 
 A [Quantity_Value_Unit](ec4py_util.md) representation of the catalyst weight.
 ```python
    m = EC_Setup().weight
 ```
 
-### EC_Setup.*loading*
+### EC_Setup.__loading__
 
 A [Quantity_Value_Unit](ec4py_util.md) representation of the catalyst loading.
 ```python
    loading = EC_Setup().loading
 ```
 
-### EC_Setup.*pressure*
+### EC_Setup.__pressure__
 
 A [Quantity_Value_Unit](ec4py_util.md) representation of the pressure of the system.
 ```python
    loading = EC_Setup().loading
 ```
 
-### EC_Setup.*temp0*
+### EC_Setup.__temp0__
 
 A [Quantity_Value_Unit](ec4py_util.md) representation of the temperature of the system.
 ```python
