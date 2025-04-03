@@ -34,8 +34,8 @@ class EC_Channels:
                 if arg[0]=='i' and numMatch!= None:
                     # to get the different channels of the MWE.
                     self._channels["i"]=arg
-                    self._channels["Z"]="Z"+numMatch.group()
-                    self._channels["Phase"]="Phase"+numMatch.group()
+                    self._channels["Z"]="Z_"+numMatch.group()
+                    self._channels["Phase"]="Phase_"+numMatch.group()
                     self._channels["MWE_CH"]=int(numMatch.group())
                 if arg[0]=='P' and numMatch!= None:
                     self._channels["E"]=arg+"_E"
