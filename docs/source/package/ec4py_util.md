@@ -22,7 +22,7 @@ Give a quantity a value and a unit.
 ```
 
 ## Operators
-### Quantity_Value_Unit and a scalar
+### - __Quantity_Value_Unit__ and a __scalar__
 The arithmetic operators * (multiplication), / (division), ** (exponentiation) are supported between **Quantity_Value_Unit** and a float or an int.
 ```python
     length = QVU("10 m")
@@ -30,7 +30,7 @@ The arithmetic operators * (multiplication), / (division), ** (exponentiation) a
     print(length * 5) #the result is "5 m"
     print(length ** 3) #the result is "1000 m^3"
 ```
-### __Quantity_Value_Unit__ and __Quantity_Value_Unit__
+### - __Quantity_Value_Unit__ and __Quantity_Value_Unit__
 Arithemtics operators between **Quantity_Value_Unit** and another **Quantity_Value_Unit** are the following: 
 + (addition), - (subtraction), * (multiplication), / (division)
 please note that:
