@@ -5,6 +5,7 @@ nav_order: 100
 ---
 
 # Keywords
+
 | Keyword        | Meaning           | Where to use  |
 | ------------- |:-------------| -----:|
 | IRCOMP = "Z" | iR-compensation using measured <br> absolute impedance| When loading a dataset |
@@ -12,6 +13,7 @@ nav_order: 100
 | IRCOMP = 1.0 | Manual iR-compensation<br>where the number corresponds to the Rsol | When loading a dataset |
 
 ## For plotting
+
 | Keyword        | Meaning           | Where to use  |
 | ------------- |:-------------| -----:|
 | y_smooth = 3 | iR-compensation using measured <br> absolute impedance| When loading a dataset |
