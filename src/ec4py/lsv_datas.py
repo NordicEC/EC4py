@@ -121,6 +121,9 @@ class LSV_Datas:
     def append(self,LSV = LSV_Data):
         self.datas.append(LSV)
         
+    def pop(self,index):
+        self.datas.pop(index)
+        
     @property
     def rate(self):
         rates=[]

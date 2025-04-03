@@ -41,6 +41,8 @@ class EIS_Datas:
         #print(index)
         return
     
+    def pop(self,index):
+        self.datas.pop(index)
     
     def nq(self,*args, **kwargs):
         

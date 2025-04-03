@@ -80,7 +80,8 @@ class Step_Datas:
         self.datas[item_index] = new_Step
     #############################################################################
    
-    
+    def pop(self,index):
+        self.datas.pop(index)
 ################################################################    
     def plot(self, *args, **kwargs):
         """Plot Stepss.

@@ -45,24 +45,26 @@ class CV_Datas:
     ### Options keywords:
     legend = "name"
     """
-    def __init__(self, paths:list[Path] | Path,*args, **kwargs):
+    def __init__(self,*args, **kwargs):
 
-        if not isinstance(paths,list ):
-            path_list = [paths]
-        #if isinstance(paths,Path ):
-        #    path_list = [paths]
-        else:
-            path_list = paths
-        self.datas = [CV_Data() for i in range(len(path_list))]
-        index=0
-        for path in path_list:
-            ec = EC_Data(path)
-            try:
-                self.datas[index].conv(ec,*args,**kwargs)
-            finally:
-                index=index+1 
-        #print(index)
-        return
+        self.datas =[]
+        if args:
+            paths = args[0]
+            if not isinstance(paths,list ):
+                path_list = [paths]
+            #if isinstance(paths,Path ):
+            #    path_list = [paths]
+            else:
+                path_list = paths
+            self.datas = [CV_Data() for i in range(len(path_list))]
+            index=0
+            for path in path_list:
+                ec = EC_Data(path)
+                try:
+                    self.datas[index].conv(ec,*args,**kwargs)
+                finally:
+                    index=index+1 
+            #print(index)
     #############################################################################
     
     def __getitem__(self, item_index:slice | int) -> CV_Data: 
@@ -115,8 +117,20 @@ class CV_Datas:
 
     #############################################################################
     
-    def append(self,CV = CV_Data):
-        self.datas.append(CV)
+    def append(self,other = CV_Data):
+        """append
+
+        Args:
+            other (_type_, optional): _description_. Defaults to CV_Data.
+        """
+        if isinstance(other, CV_Data):
+            self.datas.append(other)
+        elif isinstance(other, CV_Datas):
+            for cv in other:
+                self.datas.append(cv)
+    
+    def pop(self,index):
+        self.datas.pop(index)
     
     def bg_corr(self, bg_cv: CV_Data|Path) -> CV_Data:
         """Background correct the data by subtracting the bg_cv. 
@@ -255,6 +269,11 @@ class CV_Datas:
             _type_: _description_
         """
         return [cv.get_E_of_min_i(E1,E2,*args, **kwargs) for cv in self.datas]
+
+    def norm(self,*args, **kwargs):
+        for x in self.datas:
+            x.norm(args)
+        return
 
     def plot(self, *args, **kwargs):
         """Plot CVs.

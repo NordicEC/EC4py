@@ -51,6 +51,10 @@ class EC_Datas:
         if not isinstance(item_index, int):
             raise TypeError("key must be an integer")
         self.datas[item_index] = new_data
+    
+    def pop(self,index):
+        self.datas.pop(index)
+    
         
     def plot(self, x_channel:str = "E", y_channel:str = "i", *args, **kwargs):
         p = plot_options(kwargs)
