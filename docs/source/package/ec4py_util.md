@@ -44,7 +44,7 @@ please note that:
 ```
 
 
-## Methods and properties¶
+## Methods and properties
 
 ### Quantity_Value_Unit.__value__
 The value of a quantity:
@@ -73,7 +73,7 @@ The name of a quantity:
     print(length.quantity) #the result is "d"
 ```
 
-### Quantity_Value_Unit.set_quantity(new_quantity_label:str)
+### Quantity_Value_Unit.__set_quantity(new_quantity_label:str)__
 Manually set the quantity name after the class has been initialized.
 ```python
    length = QVU(5,"m","d")
@@ -81,7 +81,7 @@ Manually set the quantity name after the class has been initialized.
    print(length.quantity) #the result is "len"
 ```
 
-### Quantity_Value_Unit.set_unit(self, new_unit_label:str)
+### Quantity_Value_Unit.__set_unit(self, new_unit_label:str)__
 Manually set the unit name after the class has been initialized.
 ```python
    length = QVU(5,"m","d")
