@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="240mm"
+   viewBox="0 0 210 240"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="class_overview.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.71713664"
+     inkscape:cx="287.9507"
+     inkscape:cy="480.38265"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <marker
+       style="overflow:visible"
+       id="RoundedArrow"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Rounded arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.7)"
+         d="m -0.21114562,-4.1055728 6.42229122,3.21114561 a 1,1 90 0 1 0,1.78885438 L -0.21114562,4.1055728 A 1.236068,1.236068 31.717474 0 1 -2,3 v -6 a 1.236068,1.236068 148.28253 0 1 1.78885438,-1.1055728 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path8" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="RoundedArrow-1"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Rounded arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.7)"
+         d="m -0.21114562,-4.1055728 6.42229122,3.21114561 a 1,1 90 0 1 0,1.78885438 L -0.21114562,4.1055728 A 1.236068,1.236068 31.717474 0 1 -2,3 v -6 a 1.236068,1.236068 148.28253 0 1 1.78885438,-1.1055728 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path8-5" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="RoundedArrow-7"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Rounded arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.7)"
+         d="m -0.21114562,-4.1055728 6.42229122,3.21114561 a 1,1 90 0 1 0,1.78885438 L -0.21114562,4.1055728 A 1.236068,1.236068 31.717474 0 1 -2,3 v -6 a 1.236068,1.236068 148.28253 0 1 1.78885438,-1.1055728 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path8-4" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="RoundedArrow-7-6"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Rounded arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.7)"
+         d="m -0.21114562,-4.1055728 6.42229122,3.21114561 a 1,1 90 0 1 0,1.78885438 L -0.21114562,4.1055728 A 1.236068,1.236068 31.717474 0 1 -2,3 v -6 a 1.236068,1.236068 148.28253 0 1 1.78885438,-1.1055728 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path8-4-8" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="RoundedArrow-79"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Rounded arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.7)"
+         d="m -0.21114562,-4.1055728 6.42229122,3.21114561 a 1,1 90 0 1 0,1.78885438 L -0.21114562,4.1055728 A 1.236068,1.236068 31.717474 0 1 -2,3 v -6 a 1.236068,1.236068 148.28253 0 1 1.78885438,-1.1055728 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path8-6" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="RoundedArrow-1-3"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Rounded arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.7)"
+         d="m -0.21114562,-4.1055728 6.42229122,3.21114561 a 1,1 90 0 1 0,1.78885438 L -0.21114562,4.1055728 A 1.236068,1.236068 31.717474 0 1 -2,3 v -6 a 1.236068,1.236068 148.28253 0 1 1.78885438,-1.1055728 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path8-5-1" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="RoundedArrow-7-2"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Rounded arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.7)"
+         d="m -0.21114562,-4.1055728 6.42229122,3.21114561 a 1,1 90 0 1 0,1.78885438 L -0.21114562,4.1055728 A 1.236068,1.236068 31.717474 0 1 -2,3 v -6 a 1.236068,1.236068 148.28253 0 1 1.78885438,-1.1055728 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path8-4-2" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="RoundedArrow-7-6-3"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Rounded arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.7)"
+         d="m -0.21114562,-4.1055728 6.42229122,3.21114561 a 1,1 90 0 1 0,1.78885438 L -0.21114562,4.1055728 A 1.236068,1.236068 31.717474 0 1 -2,3 v -6 a 1.236068,1.236068 148.28253 0 1 1.78885438,-1.1055728 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path8-4-8-4" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Lager 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g9"
+       transform="translate(-18.078261,-28.77764)">
+      <rect
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.272081;stroke-miterlimit:1"
+         id="rect1"
+         width="62.32547"
+         height="37.975159"
+         x="27.683847"
+         y="43.179501"
+         ry="0.9088546" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="31.729191"
+         y="52.759003"
+         id="text1"><tspan
+           sodipodi:role="line"
+           id="tspan1"
+           style="stroke-width:0.264583"
+           x="31.729191"
+           y="52.759003">EC_Data</tspan><tspan
+           sodipodi:role="line"
+           style="stroke-width:0.264583"
+           x="31.729191"
+           y="65.988129"
+           id="tspan2" /></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="34.680744"
+         y="65.303108"
+         id="text3"><tspan
+           sodipodi:role="line"
+           id="tspan3"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="34.680744"
+           y="65.303108">base class</tspan><tspan
+           sodipodi:role="line"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="34.680744"
+           y="72.358658"
+           id="tspan8">to read in data</tspan><tspan
+           sodipodi:role="line"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="34.680744"
+           y="79.414207"
+           id="tspan9">and do general plot</tspan></text>
+    </g>
+    <g
+       id="g9-9"
+       transform="translate(78.516343,-29.861031)">
+      <rect
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.261464;stroke-miterlimit:1"
+         id="rect1-1"
+         width="57.539814"
+         height="37.985775"
+         x="27.678539"
+         y="43.174191"
+         ry="0.9091087" />
+      <g
+         id="g10">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+           x="31.729191"
+           y="52.759003"
+           id="text1-9"><tspan
+             sodipodi:role="line"
+             id="tspan1-9"
+             style="stroke-width:0.264583"
+             x="31.729191"
+             y="52.759003">EC_Datas</tspan><tspan
+             sodipodi:role="line"
+             style="stroke-width:0.264583"
+             x="31.729191"
+             y="65.988129"
+             id="tspan2-8" /></text>
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="34.680744"
+         y="65.303108"
+         id="text3-2"><tspan
+           sodipodi:role="line"
+           id="tspan3-8"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="34.680744"
+           y="65.303108">base class</tspan><tspan
+           sodipodi:role="line"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="34.680744"
+           y="72.358658"
+           id="tspan8-3">to read in data</tspan><tspan
+           sodipodi:role="line"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="34.680744"
+           y="79.414207"
+           id="tspan9-3">and plot</tspan></text>
+    </g>
+    <g
+       id="g9-7-9"
+       transform="translate(5.1024646,108.75943)" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="5.6017127"
+       y="9.2236061"
+       id="text10"><tspan
+         sodipodi:role="line"
+         id="tspan10"
+         style="stroke-width:0.264583"
+         x="5.6017127"
+         y="9.2236061">Single Data Set</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="106.81721"
+       y="9.4604959"
+       id="text10-2"><tspan
+         sodipodi:role="line"
+         id="tspan10-3"
+         style="stroke-width:0.264583"
+         x="106.81721"
+         y="9.4604959">Mulit Data Sets</tspan></text>
+    <g
+       id="g22"
+       transform="translate(3.1750001)">
+      <rect
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.261464;stroke-miterlimit:1"
+         id="rect1-3-9-8"
+         width="57.539814"
+         height="37.985775"
+         x="125.98705"
+         y="102.36554"
+         ry="0.9091087" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="130.03767"
+         y="111.95036"
+         id="text1-6-3-6"><tspan
+           sodipodi:role="line"
+           id="tspan1-8-1-7"
+           style="stroke-width:0.264583"
+           x="130.03767"
+           y="111.95036">CV_Datas</tspan><tspan
+           sodipodi:role="line"
+           style="stroke-width:0.264583"
+           x="130.03767"
+           y="125.17949"
+           id="tspan2-2-1-2" /></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;white-space:pre;inline-size:46.6452;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="34.680744"
+         y="65.303108"
+         id="text3-8-4-3"
+         transform="translate(98.308557,54.428847)"><tspan
+           x="34.680744"
+           y="65.303108"
+           id="tspan4">class to treat
+</tspan><tspan
+           x="34.680744"
+           y="72.358661"
+           id="tspan5">- Levich analys
+</tspan><tspan
+           x="34.680744"
+           y="79.414211"
+           id="tspan6">- KouLev analysis
+</tspan><tspan
+           x="34.680744"
+           y="86.46976"
+           id="tspan7">
+</tspan></text>
+    </g>
+    <g
+       id="g9-7-7-9"
+       transform="translate(4.5122346,59.27058)">
+      <rect
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.246;stroke-miterlimit:1"
+         id="rect1-3-9-0"
+         width="57.186333"
+         height="38.370178"
+         x="27.670807"
+         y="43.166458"
+         ry="0.90947878" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="31.729191"
+         y="52.759003"
+         id="text1-6-3-67"><tspan
+           sodipodi:role="line"
+           id="tspan1-8-1-3"
+           style="stroke-width:0.264583"
+           x="31.729191"
+           y="52.759003">CV_Data</tspan><tspan
+           sodipodi:role="line"
+           style="stroke-width:0.264583"
+           x="31.729191"
+           y="65.988129"
+           id="tspan2-2-1-1" /></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;white-space:pre;inline-size:45.7561;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="34.680744"
+         y="65.303108"
+         id="text3-8-4-8"
+         transform="translate(-0.55341615,-5.7186335)"><tspan
+           x="34.680744"
+           y="65.303108"
+           id="tspan11">class to treat CV
+</tspan><tspan
+           x="34.680744"
+           y="72.358661"
+           id="tspan12">- peak integration
+</tspan><tspan
+           x="34.680744"
+           y="79.414211"
+           id="tspan15">- peak analysis
+</tspan><tspan
+           x="34.680744"
+           y="86.46976"
+           id="tspan16">- Tafel analysis</tspan></text>
+    </g>
+    <g
+       id="g9-7-7-3-0"
+       transform="translate(4.3931428,15.980714)">
+      <rect
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.261464;stroke-miterlimit:1"
+         id="rect1-3-9-8-3"
+         width="57.539814"
+         height="37.985775"
+         x="27.678539"
+         y="43.174191"
+         ry="0.9091087" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="29.612522"
+         y="52.759003"
+         id="text1-6-3-6-6"><tspan
+           sodipodi:role="line"
+           id="tspan1-8-1-7-4"
+           style="stroke-width:0.264583"
+           x="29.612522"
+           y="52.759003">LSV_Data</tspan><tspan
+           sodipodi:role="line"
+           style="stroke-width:0.264583"
+           x="29.612522"
+           y="65.988129"
+           id="tspan2-2-1-2-2" /></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="35.049686"
+         y="59.21553"
+         id="text3-8-4-3-7"><tspan
+           sodipodi:role="line"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="35.049686"
+           y="59.21553"
+           id="tspan9-33-5-2-8">class to treat LSV</tspan><tspan
+           sodipodi:role="line"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="35.049686"
+           y="66.27108"
+           id="tspan12-0">- integration</tspan><tspan
+           sodipodi:role="line"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="35.049686"
+           y="73.32663"
+           id="tspan13">- peak analysis</tspan><tspan
+           sodipodi:role="line"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="35.049686"
+           y="80.382179"
+           id="tspan14">- Tafel anlysis</tspan><tspan
+           sodipodi:role="line"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="35.049686"
+           y="87.437729"
+           id="tspan11-0" /></text>
+    </g>
+    <g
+       id="g9-7-7-3-8"
+       transform="translate(101.27484,16.051299)">
+      <rect
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.261464;stroke-miterlimit:1"
+         id="rect1-3-9-8-5"
+         width="57.539814"
+         height="37.985775"
+         x="27.678539"
+         y="43.174191"
+         ry="0.9091087" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="31.729191"
+         y="52.759003"
+         id="text1-6-3-6-9"><tspan
+           sodipodi:role="line"
+           id="tspan1-8-1-7-2"
+           style="stroke-width:0.264583"
+           x="31.729191"
+           y="52.759003">LSV_Datas</tspan><tspan
+           sodipodi:role="line"
+           style="stroke-width:0.264583"
+           x="31.729191"
+           y="65.988129"
+           id="tspan2-2-1-2-9" /></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="35.418633"
+         y="60.13789"
+         id="text3-8-4-3-9"><tspan
+           sodipodi:role="line"
+           id="tspan3-3-5-3-4"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="35.418633"
+           y="60.13789">class to treat</tspan><tspan
+           sodipodi:role="line"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="35.418633"
+           y="67.193443"
+           id="tspan9-33-5-2-0">- Levich analys</tspan><tspan
+           sodipodi:role="line"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="35.418633"
+           y="74.248993"
+           id="tspan12-3">- KouLev analysis</tspan><tspan
+           sodipodi:role="line"
+           style="font-size:5.64444px;stroke-width:0.264583"
+           x="35.418633"
+           y="81.304543"
+           id="tspan11-4" /></text>
+    </g>
+    <rect
+       style="fill:#ffffff;stroke:#000000;stroke-width:0.246;stroke-miterlimit:1"
+       id="rect1-3-9-0-6"
+       width="57.186333"
+       height="38.370178"
+       x="32.159676"
+       y="147.60764"
+       ry="0.90947878" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="36.21806"
+       y="157.20018"
+       id="text1-6-3-67-3"><tspan
+         sodipodi:role="line"
+         id="tspan1-8-1-3-2"
+         style="stroke-width:0.264583"
+         x="36.21806"
+         y="157.20018">Step_Data</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="36.21806"
+         y="170.42931"
+         id="tspan2-2-1-1-8" /></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;white-space:pre;inline-size:56.271;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="34.680744"
+       y="65.303108"
+       id="text3-8-4-8-2"
+       transform="translate(3.9354489,98.722547)"><tspan
+         x="34.680744"
+         y="65.303108"
+         id="tspan17">class to treat Steps
+</tspan><tspan
+         x="34.680744"
+         y="72.358661"
+         id="tspan18">- integration
+</tspan></text>
+    <g
+       id="g20"
+       transform="translate(19.579173)">
+      <rect
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.246;stroke-miterlimit:1"
+         id="rect1-3-9-0-6-6"
+         width="57.186333"
+         height="38.370178"
+         x="109.41064"
+         y="146.97716"
+         ry="0.90947878" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="110.29405"
+         y="156.5697"
+         id="text1-6-3-67-3-9"><tspan
+           sodipodi:role="line"
+           id="tspan1-8-1-3-2-8"
+           style="stroke-width:0.264583"
+           x="110.29405"
+           y="156.5697">Step_Datas</tspan><tspan
+           sodipodi:role="line"
+           style="stroke-width:0.264583"
+           x="110.29405"
+           y="169.79883"
+           id="tspan2-2-1-1-8-5" /></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;white-space:pre;inline-size:56.271;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="34.680744"
+         y="65.303108"
+         id="text3-8-4-8-2-4"
+         transform="translate(81.186418,98.092063)"><tspan
+           x="34.680744"
+           y="65.303108"
+           id="tspan19">class to treat Steps
+</tspan><tspan
+           x="34.680744"
+           y="72.358661"
+           id="tspan20">- integration
+</tspan></text>
+    </g>
+    <g
+       id="g23">
+      <rect
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.246;stroke-miterlimit:1"
+         id="rect1-3-9-0-6-5"
+         width="57.186333"
+         height="38.370178"
+         x="32.489643"
+         y="188.61679"
+         ry="0.90947878" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="36.548027"
+         y="198.20932"
+         id="text1-6-3-67-3-1"><tspan
+           sodipodi:role="line"
+           id="tspan1-8-1-3-2-84"
+           style="stroke-width:0.264583"
+           x="36.548027"
+           y="198.20932">EIS_Data</tspan><tspan
+           sodipodi:role="line"
+           style="stroke-width:0.264583"
+           x="36.548027"
+           y="211.43845"
+           id="tspan2-2-1-1-8-2" /></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;white-space:pre;inline-size:56.271;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="34.680744"
+         y="65.303108"
+         id="text3-8-4-8-2-3"
+         transform="translate(4.2654181,139.73169)"><tspan
+           x="34.680744"
+           y="65.303108"
+           id="tspan21">class to treat EIS
+</tspan><tspan
+           x="34.680744"
+           y="72.358661"
+           id="tspan22">- Bode plot
+</tspan><tspan
+           x="34.680744"
+           y="79.414211"
+           id="tspan24">- Nyquist plot
+</tspan></text>
+    </g>
+    <g
+       id="g21">
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.965;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#RoundedArrow)"
+         d="m 16.481239,79.298736 10.883849,-0.09224"
+         id="path19"
+         inkscape:connector-type="polyline"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.965;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#RoundedArrow-1)"
+         d="m 16.842587,119.76776 10.883849,-0.0922"
+         id="path19-8"
+         inkscape:connector-type="polyline"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.965;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#RoundedArrow-7)"
+         d="m 16.641228,166.05904 10.883849,-0.0922"
+         id="path19-1"
+         inkscape:connector-type="polyline"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.965;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#RoundedArrow-7-6)"
+         d="m 16.971197,207.06818 10.883849,-0.0922"
+         id="path19-1-4"
+         inkscape:connector-type="polyline"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+         d="m 17.083153,52.550288 0.09224,155.233232"
+         id="path20"
+         inkscape:connector-type="polyline"
+         inkscape:connector-curvature="0" />
+    </g>
+    <g
+       id="g21-9"
+       transform="translate(96.61246,-1.030672)">
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.965;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#RoundedArrow-79)"
+         d="m 16.481239,79.298736 10.883849,-0.09224"
+         id="path19-3"
+         inkscape:connector-type="polyline"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.965;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#RoundedArrow-1-3)"
+         d="m 16.842587,119.76776 10.883849,-0.0922"
+         id="path19-8-2"
+         inkscape:connector-type="polyline"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.965;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#RoundedArrow-7-2)"
+         d="m 16.641228,166.05904 10.883849,-0.0922"
+         id="path19-1-1"
+         inkscape:connector-type="polyline"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.965;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#RoundedArrow-7-6-3)"
+         d="m 16.971197,207.06818 10.883849,-0.0922"
+         id="path19-1-4-7"
+         inkscape:connector-type="polyline"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+         d="m 17.083153,52.550288 0.09224,155.233232"
+         id="path20-4"
+         inkscape:connector-type="polyline"
+         inkscape:connector-curvature="0" />
+    </g>
+    <g
+       id="g23-9"
+       transform="translate(97.069184,-0.23386506)">
+      <rect
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.246;stroke-miterlimit:1"
+         id="rect1-3-9-0-6-5-3"
+         width="57.186333"
+         height="38.370178"
+         x="32.489643"
+         y="188.61679"
+         ry="0.90947878" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="36.548027"
+         y="198.20932"
+         id="text1-6-3-67-3-1-9"><tspan
+           sodipodi:role="line"
+           id="tspan1-8-1-3-2-84-8"
+           style="stroke-width:0.264583"
+           x="36.548027"
+           y="198.20932">EIS_Datas</tspan><tspan
+           sodipodi:role="line"
+           style="stroke-width:0.264583"
+           x="36.548027"
+           y="211.43845"
+           id="tspan2-2-1-1-8-2-0" /></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;white-space:pre;inline-size:56.271;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="34.680744"
+         y="65.303108"
+         id="text3-8-4-8-2-3-5"
+         transform="translate(4.2654181,139.73169)"><tspan
+           x="34.680744"
+           y="65.303108"
+           id="tspan25">class to treat EISs
+</tspan><tspan
+           x="34.680744"
+           y="72.358661"
+           id="tspan26">- Bode plot
+</tspan><tspan
+           x="34.680744"
+           y="79.414211"
+           id="tspan27">- Nyquist plot</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;white-space:pre;inline-size:56.271;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="34.680744"
+         y="65.303108"
+         transform="translate(4.2654181,139.73169)"
+         id="text23"><tspan
+           x="34.680744"
+           y="65.303108"
+           id="tspan28">
+</tspan></text>
+    </g>
+  </g>
+</svg>
