@@ -8,7 +8,7 @@ permalink: /
 
 # EC4py documentation - Data Treament of Electrochemcial data made easy
 
-**Source code:** [EC4py on Github] (https://github.com/NordicEC/EC4py)
+**Source code:** [EC4py on Github](https://github.com/NordicEC/EC4py)
 
 __________________________________
 This Module offers classes representing data recorded different kinds of electrochemical techniques. Each class has a single and a multi data version. The latter version funktion as an array, and can be iterated.  
