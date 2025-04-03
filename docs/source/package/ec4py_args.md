@@ -7,6 +7,7 @@ nav_order: 100
 # Arguments
 
 ## For plotting, LEGEND
+
 | Argument        | Meaning for the legend of a graph     |
 | ------------- |:-------------|
 | LEGEND.NONE  |  removes legend | 
@@ -24,6 +25,7 @@ nav_order: 100
 
 
 ## For normalization of current
+
 | Argument        | Meaning           | Where to use  |
 | ------------- |:-------------| -----:|
 | AREA | normalize to geometric area using m as unit| |
@@ -33,6 +35,7 @@ nav_order: 100
 
 
 ## For CV_Data, CV_Datas
+
 | Argument        | Meaning           |
 | ------------- |:-------------|
 | POS | Select the positive sweep| 
