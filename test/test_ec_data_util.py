@@ -37,12 +37,12 @@ class test_EC_Channels(unittest.TestCase):
 
     def test_MWE_channels(self):
         channel_num=4
-        ch = EC_Channels(str(f"i{channel_num}"))
+        ch = EC_Channels(str(f"i_{channel_num}"))
         
         self.assertEqual(ch.Voltage, "E")
-        self.assertEqual(ch.Current, str(f"i{channel_num}"))
-        self.assertEqual(ch.Impedance,str(f"Z{channel_num}"))
-        self.assertEqual(ch.Phase, str(f"Phase{channel_num}"))
+        self.assertEqual(ch.Current, str(f"i_{channel_num}"))
+        self.assertEqual(ch.Impedance,str(f"Z_{channel_num}"))
+        self.assertEqual(ch.Phase, str(f"Phase_{channel_num}"))
  
     def test_MultiPOT(self):
         channel_num=4

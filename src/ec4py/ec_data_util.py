@@ -33,7 +33,7 @@ class EC_Channels:
                 numMatch=re.search("[0-9]+", arg)
                 if arg[0]=='i' and numMatch!= None:
                     # to get the different channels of the MWE.
-                    self._channels["i"]=arg
+                    self._channels["i"]="i_"+numMatch.group()
                     self._channels["Z"]="Z_"+numMatch.group()
                     self._channels["Phase"]="Phase_"+numMatch.group()
                     self._channels["MWE_CH"]=int(numMatch.group())
