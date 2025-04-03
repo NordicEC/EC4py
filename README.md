@@ -1,6 +1,6 @@
 The intention
 ---------------
-This is a package to be used to treat electrochemical data in order to extract key values such as ECSA and Tafel slopes. Specifically, its aim is to make the data analysis as quick, transparemt and easy as possible. 
+This is a package to be used to treat electrochemical data in order to extract key values such as ECSA and Tafel slopes. Specifically, its aim is to make the data analysis as quick, transparent and easy as possible. 
 
 #  EC4py Docs
 The documentation can be found here:
