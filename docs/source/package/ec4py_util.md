@@ -5,7 +5,7 @@ nav_order: 100
 ---
 
 
-# class ec4py.Quantity_Value_Unit() -- class to handle quantities, values and units
+# class ec4py.Quantity_Value_Unit() <br>-- class to handle quantities, values and units
 
 ## Basic use:
 Importing the class:
@@ -30,7 +30,7 @@ The arithmetic operators * (multiplication), / (division), ** (exponentiation) a
     print(length * 5) #the result is "5 m"
     print(length ** 3) #the result is "1000 m^3"
 ```
-### Quantity_Value_Unit and Quantity_Value_Unit
+### __Quantity_Value_Unit__ and __Quantity_Value_Unit__
 Arithemtics operators between **Quantity_Value_Unit** and another **Quantity_Value_Unit** are the following: 
 + (addition), - (subtraction), * (multiplication), / (division)
 please note that:
@@ -46,7 +46,7 @@ please note that:
 
 ## Methods and properties¶
 
-### Quantity_Value_Unit.**value**
+### Quantity_Value_Unit.__value__
 The value of a quantity:
 ```python
     length = QVU("5.3 m")
