@@ -88,15 +88,5 @@ Manually set the unit name after the class has been initialized.
    length.set_unit("cm")
    print(length.unit) #the result is "cm"
 ```
-    def set_unit(self, new_unit_label:str):
-        """Set the unit of label.
 
-        Args: new_unit_label (str): _description_
-            
-        Returns: unit_label (str)
-        """
-        self._unit = symbols(new_unit_label)
-        return self.unit
-    
-  
     
