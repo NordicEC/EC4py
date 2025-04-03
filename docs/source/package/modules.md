@@ -9,6 +9,15 @@ nav_order: 1
 
 ## Basic use:
 
+Import class:
+```python
+   from ec4py import CV_Data
+```
+Load data set:
+```python
+   data = CV_Data("PATH TO DATA")
+```
+
 
 ## General properties
 
