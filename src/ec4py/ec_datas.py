@@ -14,7 +14,7 @@ class EC_Datas:
     When creating an opject the file path must be given.
      
     """
-    def __init__(self, paths:Path|list[Path], **kwargs):
+    def __init__(self, paths:Path|list[Path]=None, **kwargs):
         
         if isinstance(paths,Path):
             paths = [paths]

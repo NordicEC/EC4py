@@ -5,6 +5,8 @@
 import math
 import numpy as np
 from .ec_data import EC_Data
+from .ec_datas_util import EC_Datas_base,check_paths
+
 from .cv_data import CV_Data,STYLE_POS_DL,STYLE_NEG_DL, POS, NEG 
 
 from pathlib import Path
@@ -28,7 +30,7 @@ import pandas as pd
 # STYLE_POS_DL = "bo"
 # STYLE_NEG_DL = "ro"
 
-class CV_Datas:
+class CV_Datas(EC_Datas_base):
     """# Class to analyze CV datas. 
     Class Functions:
     - .plot() - plot data    
@@ -45,22 +47,29 @@ class CV_Datas:
     ### Options keywords:
     legend = "name"
     """
-    def __init__(self,paths:list[Path],Path = None,*args, **kwargs):
-
-        self.datas =[]
-        if paths is Not None:
+    def __init__(self,paths:list[Path]|Path = None,*args, **kwargs):
+        
+        EC_Datas_base.__init__(self,*args, **kwargs)
+        #self.datas =[]
+        
+        if paths is not None:
+            path_list = check_paths(paths)
             # paths = args[0]
+            """
             if not isinstance(paths,list ):
                 path_list = [paths]
             #if isinstance(paths,Path ):
             #    path_list = [paths]
             else:
                 path_list = paths
+            """
             self.datas = [CV_Data() for i in range(len(path_list))]
             index=0
             for path in path_list:
                 ec = EC_Data(path)
+                #print([x for x in args])
                 try:
+                    
                     self.datas[index].conv(ec,*args,**kwargs)
                 finally:
                     index=index+1 
@@ -177,23 +186,11 @@ class CV_Datas:
             E (float): potential where to get the current. 
             dir (str): direction, "pos,neg or all"
         Returns:
-            list of current
+            list of current at E
         """
-        list_args=[arg for arg in args]
-        list_args.insert(0,direction)
-        loc_args=tuple(list_args)
+                
+        return [x.get_i_at_E(E,direction,*args,**kwargs) for x in self.datas]
         
-        i_at_E_pos=[]
-        i_at_E_neg=[]
-        #print(loc_args)
-        for x in self.datas:
-            cv = copy.deepcopy(x)
-            
-            a =cv.get_i_at_E(E,"all",*loc_args,**kwargs)
-            i_at_E_pos.append(a[0])
-            i_at_E_neg.append(a[1])
-        return i_at_E_pos,i_at_E_neg
-    
     ########################################################################################################
 
     def get_sweep(self,sweep:str,update_label=True):
@@ -271,6 +268,12 @@ class CV_Datas:
         return [cv.get_E_of_min_i(E1,E2,*args, **kwargs) for cv in self.datas]
 
     def norm(self,*args, **kwargs):
+        """Normalise the current to certain factors. 
+
+        Args:
+            norm_to (str | tuple): _description_
+        """
+        
         for x in self.datas:
             x.norm(args)
         return
@@ -558,36 +561,3 @@ class CV_Datas:
         LSVs.set_active_RE(args)
         LSVs.norm(*args)
         return LSVs.export_Array()
-"""
-def plots_for_rotations(datas: CV_Datas, Epot: float, *args, **kwargs):
-    rot = []
-    y = []
-    E = []
-    # Epot=-0.5
-    y_axis_title = ""
-    y_axis_unit = ""
-    CVs = copy.deepcopy(datas)
-    cv_kwargs = kwargs
-    # x_qv = QV(1, "rpm^0.5","w")
-    line=[]
-    for cv in CVs:
-        # x_qv = cv.rotation
-        rot.append(float(cv.rotation))
-        cv.norm(args)
-        cv.set_active_RE(args)
-        cv_kwargs["legend"] = str(f"{float(cv.rotation):.0f}")
-        # cv_kwargs["plot"] = CV_plot
-        l, ax = cv.plot( **cv_kwargs)
-
-        line.append(l)
-        y.append(cv.get_i_at_E(Epot))
-        E.append([Epot, Epot])
-        y_axis_title = str(cv.i_label)
-        y_axis_unit = str(cv.i_unit)
-    rot = np.array(rot)
-    y = np.array(y)
-    CV_plot = cv_kwargs["plot"]
-    CV_plot.plot(E, y[:, 0], STYLE_POS_DL, E, y[:, 1], STYLE_NEG_DL)
-    CV_plot.legend()
-    return rot, y, E, y_axis_title, y_axis_unit
-"""

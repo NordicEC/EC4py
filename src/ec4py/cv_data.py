@@ -63,21 +63,7 @@ class CV_Data(Voltammetry):
         # self.E=[]
         self.i_p=[]
         self.i_n=[]
-
-        """max voltage""" 
-        # self.E_max = -2.5
-        """min voltage"""
-        # self.E_min = -2.5
-        """self.E_axis = {
-                    "E_min" : -2.5,
-                    "E_max" :  2.5 
-                    }
-                    
-        self.E_axis.update(kwargs)
-        """
-        # self.xmin = -2.5 # View range
-        # self.xmax = 2.5  # view renage
-        
+ 
         if not args:
             return
         else:
@@ -390,9 +376,6 @@ class CV_Data(Voltammetry):
 
         Args:
             norm_to (str | tuple): _description_
-
-        Returns:
-            _type_: _description_
         """
         r = Voltammetry.norm(self, norm_to,[self.i_p,self.i_n ] )
         #n = Voltammetry.norm(self, norm_to,self.i_n )
@@ -505,7 +488,7 @@ class CV_Data(Voltammetry):
         dir = self._direction(*loc_args,**kwargs)
        
         update_label = kwargs.get("update_label",True)
-        
+        print(dir)
         if dir == "" or dir == "all".casefold():
             lsv_pos = self.get_sweep(POS,update_label)
             lsv_neg = self.get_sweep(NEG,update_label)
