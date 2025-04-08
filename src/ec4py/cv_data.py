@@ -70,54 +70,10 @@ class CV_Data(Voltammetry):
             #print(kwargs)
             self.conv(EC_Data(args[0]), *args, **kwargs)
 
-    #########################################   
-    def sub(self, subData: CV_Data) -> None:
-        try:
-            self.i_p = self.i_p-subData.i_p
-            self.i_n = self.i_n-subData.i_n
-        finally:
-            return
-    #############################################################################
-    def __mul__(self, other: float):
-        """ 
-
-        Args:
-            other (float): factor to div. the data.
-
-        Returns:
-            CV_Data: a copy of the original data
-        """
-        new_cv = copy.deepcopy(self)
-        new_cv.i_p = new_cv.i_p * other
-        new_cv.i_n = new_cv.i_n * other
-        return new_cv
-    #############################################################################
-    def __div__(self, other: float):
-        """ 
-
-        Args:
-            other (float): factor to div. the data.
-
-        Returns:
-            CV_Data: a copy of the original data
-        """
-        new_cv = copy.deepcopy(self)
-        new_cv.i_p = new_cv.i_p / other
-        new_cv.i_n = new_cv.i_n / other
-        return new_cv
-    #############################################################################    
-    def div(self, div_factor:float):
-        """_summary_
-
-        Args:
-            div_factor (float): div the current dataset with the factor.
-        """
-        try:
-            self.i_p = self.i_p / div_factor
-            self.i_n = self.i_n / div_factor
-        finally:
-            return
-    #############################################################################
+    #########################################  
+    
+    
+       
     def __add__(self, other: CV_Data):
         """_summary_
 
@@ -128,37 +84,146 @@ class CV_Data(Voltammetry):
             CV_Data: returns a copy of the inital dataset. 
         """
         new_cv = copy.deepcopy(self)
-        new_cv.i_p = new_cv.i_p + other.i_p
-        new_cv.i_n = new_cv.i_n + other.i_n
+        new_cv.add(other)
+        return new_cv   
+    
+    def __sub__(self, other: float) -> CV_Data:
+        """ 
+
+        Args:
+            other (float): factor to div. the data.
+
+        Returns:
+            CV_Data: a copy of the original data
+        """
+        new_cv = copy.deepcopy(self)
+        new_cv.sub(other)
+        return new_cv
+    
+    def __mul__(self, other: float):
+        """ 
+
+        Args:
+            other (float): factor to div. the data.
+
+        Returns:
+            CV_Data: a copy of the original data
+        """
+        new_cv = copy.deepcopy(self)
+        new_cv.mul(other)
         return new_cv
     #############################################################################
-    def __sub__(self, other: CV_Data):
+    def __truediv__(self, other: float):
+        """ 
+
+        Args:
+            other (float): factor to div. the data.
+
+        Returns:
+            CV_Data: a copy of the original data
+        """
+        new_cv = copy.deepcopy(self)
+        new_cv.div(other)
+        return new_cv
+    #############################################################################   
+    #####################################################################################################
+    def add(self, other: CV_Data):
         """_summary_
 
         Args:
-            other (CV_Data): CV_Data to be added 
+            other (CV_Data): Add something to the current of the CV_Data.
 
-        Returns:
-            CV_Data: returns a copy of the inital dataset. 
+        Raises:
+            ValueError: _description_
+            TypeError: _description_
         """
-        new_cv = copy.deepcopy(self)
-        new_cv.i_p = (new_cv.i_p - other.i_p).copy()
-        new_cv.i_n = new_cv.i_n - other.i_n
-        return new_cv
-    
-    #####################################################################################################
-    def add(self, subData: CV_Data):
-        try:
-            self.i_p = self.i_p+subData.i_p
-        finally:
-            pass
-        try:
-            self.i_n = self.i_n+subData.i_n
-        finally:
-            pass
-        return
+        if isinstance(other, CV_Data):
+            self.i_p = self.i_p + other.i_p
+            self.i_n = self.i_n + other.i_n
+        elif isinstance(other, LSV_Data):
+            self.i_p = self.i_p + other.i
+            self.i_n = self.i_n + other.i
+        elif isinstance(other, QV):
+            self.i_p = self.i_p + other.value
+            self.i_n = self.i_n + other.value
+        elif isinstance(other, str):
+            self.i_p = self.i_p + float(other)
+            self.i_n = self.i_n + float(other)
+        elif isinstance(other, list):
+            if len(other) == 2:
+                self.i_p = self.i_p + float(other[0])
+                self.i_n = self.i_n + float(other[1])
+            else:
+                raise ValueError("List must have length 2")
+        elif isinstance(other, float) or isinstance(other, int):
+            self.i_p = self.i_p + other
+            self.i_n = self.i_n + other
+        else:
+            raise TypeError("Unsupported type for subtraction")
+        
 
-    #####################################################################################################    
+    #####################################################################################################   
+    
+    
+    def sub(self, other: CV_Data) -> None:
+        if isinstance(other, CV_Data):
+            self.i_p = self.i_p - other.i_p
+            self.i_n = self.i_n - other.i_n
+        elif isinstance(other, LSV_Data):
+            self.i_p = self.i_p - other.i
+            self.i_n = self.i_n - other.i
+        elif isinstance(other, QV):
+            self.i_p = self.i_p - other.value
+            self.i_n = self.i_n - other.value
+        elif isinstance(other, str):
+            self.i_p = self.i_p - float(other)
+            self.i_n = self.i_n - float(other)
+        elif isinstance(other, list):
+            if len(other) == 2:
+                self.i_p = self.i_p - float(other[0])
+                self.i_n = self.i_n - float(other[1])
+            else:
+                raise ValueError("List must have length 2")
+        elif isinstance(other, float) or isinstance(other, int):
+            print("AAA",other)
+            self.i_p = self.i_p - other
+            self.i_n = self.i_n - other
+        else:
+            raise TypeError("Unsupported type for subtraction")
+        
+    #############################################################################
+    
+    def mul(self, mul_factor:float):
+        """divide the current by a factor.
+        Args:
+            div_factor (float): div the current dataset with the factor.
+        """
+    
+        self.i_p = self.i_p * float(mul_factor)
+        self.i_n = self.i_n * float(mul_factor)
+    
+    def div(self, div_factor:float):
+        """divide the current by a factor.
+        Args:
+            div_factor (float): div the current dataset with the factor.
+        """
+        self.i_p = self.i_p / float(div_factor)
+        self.i_n = self.i_n / float(div_factor)
+     
+    #############################################################################
+    
+    def set_i_at_E_to_zero(self, E:float, *args, **kwargs):
+        """Set the current at a specific voltage to zero and adjust the rest of the current.
+
+        Args:
+            E (float): potential where to set the current to zero.
+        """
+        new_data = copy.deepcopy(self)
+        new_data.set_active_RE(args)
+        current = new_data.get_i_at_E(E,*args,**kwargs)
+        self.sub(current)
+    
+     
     def smooth(self, smooth_width:int):
         try:
             self.i_p = self._smooth(self.i_p,smooth_width)

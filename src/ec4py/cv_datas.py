@@ -99,8 +99,8 @@ class CV_Datas(EC_Datas_base):
         self.datas[item_index] = new_CV
     #############################################################################
     
-    def __sub__(self, other: CV_Data):
-        """_summary_
+    def __add__(self, other: CV_Data):
+        """add
 
         Args:
             other (CV_Data): CV_Data to be added 
@@ -108,23 +108,119 @@ class CV_Datas(EC_Datas_base):
         Returns:
             CV_Datas: returns a copy of the initial dataset. 
         """
+        new_CVs = copy.deepcopy(self)
+        new_CVs.add(other)
+        return new_CVs
+    
+    def __sub__(self, other: CV_Data):
+        """sub
 
-        if isinstance(other, CV_Data):
-            new_CVs = copy.deepcopy(self)
-            for new_cv in new_CVs:
-                new_cv.i_p = new_cv.i_p - other.i_p
-                new_cv.i_n = new_cv.i_n - other.i_n
-        elif isinstance(other, CV_Datas):
-            new_CVs = copy.deepcopy(self)
-            for new_cv in new_CVs:
-                new_cv.i_p = new_cv.i_p - other.i_p
-                new_cv.i_n = new_cv.i_n - other.i_n
+        Args:
+            other (CV_Data): CV_Data to be added 
+
+        Returns:
+            CV_Datas: returns a copy of the initial dataset. 
+        """
+        new_CVs = copy.deepcopy(self)
+        new_CVs.sub(other)
+        return new_CVs
+    
+    def __mul__(self, other: float):
+        """multiply
+
+        Args:
+            other (float): CV_Data to be added 
+
+        Returns:
+            CV_Datas: returns a copy of the initial dataset. 
+        """
+        new_CVs = copy.deepcopy(self)
+        new_CVs.mul(other)
+        return new_CVs
+    
+    def __truediv__(self, other: float):
+        """divide
+
+        Args:
+            other (float): CV_Data to be added 
+
+        Returns:
+            CV_Datas: returns a copy of the initial dataset. 
+        """
+        new_CVs = copy.deepcopy(self)
+        new_CVs.div(other)
         return new_CVs
 
     def __len__(self):
         return len(self.datas)
 
     #############################################################################
+    
+    
+    def add(self,other):
+        """add
+
+        Args:
+            other (_type_, optional): _description_. Defaults to CV_Data.
+        """
+        if isinstance(other, CV_Datas) or isinstance(other, list):
+            if len(other) == len(self):
+                for i in range(0,len(self.datas)):
+                    self.datas[i].add(other[i])
+            else:
+                raise ValueError('The data sets are not of the same length.')
+        else:
+            for cv in self.datas:
+                cv.add(other)  
+        ##########################################        
+    def sub(self,other):
+        """sub
+
+        Args:
+            other (_type_, optional): _description_. Defaults to CV_Data.
+        """
+        if isinstance(other, CV_Datas) or isinstance(other, list):
+            if len(other) == len(self.datas):
+                for i in range(0,len(self.datas)):
+                    self.datas[i].sub(other[i])
+            else:
+                raise ValueError('The data sets are not of the same length.')
+        else:
+            for cv in self.datas:
+                cv.sub(other)
+                
+    def mul(self,other):
+        """multiply the current by a number or a list of numbers.
+
+        Args:
+            other (_type_, optional): _description_. Defaults to CV_Data.
+        """
+        if isinstance(other, list):
+            if len(other) == len(self.datas):
+                for i in range(0,len(self.datas)):
+                    self.datas[i].mul(other[i])
+            else:
+                raise ValueError('The data sets are not of the same length.')
+        else:
+            for cv in self.datas:
+                cv.mul(other)
+            
+    def div(self,other):
+        """divide the current by a number.
+
+        Args:
+            other (_type_, optional): _description_. Defaults to CV_Data.
+        """
+        if isinstance(other, list):
+            if len(other) == len(self.datas):
+                for i in range(0,len(self.datas)):
+                    self.datas[i].div(other[i])
+            else:
+                raise ValueError('The data sets are not of the same length.')
+        else:
+            for cv in self.datas:
+                cv.div(other)   
+        
     
     def append(self,other = CV_Data):
         """append
@@ -140,6 +236,18 @@ class CV_Datas(EC_Datas_base):
     
     def pop(self,index):
         self.datas.pop(index)
+    
+    
+    
+    def set_i_at_E_to_zero(self, E:float, *args, **kwargs):
+        """Set the current at a specific voltage to zero.
+        
+        Args:
+            E (float): potential where to set the current to zero. 
+
+        """
+        for x in self.datas:
+            x.set_i_at_E_to_zero(E,*args,**kwargs)
     
     def bg_corr(self, bg_cv: CV_Data|Path) -> CV_Data:
         """Background correct the data by subtracting the bg_cv. 

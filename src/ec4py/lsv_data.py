@@ -60,54 +60,10 @@ class LSV_Data(Voltammetry):
         else:
             #print(kwargs)
             self.conv(EC_Data(args[0]),*args, **kwargs)
-    #############################################################################   
-    def sub(self, subData: LSV_Data) -> None:
-        try:
-            self.i = self.i-subData.i
-            
-        finally:
-            return
+  
+  
     #############################################################################
-    def __mul__(self, other: float):
-        """ 
-
-        Args:
-            other (float): factor to div. the data.
-
-        Returns:
-            LSV_Data: a copy of the original data
-        """
-        new_lsv = copy.deepcopy(self)
-        new_lsv.i = new_lsv.i * other
-        return new_lsv
-    #############################################################################
-    def __div__(self, other: float):
-        """ 
-
-        Args:
-            other (float): factor to div. the data.
-
-        Returns:
-            LSV_Data: a copy of the original data
-        """
-        new_lsv = copy.deepcopy(self)
-        
-        new_lsv.i = new_lsv.i / other
-        return new_lsv
-    #############################################################################    
-    def div(self, div_factor:float):
-        """_summary_
-
-        Args:
-            div_factor (float): div the current dataset with the factor.
-        """
-        try:
-            self.i = self.i / div_factor
-             
-        finally:
-            return
-    #############################################################################
-    def __add__(self, other: LSV_Data):
+    def __add__(self, other: LSV_Data) -> LSV_Data:
         """_summary_
 
         Args:
@@ -117,8 +73,7 @@ class LSV_Data(Voltammetry):
             LSV_Data: returns a copy of the inital dataset. 
         """
         new_lsv = copy.deepcopy(self)
-        new_lsv.i = new_lsv.i + other.i
-         
+        new_lsv.add(other)
         return new_lsv
     #############################################################################
     def __sub__(self, other: LSV_Data):
@@ -131,18 +86,73 @@ class LSV_Data(Voltammetry):
             LSV_Data: returns a copy of the inital dataset. 
         """
         new_lsv = copy.deepcopy(self)
-        new_lsv.i = (new_lsv.i - other.i).copy()
-         
+        new_lsv.sub(other)
+        return new_lsv
+    #############################################################################
+    def __mul__(self, other: float):
+        """ 
+
+        Args:
+            other (float): factor to div. the data.
+
+        Returns:
+            LSV_Data: a copy of the original data
+        """
+        new_lsv = copy.deepcopy(self)
+        new_lsv.mul(other)
         return new_lsv
     
-    #####################################################################################################
-    def add(self, subData: LSV_Data):
-        try:
-            self.i = self.i+subData.i
-        finally:
-            pass
-        return
+    #############################################################################
+    def __truediv__(self, other):
+        """ 
 
+        Returns:
+            LSV_Data: a copy of the original data
+        """
+        new_lsv = copy.deepcopy(self)
+        new_lsv.div(other)
+        return new_lsv
+   
+    #####################################################################################################
+    def add(self, addData: LSV_Data) -> None:
+        """Add a LSV_Data or a number to the current data"""
+        if isinstance(addData, LSV_Data):    
+            self.i = self.i+addData.i
+        else: 
+            number = float(addData)
+            self.i = self.i + number
+        #print("ADD",self.i,addData.i)
+        #raise TypeError("Addition is only possible with LSV_Data or number")
+
+  #############################################################################   
+    def sub(self, subData: LSV_Data) -> None:
+        """Add a LSV_Data or a number to the current data"""
+        if isinstance(subData, LSV_Data):    
+            self.i = self.i-subData.i
+        else:
+            number = float(subData)
+            self.i = self.i - number
+    #############################################################################    
+    def mul(self, factor:float):
+        """Multiply the current by a factor
+
+        Args:
+            div_factor (float): div the current dataset with the factor.
+        """
+        self.i = self.i * float(factor)
+        #else:
+        #    raise TypeError("Multiplication is only possible with a number")    
+ #############################################################################    
+    def div(self, factor:float):
+        """Divide the current by a factor
+
+        Args:
+            div_factor (float): div the current dataset with the factor.
+        """
+        self.i = self.i / float(factor)
+        #else:
+        #    raise TypeError("Division is only possible with a number")
+         
     #####################################################################################################    
     def smooth(self, smooth_width:int):
         try:
@@ -333,6 +343,17 @@ class LSV_Data(Voltammetry):
             self.i = b[0]
             # print("pot_shift",a, "REEE",self.E_label)
         return 
+    
+    def set_i_at_E_to_zero(self, E:float, *args, **kwargs):
+        """Set the current at a specific voltage to zero and adjust the rest of the current.
+
+        Args:
+            E (float): potential where to set the current to zero.
+        """
+        new_lsv = copy.deepcopy(self)
+        new_lsv.set_active_RE(args)
+        current = new_lsv.get_i_at_E(E,*args,**kwargs)
+        self.sub(current)
     
     ####################################################################################################
     def get_index_of_E(self, E:float):

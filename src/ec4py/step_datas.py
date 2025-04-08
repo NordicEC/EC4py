@@ -80,6 +80,9 @@ class Step_Datas:
         self.datas[item_index] = new_Step
     #############################################################################
    
+    def __len__(self):
+        return len(self.datas)
+   
     def pop(self,index):
         self.datas.pop(index)
 ################################################################    
