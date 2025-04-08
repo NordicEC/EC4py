@@ -15,29 +15,14 @@ This Module offers classes representing data recorded different kinds of electro
  
   <img src="class_overview.svg" width="300"> 
 
-### Keywords
-| Keyword        | Meaning           | Where to use  |
-| ------------- |:-------------| -----:|
-| IRCOMP = "Z" | iR-compensation using measured <br> absolute impedance| When loading a dataset |
-| IRCOMP = "R" | iR-compensation using measured <br>real part of the impedance |When loading a dataset|
-| IRCOMP = 1.0 | Manual iR-compensation<br>where the number corresponds to the Rsol | When loading a dataset |
 
-#### For plotting
-| Keyword        | Meaning           | Where to use  |
-| ------------- |:-------------| -----:|
-| y_smooth = 3 | iR-compensation using measured <br> absolute impedance| When loading a dataset |
-| x_smooth = 4 | iR-compensation using measured <br>real part of the impedance |When loading a dataset|
-| IRCOMP = 1.0 | Manual iR-compensation<br>where the number corresponds to the Rsol | When loading a dataset |
+### [Arguments](package/ec4py_arguments.md) and [Keywords](package/ec4py_keywords.md)
 
-### Arguments
+The classes and class functions of ec4py use [arguments](package/ec4py_arguments.md) and [keywords](package/ec4py_keywords.md) to change the functionality of the data anlysis and plots. 
+
+
 
 #### For CV_Data, CV_Datas
-| Keyword        | Meaning           | Where to use  |
-| ------------- |:-------------| -----:|
-| POS | Select the positive sweep| |
-| NEG | Select the negative sweep| |
-| AVG | Select the average sweep<br>from positive and negative sweeps| |
-| DIF | Select the difference <br>between the positive and negative sweeps| |
 
 
    intro
