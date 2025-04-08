@@ -16,9 +16,9 @@ This Module offers classes representing data recorded different kinds of electro
   <img src="class_overview.svg" width="300"> 
 
 
-### [Arguments](package/ec4py_arguments.md) and [Keywords](package/ec4py_keywords.md)
+### [Arguments](package/ec4py_args.md) and [Keywords](package/ec4py_keywords.md)
 
-The classes and class functions of ec4py use [arguments](package/ec4py_arguments.md) and [keywords](package/ec4py_keywords.md) to change the functionality of the data anlysis and plots. 
+The classes and class functions of ec4py use [arguments](package/ec4py_args.md) and [keywords](package/ec4py_keywords.md) to change the functionality of the data anlysis and plots. 
 
 
 
