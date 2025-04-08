@@ -7,6 +7,7 @@ from ec4py.util import Quantity_Value_Unit as QVU
 import unittest   # The test framework
 import numpy as np
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 E =np.array([1,2,3])
 paths = []
@@ -47,6 +48,7 @@ class Test_CV_Datas(unittest.TestCase):
         datas = CV_Datas(paths)
         a = datas.plot()
         datas.plot(AREA)
+        plt.close("all")
         
 
 class test_CV_Datas_arithmetics( unittest.TestCase ):
