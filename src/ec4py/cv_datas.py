@@ -5,6 +5,8 @@
 import math
 import numpy as np
 from .ec_data import EC_Data
+from .ec_datas_util import EC_Datas_base,check_paths
+
 from .cv_data import CV_Data,STYLE_POS_DL,STYLE_NEG_DL, POS, NEG 
 
 from pathlib import Path
@@ -28,7 +30,7 @@ import pandas as pd
 # STYLE_POS_DL = "bo"
 # STYLE_NEG_DL = "ro"
 
-class CV_Datas:
+class CV_Datas(EC_Datas_base):
     """# Class to analyze CV datas. 
     Class Functions:
     - .plot() - plot data    
@@ -45,22 +47,29 @@ class CV_Datas:
     ### Options keywords:
     legend = "name"
     """
-    def __init__(self,*args, **kwargs):
-
-        self.datas =[]
-        if args:
-            paths = args[0]
+    def __init__(self,paths:list[Path]|Path = None,*args, **kwargs):
+        
+        EC_Datas_base.__init__(self,*args, **kwargs)
+        #self.datas =[]
+        
+        if paths is not None:
+            path_list = check_paths(paths)
+            # paths = args[0]
+            """
             if not isinstance(paths,list ):
                 path_list = [paths]
             #if isinstance(paths,Path ):
             #    path_list = [paths]
             else:
                 path_list = paths
+            """
             self.datas = [CV_Data() for i in range(len(path_list))]
             index=0
             for path in path_list:
                 ec = EC_Data(path)
+                #print([x for x in args])
                 try:
+                    
                     self.datas[index].conv(ec,*args,**kwargs)
                 finally:
                     index=index+1 
@@ -90,8 +99,8 @@ class CV_Datas:
         self.datas[item_index] = new_CV
     #############################################################################
     
-    def __sub__(self, other: CV_Data):
-        """_summary_
+    def __add__(self, other: CV_Data):
+        """add
 
         Args:
             other (CV_Data): CV_Data to be added 
@@ -99,23 +108,119 @@ class CV_Datas:
         Returns:
             CV_Datas: returns a copy of the initial dataset. 
         """
+        new_CVs = copy.deepcopy(self)
+        new_CVs.add(other)
+        return new_CVs
+    
+    def __sub__(self, other: CV_Data):
+        """sub
 
-        if isinstance(other, CV_Data):
-            new_CVs = copy.deepcopy(self)
-            for new_cv in new_CVs:
-                new_cv.i_p = new_cv.i_p - other.i_p
-                new_cv.i_n = new_cv.i_n - other.i_n
-        elif isinstance(other, CV_Datas):
-            new_CVs = copy.deepcopy(self)
-            for new_cv in new_CVs:
-                new_cv.i_p = new_cv.i_p - other.i_p
-                new_cv.i_n = new_cv.i_n - other.i_n
+        Args:
+            other (CV_Data): CV_Data to be added 
+
+        Returns:
+            CV_Datas: returns a copy of the initial dataset. 
+        """
+        new_CVs = copy.deepcopy(self)
+        new_CVs.sub(other)
+        return new_CVs
+    
+    def __mul__(self, other: float):
+        """multiply
+
+        Args:
+            other (float): CV_Data to be added 
+
+        Returns:
+            CV_Datas: returns a copy of the initial dataset. 
+        """
+        new_CVs = copy.deepcopy(self)
+        new_CVs.mul(other)
+        return new_CVs
+    
+    def __truediv__(self, other: float):
+        """divide
+
+        Args:
+            other (float): CV_Data to be added 
+
+        Returns:
+            CV_Datas: returns a copy of the initial dataset. 
+        """
+        new_CVs = copy.deepcopy(self)
+        new_CVs.div(other)
         return new_CVs
 
     def __len__(self):
         return len(self.datas)
 
     #############################################################################
+    
+    
+    def add(self,other):
+        """add
+
+        Args:
+            other (_type_, optional): _description_. Defaults to CV_Data.
+        """
+        if isinstance(other, CV_Datas) or isinstance(other, list):
+            if len(other) == len(self):
+                for i in range(0,len(self.datas)):
+                    self.datas[i].add(other[i])
+            else:
+                raise ValueError('The data sets are not of the same length.')
+        else:
+            for cv in self.datas:
+                cv.add(other)  
+        ##########################################        
+    def sub(self,other):
+        """sub
+
+        Args:
+            other (_type_, optional): _description_. Defaults to CV_Data.
+        """
+        if isinstance(other, CV_Datas) or isinstance(other, list):
+            if len(other) == len(self.datas):
+                for i in range(0,len(self.datas)):
+                    self.datas[i].sub(other[i])
+            else:
+                raise ValueError('The data sets are not of the same length.')
+        else:
+            for cv in self.datas:
+                cv.sub(other)
+                
+    def mul(self,other):
+        """multiply the current by a number or a list of numbers.
+
+        Args:
+            other (_type_, optional): _description_. Defaults to CV_Data.
+        """
+        if isinstance(other, list):
+            if len(other) == len(self.datas):
+                for i in range(0,len(self.datas)):
+                    self.datas[i].mul(other[i])
+            else:
+                raise ValueError('The data sets are not of the same length.')
+        else:
+            for cv in self.datas:
+                cv.mul(other)
+            
+    def div(self,other):
+        """divide the current by a number.
+
+        Args:
+            other (_type_, optional): _description_. Defaults to CV_Data.
+        """
+        if isinstance(other, list):
+            if len(other) == len(self.datas):
+                for i in range(0,len(self.datas)):
+                    self.datas[i].div(other[i])
+            else:
+                raise ValueError('The data sets are not of the same length.')
+        else:
+            for cv in self.datas:
+                cv.div(other)   
+        
     
     def append(self,other = CV_Data):
         """append
@@ -131,6 +236,18 @@ class CV_Datas:
     
     def pop(self,index):
         self.datas.pop(index)
+    
+    
+    
+    def set_i_at_E_to_zero(self, E:float, *args, **kwargs):
+        """Set the current at a specific voltage to zero.
+        
+        Args:
+            E (float): potential where to set the current to zero. 
+
+        """
+        for x in self.datas:
+            x.set_i_at_E_to_zero(E,*args,**kwargs)
     
     def bg_corr(self, bg_cv: CV_Data|Path) -> CV_Data:
         """Background correct the data by subtracting the bg_cv. 
@@ -177,23 +294,11 @@ class CV_Datas:
             E (float): potential where to get the current. 
             dir (str): direction, "pos,neg or all"
         Returns:
-            list of current
+            list of current at E
         """
-        list_args=[arg for arg in args]
-        list_args.insert(0,direction)
-        loc_args=tuple(list_args)
+                
+        return [x.get_i_at_E(E,direction,*args,**kwargs) for x in self.datas]
         
-        i_at_E_pos=[]
-        i_at_E_neg=[]
-        #print(loc_args)
-        for x in self.datas:
-            cv = copy.deepcopy(x)
-            
-            a =cv.get_i_at_E(E,"all",*loc_args,**kwargs)
-            i_at_E_pos.append(a[0])
-            i_at_E_neg.append(a[1])
-        return i_at_E_pos,i_at_E_neg
-    
     ########################################################################################################
 
     def get_sweep(self,sweep:str,update_label=True):
@@ -271,6 +376,12 @@ class CV_Datas:
         return [cv.get_E_of_min_i(E1,E2,*args, **kwargs) for cv in self.datas]
 
     def norm(self,*args, **kwargs):
+        """Normalise the current to certain factors. 
+
+        Args:
+            norm_to (str | tuple): _description_
+        """
+        
         for x in self.datas:
             x.norm(args)
         return
@@ -558,36 +669,3 @@ class CV_Datas:
         LSVs.set_active_RE(args)
         LSVs.norm(*args)
         return LSVs.export_Array()
-"""
-def plots_for_rotations(datas: CV_Datas, Epot: float, *args, **kwargs):
-    rot = []
-    y = []
-    E = []
-    # Epot=-0.5
-    y_axis_title = ""
-    y_axis_unit = ""
-    CVs = copy.deepcopy(datas)
-    cv_kwargs = kwargs
-    # x_qv = QV(1, "rpm^0.5","w")
-    line=[]
-    for cv in CVs:
-        # x_qv = cv.rotation
-        rot.append(float(cv.rotation))
-        cv.norm(args)
-        cv.set_active_RE(args)
-        cv_kwargs["legend"] = str(f"{float(cv.rotation):.0f}")
-        # cv_kwargs["plot"] = CV_plot
-        l, ax = cv.plot( **cv_kwargs)
-
-        line.append(l)
-        y.append(cv.get_i_at_E(Epot))
-        E.append([Epot, Epot])
-        y_axis_title = str(cv.i_label)
-        y_axis_unit = str(cv.i_unit)
-    rot = np.array(rot)
-    y = np.array(y)
-    CV_plot = cv_kwargs["plot"]
-    CV_plot.plot(E, y[:, 0], STYLE_POS_DL, E, y[:, 1], STYLE_NEG_DL)
-    CV_plot.legend()
-    return rot, y, E, y_axis_title, y_axis_unit
-"""

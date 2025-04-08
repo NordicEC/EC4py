@@ -10,6 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 
 ### Changed
 
+## [0.6.0] - 
+### Added
+  -  CV_Data,CV_Datas,LSV_Data,LSV_Datas
+    - better support for arithmetics operators 
+    - zero current at a specific potential
+
+### Changed
+  -  
+  
 ## [0.5.1] - 
 ### Added
   - POP functions to all multi-object classes.

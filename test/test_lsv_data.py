@@ -32,6 +32,77 @@ class test_lsv_data_basic( unittest.TestCase ):
         l = len(data.E)
         self.assertGreater(l,0)
         
+    def test_add(self):
+        data = LSV_Data()
+        data.i = data.E*2
+        data.add(data)
+        self.assertTrue(np.allclose(data.i, data.E*4,  atol=1e-10, rtol=1e-10))
+        data2 =data+data +data
+        self.assertTrue(np.allclose(data2.i, data.i*3,  atol=1e-10, rtol=1e-10))
+        ###add a number
+        data2 =data+4
+        self.assertTrue(np.allclose(data2.i, data.i+4,  atol=1e-10, rtol=1e-10))
+         ###add a list
+        with self.assertRaises(TypeError):
+            data2 =data+[3]
+        with self.assertRaises(TypeError):
+            data2 =data+[3,1,4]
+
+        
+    def test_sub(self):
+        data = LSV_Data()
+        data.i = data.E
+        data.sub(data)
+        self.assertTrue(np.allclose(data.i, data.E*0,  atol=1e-10, rtol=1e-10))
+        ### sub multiple cvs
+        data.i = data.E
+        data2 =data-data-data
+        self.assertTrue(np.allclose(data2.i, data.i*-1,  atol=1e-10, rtol=1e-10))
+        ###sub a number
+        data2 =data-3
+        self.assertTrue(np.allclose(data2.i, data.i-3,  atol=1e-10, rtol=1e-10))
+        
+        ###sub a list
+        with self.assertRaises(TypeError):
+            data2 =data-[3]
+        with self.assertRaises(TypeError):
+            data2 =data-[3,1,4]    
+  
+    def test_mul(self):
+        data = LSV_Data()
+        data.i = data.E*2
+        data2 =data*3
+        self.assertTrue(np.allclose(data2.i, data.i*3,  atol=1e-10, rtol=1e-10))
+        data2.mul(3)
+        self.assertTrue(np.allclose(data2.i, data.i*3*3,  atol=1e-10, rtol=1e-10))
+        ###add a number
+     ###add a list
+        with self.assertRaises(TypeError):
+            data2 =data*[3]
+        with self.assertRaises(TypeError):
+            data2 =data*[3,1,4]  
+        with self.assertRaises(TypeError):
+            data2 =data*data  
+        
+    def test_div(self):
+        data = LSV_Data()
+        data.i = data.E*2
+        data2 =data/3
+        self.assertTrue(np.allclose(data2.i, data.i/3,  atol=1e-10, rtol=1e-10))
+        data2.div(3.2)
+        self.assertTrue(np.allclose(data2.i, data.i/3/3.2,  atol=1e-10, rtol=1e-10))
+        
+        ###add a number
+     ###add a list
+        with self.assertRaises(TypeError):
+            data2 =data/[3]
+        with self.assertRaises(TypeError):
+            data2 =data/[3,1,4]  
+        with self.assertRaises(TypeError):
+            data2 =data/data  
+        
+        
+        
     def test_lsv_tafel(self):
         data = LSV_Data()
         tafel=100.0
@@ -75,6 +146,12 @@ class test_lsv_data( unittest.TestCase ):
 
         lsv_d = data.get_sweep("dif")
         self.assertTrue(np.allclose((data.i_p-data.i_n),lsv_d.i,  atol=1e-5, rtol=1e-5))
+
+    def test_set_i_at_E_to_zero(self):
+        data = LSV_Data()
+        data.i = np.ones(len(data.E)) 
+        data.set_i_at_E_to_zero(-2.5)
+        self.assertTrue(np.allclose(data.i, data.E*0,  atol=1e-10, rtol=1e-10))
 
     def test_integrate(self):
         data = LSV_Data()
