@@ -153,25 +153,26 @@ class test_CV_Datas_arithmetics( unittest.TestCase ):
         datas = CV_Datas()
         datas.append(data)
         datas.append(data.copy())
+        datas.append(data.copy())
  
-        data.div(3)
+        datas.div(3)
         for d in datas:
             self.assertTrue(np.allclose(d.i_p, d.E/3,  atol=1e-10, rtol=1e-10))
             self.assertTrue(np.allclose(d.i_n, (d.E+2)/3,  atol=1e-10, rtol=1e-10))
         datas2=datas/3
         for d in range(len(datas2)):    
-            self.assertTrue(np.allclose(datas2[d].i, datas[d].i/3,  atol=1e-10, rtol=1e-10))
+            self.assertTrue(np.allclose(datas2[d].i_p, datas[d].i_p/3,  atol=1e-10, rtol=1e-10))
         
-        off=[2,3]
+        off=[2,3,4]
         datas2 =datas/off
         for d in range(len(datas2)):
-            self.assertTrue(np.allclose(datas2[d].i, datas[d].i/off[d],  atol=1e-10, rtol=1e-10))
+            self.assertTrue(np.allclose(datas2[d].i_p, datas[d].i_p/off[d],  atol=1e-10, rtol=1e-10))
         
      ###add a list
         with self.assertRaises(ValueError):
             data2 =datas*[3]
         with self.assertRaises(ValueError):
-            data2 =datas*[3,1,4]  
+            data2 =datas*[3,1,4,4]  
         with self.assertRaises(TypeError):
             data2 =datas*datas  
                    
