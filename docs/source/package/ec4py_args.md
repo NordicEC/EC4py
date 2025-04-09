@@ -6,14 +6,14 @@ nav_order: 100
 
 # Arguments
 
-EC4py defines some global string constant, that can be used as arguments to functions to adjust their behavior.  
+EC4py defines some global string constants, that can be used as arguments to functions to adjust their behavior.  
 
 These string constants can be imported:
 
 ```python
    from ec4py import *
 ```
-Here below follows all the string constant and their mening as a argument to a function.
+Here below follows all the string constants and their meaning when used as an argument to a function.
 
 ## For adjusting the reference electrode
 
