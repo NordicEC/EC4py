@@ -5,7 +5,14 @@ nav_order: 1
 ---
 
 
-# class ec4py.CV_Data() -- CV data analysis and display. 
+
+# class ec4py.CV_Data() -- <br>CV data analysis and display. 
+
+-[Basic use](#basic-use)
+-[Initialization](#initialization)
+-[Operators](#operators)
+-[Methods and properties](#methods-and-properties)
+
 
 ## Basic use:
 
