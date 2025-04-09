@@ -15,6 +15,7 @@ Import string constants:
 ```
 
 ## For adjusting the reference electrode
+
 | Argument        | Meaning           | Where to use  |
 | ------------- |:-------------| -----:|
 | RHE | express potential relative the RHE potential| |

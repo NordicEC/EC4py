@@ -7,10 +7,10 @@ nav_order: 1
 
 # class ec4py.LSV_Datas() -- <br>list class of LSV data. 
 
--[Basic use](#basic-use)
--[Initialization](#initialization)
--[Operators](#operators)
--[Methods and properties](#methods-and-properties)
+- [Basic use](#basic-use)
+- [Initialization](#initialization)
+- [Operators](#operators)
+- [Methods and properties](#methods-and-properties)
 
 
 ## Basic use:
@@ -26,7 +26,7 @@ Load data set:
 ```
 
 
-## Initilization
+## Initialization
 
 ### class ec4py.lsv_data.LSV_Datas(args, kwargs)
 ```python

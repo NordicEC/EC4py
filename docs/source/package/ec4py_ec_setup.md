@@ -7,8 +7,8 @@ nav_order: 1
 
 # class ec4py.EC_Setup() <br>-- class to handle meta data of the electrochemical data file. 
 
--[Basic use](#basic-use)
--[Methods and properties](#methods-and-properties)
+- [Basic use](#basic-use)
+- [Methods and properties](#methods-and-properties)
 
 
 ## Basic use:

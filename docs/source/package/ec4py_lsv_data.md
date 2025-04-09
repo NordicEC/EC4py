@@ -7,10 +7,10 @@ nav_order: 1
 
 # class ec4py.LSV_Data()<br> -- LSV data analysis and display. 
 
--[Basic use](#basic-use)
--[Initialization](#initialization)
--[Operators](#operators)
--[Methods and properties](#methods-and-properties)
+- [Basic use](#basic-use)
+- [Initialization](#initialization)
+- [Operators](#operators)
+- [Methods and properties](#methods-and-properties)
 
 ## Basic use:
 
@@ -24,7 +24,7 @@ Load data set:
    current = data.i #current array
    E = data.E # voltage array
 ```
-## Initilization
+## Initialization
 
 ### class ec4py.lsv_data.LSV_Data(args, kwargs)
 ```python
