@@ -1,5 +1,5 @@
 ---
-title:  - Arguments
+title: Arguments
 parent: Package
 nav_order: 100
 ---
