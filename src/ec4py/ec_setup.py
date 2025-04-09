@@ -42,6 +42,8 @@ class ec_setup_data:
             self._Loading = None
             return
 
+
+
         def setACTIVE_RE(self,ref):
             if ref is RHE:
                 self._currentElectrode = 1
@@ -106,6 +108,11 @@ class EC_Setup:
         #self._setup_rotation_unit ="/min"
         self.setup_data = ec_setup_data()
         return
+    
+    def __str__(self):
+        """Get the name of the data file.
+        """
+        return f"{self.setup_data.name}"
           
     def setup_reset(self):
         if 'Electrode.Area' in self.setup_data._setup:

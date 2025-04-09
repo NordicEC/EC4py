@@ -95,13 +95,14 @@ class EC_Data(EC_Setup):
     #    self._area = value
     #    self._area_unit = unit
 
-    def __str__(self):
+    #def __str__(self):
         """_summary_
 
         Returns:
             _type_: _description_
         """
-        return f"{self.setup_data.name}"
+     #   return f"{self.setup_data.name}"
+
     
     @property 
     def channels(self):

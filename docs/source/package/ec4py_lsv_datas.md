@@ -28,7 +28,7 @@ Load data set:
 
 ## Initialization
 
-### class ec4py.lsv_data.LSV_Datas(args, kwargs)
+### class ec4py.lsv_data.LSV_Datas(Path=None, args, kwargs)
 ```python
    data = LSV_Datas() # empty object
    data = LSV_Datas(["PATHs"]) # import the data from a file.

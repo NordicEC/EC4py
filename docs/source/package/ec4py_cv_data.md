@@ -28,7 +28,7 @@ Load data set:
 
 ## Initialization
 
-### class ec4py.cv_data.CV_Data(args, kwargs)
+### class ec4py.cv_data.CV_Data(Path=None, args, kwargs)
 ```python
    data = CV_Data() # empty object
    data = CV_Data("PATH TO DATA FILE") # import the data from a file.
