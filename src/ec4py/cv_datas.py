@@ -76,6 +76,14 @@ class CV_Datas(EC_Datas_base):
             #print(index)
     #############################################################################
     
+    def __repr__(self):
+        """CV Datas
+        """
+        delimiter = "','"
+        r =delimiter.join([x.setup_data.fileName for x in self.datas])
+        return f"CV_Datas(['{r}'])"
+    
+    
     def __getitem__(self, item_index:slice | int) -> CV_Data: 
 
         if isinstance(item_index, slice):

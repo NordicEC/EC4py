@@ -12,7 +12,7 @@ from .util_graph import plot_options
 from .ec_setup import EC_Setup
 from .util import Quantity_Value_Unit as QV
 from .ec_data_util import EC_Channels
-
+from pathlib import Path
 
 class EC_Data(EC_Setup):
     """ Reads and stores data from a TDMS file in the format of EC4 DAQ.
@@ -47,6 +47,7 @@ class EC_Data(EC_Setup):
                 tdms_file = TdmsFile.read(path)
                 tdms_file.close()
                 self.path = str(path)
+                self.setup_data.fileName = Path(path).name
                 # print(tdms_file.properties)
                 
                 try:
@@ -102,7 +103,10 @@ class EC_Data(EC_Setup):
             _type_: _description_
         """
      #   return f"{self.setup_data.name}"
-
+    def __repr__(self):
+        """Get the name of the data file.
+        """
+        return f"EC_Data('{self.setup_data.fileName}')"
     
     @property 
     def channels(self):

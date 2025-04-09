@@ -17,6 +17,7 @@ SQRT_ROT = "sqrt_rot"
 class ec_setup_data:
         def __init__(self):
             self.name =""
+            self.fileName=""
             self._setup = {"Current Range" : "", "Control Mode" : "", "Cell Switch": 0}
             self._area= 1.0
             self._area_unit="m^2"
@@ -113,6 +114,8 @@ class EC_Setup:
         """Get the name of the data file.
         """
         return f"{self.setup_data.name}"
+    
+    
           
     def setup_reset(self):
         if 'Electrode.Area' in self.setup_data._setup:
