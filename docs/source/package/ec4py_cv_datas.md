@@ -5,7 +5,7 @@ nav_order: 1
 ---
 
 
-# class ec4py.CV_Datas() -- <br>list class of CV data analysis and display. 
+# class ec4py.CV_Datas()<br> -- list class of CV data analysis and display. 
 
 - [Basic use](#basic-use)
 - [Initialization](#initialization)
@@ -84,21 +84,21 @@ A list of [Quantity_Value_Unit](ec4py_util.md) representation of the curent at a
 A list of [Quantity_Value_Unit](ec4py_util.md) representation of the voltage at a specific current. [Arguments](ec4py_args.md) can be used to normalize the current and shift the potential.
 
 ### CV_Datas.**get_E_of_max_i(self, E1:float,E2:float,*args,**kwargs)**
-A list of [Quantity_Value_Unit](ec4py_util.md) representation of the voltage where the current reaches a maximum between two voltage limits. Arguments can be used to shift the potential.
+A list of [Quantity_Value_Unit](ec4py_util.md) representation of the voltage where the current reaches a maximum between two voltage limits. [Arguments](ec4py_args.md) can be used to shift the potential.
 ```python
    cvs = CV_Data()
    cvs.get_E_of_max_i(0.1,0.5) # returns the voltage where the current reaches the max.
 ```
 
 ### CV_Datas.**get_E_of_min_i(self, E1:float,E2:float,*args,**kwargs)**
-A list of [Quantity_Value_Unit](ec4py_util.md) representation of the voltage where the current reaches a minimum between two voltage limits. Arguments can be used to shift the potential.
+A list of [Quantity_Value_Unit](ec4py_util.md) representation of the voltage where the current reaches a minimum between two voltage limits. [Arguments](ec4py_args.md) can be used to shift the potential.
 ```python
    cvs = CV_Data()
    cvs.get_E_of_min_i(0.1,0.5) # returns the voltage where the current reaches the max.
 ```
 
 ### CV_Datas.**get_sweep(sweep:str)**
-A [LSVs](ec4_py_lsvs.md) representation of the selected sweep: POS, NEG, AVG & DIF.
+A [LSVs](ec4_py_lsvs.md) representation of the selected sweep: POS, NEG, AVG & DIF.See [Arguments](ec4py_args.md#for-cv_data-cv_datas)
 ```python
    cvs = CV_Datas()
    lsvs = cvs.get_sweep(AVG) # returns the average of positive and negative sweeps.

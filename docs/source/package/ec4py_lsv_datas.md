@@ -5,7 +5,7 @@ nav_order: 1
 ---
 
 
-# class ec4py.LSV_Datas() -- <br>list class of LSV data. 
+# class ec4py.LSV_Datas() <br>-- list class of LSV data. 
 
 - [Basic use](#basic-use)
 - [Initialization](#initialization)
@@ -87,7 +87,7 @@ A list of [Quantity_Value_Unit](ec4py_util.md) representation of the voltage at 
 
 ### LSV_Datas.**get_E_of_max_i(self, E1:float,E2:float,*args,**kwargs)**
 
-A list of [Quantity_Value_Unit](ec4py_util.md) representation of the voltage where the current reaches a maximum between two voltage limits. Arguments can be used to shift the potential.
+A list of [Quantity_Value_Unit](ec4py_util.md) representation of the voltage where the current reaches a maximum between two voltage limits. [Arguments](ec4py_args.md) can be used to shift the potential.
 ```python
    datas = LSV_Datas()
    datas.get_E_of_max_i(0.1,0.5) # returns the voltage where the current reaches the max.
@@ -95,7 +95,7 @@ A list of [Quantity_Value_Unit](ec4py_util.md) representation of the voltage whe
 
 ### LSV_Datas.**get_E_of_min_i(self, E1:float,E2:float,*args,**kwargs)**
 
-A list of [Quantity_Value_Unit](ec4py_util.md) representation of the voltage where the current reaches a minimum between two voltage limits. Arguments can be used to shift the potential.
+A list of [Quantity_Value_Unit](ec4py_util.md) representation of the voltage where the current reaches a minimum between two voltage limits. [Arguments](ec4py_args.md) can be used to shift the potential.
 ```python
    datas = LSV_Datas()
    datas.get_E_of_min_i(0.1,0.5) # returns the voltage where the current reaches the max.
@@ -120,7 +120,7 @@ Normalise the current to certain factors. See [Arguments](ec4py_args.md)
 
 ### LSV_Datas.**integrate(self, start_E:float, end_E:float, *args, **kwargs)**
 
- A list [Quantity_Value_Unit](ec4py_util.md) representation of the integrated current between two voltage limits. Arguments can be used to normailze the current and shift the potential.
+ A list [Quantity_Value_Unit](ec4py_util.md) representation of the integrated current between two voltage limits. [Arguments](ec4py_args.md) can be used to normailze the current and shift the potential.
 ```python
    datas = LSV_Datas()
    datas.integrate(0.1,1.1) # integrate the current between 0.1 and 1.1 V.
