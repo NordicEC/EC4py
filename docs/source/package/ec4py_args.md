@@ -1,18 +1,19 @@
 ---
-title: Arguments
+title:  - Arguments
 parent: Package
 nav_order: 100
 ---
 
 # Arguments
 
-The folling arguments are global string constant.
+EC4py defines some global string constant, that can be used as arguments to functions to adjust their behavior.  
 
-Import string constants:
+These string constants can be imported:
 
 ```python
    from ec4py import *
 ```
+Here below follows all the string constant and their mening as a argument to a function.
 
 ## For adjusting the reference electrode
 
