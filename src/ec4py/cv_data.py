@@ -269,7 +269,7 @@ class CV_Data(Voltammetry):
                 s_comp=str(comp).casefold()
             if  s_comp == "Z".casefold():
                 data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
-                print(sel_channels.Impedance)
+                #print(sel_channels.Impedance)
                 if(len(data_E)!=len(data_Z)):
                     data_t,q,u,dt_t = ec_data.get_channel("Time")
                     data_t_z =dt_Z*np.array(range(len(data_Z)))
@@ -351,7 +351,7 @@ class CV_Data(Voltammetry):
         V1, V1_str = extract_value_unit(self.setup['V1'])
         #print("V2", self.setup['V2'])
         V2, V2_str = extract_value_unit(self.setup['V2'])
-        #print("CV", V0,V1,V2)
+        # print("CV", V0,V1,V2)
         options = plot_options(kwargs)
         #print("CONVERTING",len(time), len(E), len(i))
         #try:
@@ -388,8 +388,9 @@ class CV_Data(Voltammetry):
         up_start =0
         up_end = 0
 
-
-
+        #print("MIN",x[zero_crossings[0]], np.min(x[0:zero_crossings[1]]))
+        #print("argMIN",zero_crossings[0], np.argmin(x[0:zero_crossings[1]]))
+        zero_crossings[0] = np.argmin(x[0:zero_crossings[1]])
         #print(f"ZeroCrossings: {zero_crossings}")
         #print(zero_crossings)
         if x[0]<x[zero_crossings[0]]:
@@ -415,23 +416,70 @@ class CV_Data(Voltammetry):
         """
         # make E axis.
         self.E = self.make_E_axis()
+        zero_crossings = np.append(zero_crossings, x.size)
+        #print("ZERO:",len(zero_crossings),zero_crossings)
 
         if positive_start:
             x_u = x[0:zero_crossings[0]]
             y_u = y[0:zero_crossings[0]]
-            x_n = np.flipud(x[zero_crossings[0]:])
-            y_n = np.flipud(y[zero_crossings[0]:])
+            x_n = np.flipud(x[zero_crossings[0]:zero_crossings[1]])
+            y_n = np.flipud(y[zero_crossings[0]:zero_crossings[1]])
+            if len(zero_crossings)>2:
+                x_u2 = x[zero_crossings[1]:zero_crossings[2]]
+                y_u2 = y[zero_crossings[1]:zero_crossings[2]] 
+                mask = x_u2<x_u.min()
+                x_u2=np.array(x_u2[mask])
+                y_u2=np.array(y_u2[mask])
+                        
         else:
             #print("neg first sweep")
             x_n = np.flipud(x[0:zero_crossings[0]])
             y_n = np.flipud(y[0:zero_crossings[0]])
-            x_u = x[zero_crossings[0]:]
-            y_u = y[zero_crossings[0]:]
+            x_u = x[zero_crossings[0]-1:zero_crossings[1]]
+            y_u = y[zero_crossings[0]-1:zero_crossings[1]]
+            if len(zero_crossings)>2:
+                x_n2 = np.flipud(x[zero_crossings[1]:zero_crossings[2]])
+                y_n2 = np.flipud(y[zero_crossings[1]:zero_crossings[2]])
+                mask = x_n2>x_n.max()
+                x_n2=np.array(x_n2[mask])
+                y_n2=np.array(y_n2[mask])
 
         #y_pos=np.interp(x_sweep, x_u, y_u)
         #y_neg=np.interp(x_sweep, x_n, y_n)
         y_pos=self.interpolate(x_u, y_u)
+        y_pos =  self.clean_up_edges(y_pos,0)
+        
+        if len(zero_crossings)>2 and positive_start:
+            y_pos2 = self.interpolate(x_u2, y_u2)
+            y_pos2 =  self.clean_up_edges(y_pos2,0)
+            y_pos = y_pos + y_pos2
+       
         y_neg=self.interpolate(x_n, y_n)
+        y_neg = self.clean_up_edges(y_neg,0)
+
+        if len(zero_crossings)>2 and not positive_start:
+          #  print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+          #  print("x_n2",len(x_n2))
+          #  print("y_n2",len(y_n2))
+            y_neg2 = self.interpolate(x_n2, y_n2)
+            y_neg2 = self.clean_up_edges(y_neg2,0)
+            y_neg=y_neg+y_neg2
+            #print("YNEG",y_neg[0])
+            
+        
+        #print("YNEG",y_neg)
+        #"""
+        if positive_start or (not positive_start and len(zero_crossings)>2):
+            max_arg= y_pos.nonzero()[0].max()
+            y_neg[max_arg]=y_pos[max_arg]    
+        if not positive_start or (positive_start and len(zero_crossings)>2):
+            #c = a.nonzero()[0]
+            mask =y_neg.nonzero()[0]
+            min_arg= mask.min()
+            #np.flatnonzero(y_neg).min()
+            #print("BBB", min_arg,y_neg[min_arg],y_neg[min_arg+1],y_pos.nonzero()[0].min())
+            y_pos[min_arg]=y_neg[min_arg]
+        #"""    
         self.i_p = self.clean_up_edges(y_pos)
         self.i_n = self.clean_up_edges(y_neg)
         

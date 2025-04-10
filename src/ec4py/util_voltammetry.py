@@ -248,16 +248,17 @@ class Voltammetry(EC_Setup):
     
     
     
-    def clean_up_edges(self, current):
-        for i in range(1,current.size):
-            if current[i-1] == current[i]:
-                current[i-1] = math.nan
+    def clean_up_edges(self, current,toValue = math.nan):
+        lower_edgeValue = current[0]
+        for i in range(0,current.size):
+            if lower_edgeValue == current[i]:
+                current[i] = toValue
             else :
                 break
-            
-        for i in range(current.size-2,0,-1):
-            if current[i] == current[i+1]:
-                current[i+1] = math.nan
+        upper_edgeValue = current[current.size-1]
+        for i in range(current.size-1,0,-1):
+            if current[i] == upper_edgeValue:
+                current[i] = toValue
             else :
                 break
         return current
