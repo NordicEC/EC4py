@@ -23,6 +23,8 @@ def Tafel(x_data, y_data, y_axis_unit, y_axis_title, plot_color, lineName="", x_
     """
 
     #Tafel Analysis  
+    x_data = np.array([float(x) for x in x_data])
+    y_data = np.array([float(x) for x in y_data])
     y_data = np.log10(np.abs(y_data))  
     m, b = np.polyfit(x_data, y_data, 1)
     y_fit= m * x_data + b
@@ -45,7 +47,7 @@ def Tafel(x_data, y_data, y_axis_unit, y_axis_title, plot_color, lineName="", x_
     
     
     #the fitted line   
-    line, = analyse_plot.plot(x_data, y_fit, linewidth=3.0, c=plot_color)
+    line, = analyse_plot.plot(x_data, y_fit, linewidth=3.0, c=plot_color, linestyle="--")
     line.set_label(f"{lineName} m={1000/m:3.1f}mV/dec")
 
     y_values = np.array(y_data)

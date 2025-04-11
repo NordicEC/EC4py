@@ -134,6 +134,14 @@ class EC_Setup:
         self.setup_data.reset_SWE()
     
     
+    def copy(self):
+        """Creates a copy of self object.
+
+        Returns:
+            Copy of the current object.
+        """
+        return copy.deepcopy(self)
+    
     def copy_from(self, source):
         """Imports a copy of EC_Setup from source.
 
