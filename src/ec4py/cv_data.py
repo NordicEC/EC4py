@@ -390,6 +390,9 @@ class CV_Data(Voltammetry):
 
         #print("MIN",x[zero_crossings[0]], np.min(x[0:zero_crossings[1]]))
         #print("argMIN",zero_crossings[0], np.argmin(x[0:zero_crossings[1]]))
+        if len(zero_crossings)<2:  #if the CV consists of 2 LSV, there is only one zero crossing.
+            zero_crossings = np.append(zero_crossings,len(x))
+        print("size",len(zero_crossings),zero_crossings,len(zero_crossings)<2)
         zero_crossings[0] = np.argmin(x[0:zero_crossings[1]])
         #print(f"ZeroCrossings: {zero_crossings}")
         #print(zero_crossings)

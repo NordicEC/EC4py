@@ -164,7 +164,8 @@ class test_lsv_data( unittest.TestCase ):
 
           
     def test_Tafel(self):
-        data = CV_Data(path_to_dataSetFolder/ "CV_153559_ 3.tdms")
+        data = CV_Data(path_to_dataSetFolder/ "CV_153559_ 3.tdms").get_sweep(POS)
+        
         k = data.Tafel([-0.2,0],-0.6)
         self.assertEqual(k[0].unit,"V/dec")
         v =k[0].value
