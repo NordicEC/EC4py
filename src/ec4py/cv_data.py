@@ -299,9 +299,10 @@ class CV_Data(Voltammetry):
             raise NameError(e)
             return
 
+        
+        self.setup_data = copy.deepcopy(ec_data.setup_data)
+        self.convert(ec_data.Time,data_E,data_i,**kwargs)
         try:
-            self.setup_data = copy.deepcopy(ec_data.setup_data)
-            self.convert(ec_data.Time,data_E,data_i,**kwargs)
             self.IR_COMPENSATED = ir_comp
             E_title = "E"
             #if ir_comp: ###NOT NEEDED
@@ -387,13 +388,18 @@ class CV_Data(Voltammetry):
         #print(f"Rate: {self.rate_V_s}")
         up_start =0
         up_end = 0
-
+        ## Number of vertext
+        Two_vertex = len(zero_crossings)>1
         #print("MIN",x[zero_crossings[0]], np.min(x[0:zero_crossings[1]]))
         #print("argMIN",zero_crossings[0], np.argmin(x[0:zero_crossings[1]]))
-        if len(zero_crossings)<2:  #if the CV consists of 2 LSV, there is only one zero crossing.
+        if not Two_vertex:  #if the CV consists of 2 LSV, there is only one zero crossing.
             zero_crossings = np.append(zero_crossings,len(x))
         print("size",len(zero_crossings),zero_crossings,len(zero_crossings)<2)
-        zero_crossings[0] = np.argmin(x[0:zero_crossings[1]])
+        ### Manualy find the first Vertex.
+        if positive_start:
+            zero_crossings[0] = np.argmax(x[0:zero_crossings[1]])
+        else:
+            zero_crossings[0] = np.argmin(x[0:zero_crossings[1]])
         #print(f"ZeroCrossings: {zero_crossings}")
         #print(zero_crossings)
         if x[0]<x[zero_crossings[0]]:
@@ -420,14 +426,14 @@ class CV_Data(Voltammetry):
         # make E axis.
         self.E = self.make_E_axis()
         zero_crossings = np.append(zero_crossings, x.size)
-        #print("ZERO:",len(zero_crossings),zero_crossings)
+        print("ZERO:",len(zero_crossings),zero_crossings, "2x vertex", Two_vertex)
 
         if positive_start:
             x_u = x[0:zero_crossings[0]]
             y_u = y[0:zero_crossings[0]]
             x_n = np.flipud(x[zero_crossings[0]:zero_crossings[1]])
             y_n = np.flipud(y[zero_crossings[0]:zero_crossings[1]])
-            if len(zero_crossings)>2:
+            if Two_vertex:
                 x_u2 = x[zero_crossings[1]:zero_crossings[2]]
                 y_u2 = y[zero_crossings[1]:zero_crossings[2]] 
                 mask = x_u2<x_u.min()
@@ -440,7 +446,7 @@ class CV_Data(Voltammetry):
             y_n = np.flipud(y[0:zero_crossings[0]])
             x_u = x[zero_crossings[0]-1:zero_crossings[1]]
             y_u = y[zero_crossings[0]-1:zero_crossings[1]]
-            if len(zero_crossings)>2:
+            if Two_vertex:
                 x_n2 = np.flipud(x[zero_crossings[1]:zero_crossings[2]])
                 y_n2 = np.flipud(y[zero_crossings[1]:zero_crossings[2]])
                 mask = x_n2>x_n.max()
@@ -452,7 +458,7 @@ class CV_Data(Voltammetry):
         y_pos=self.interpolate(x_u, y_u)
         y_pos =  self.clean_up_edges(y_pos,0)
         
-        if len(zero_crossings)>2 and positive_start:
+        if Two_vertex and positive_start:
             y_pos2 = self.interpolate(x_u2, y_u2)
             y_pos2 =  self.clean_up_edges(y_pos2,0)
             y_pos = y_pos + y_pos2
@@ -460,7 +466,7 @@ class CV_Data(Voltammetry):
         y_neg=self.interpolate(x_n, y_n)
         y_neg = self.clean_up_edges(y_neg,0)
 
-        if len(zero_crossings)>2 and not positive_start:
+        if Two_vertex and not positive_start:
           #  print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
           #  print("x_n2",len(x_n2))
           #  print("y_n2",len(y_n2))
@@ -469,13 +475,16 @@ class CV_Data(Voltammetry):
             y_neg=y_neg+y_neg2
             #print("YNEG",y_neg[0])
             
-        
-        #print("YNEG",y_neg)
+        print("YPOS",y_pos)        
+        print("YNEG",y_neg.size)
         #"""
-        if positive_start or (not positive_start and len(zero_crossings)>2):
-            max_arg= y_pos.nonzero()[0].max()
-            y_neg[max_arg]=y_pos[max_arg]    
-        if not positive_start or (positive_start and len(zero_crossings)>2):
+        if positive_start or (not positive_start and Two_vertex):
+            indexes = y_pos.nonzero()[0]
+            if len(indexes)>0:
+                max_arg= indexes.max()
+                y_neg[max_arg]=y_pos[max_arg]    
+                
+        if not positive_start or (positive_start and Two_vertex):
             #c = a.nonzero()[0]
             mask =y_neg.nonzero()[0]
             min_arg= mask.min()
