@@ -187,7 +187,26 @@ class Step_Datas:
         return charge
     
     ##################################################################################################################
-    def Tafel(self, lims=[-1,1], *args, **kwargs):
+    def Tafel(self, lims=[-1,1], step_nr:int = -1, *args, **kwargs):
+        
+        s = "Tafel Analysis"
+        if(step_nr>-1):
+            s = s + f" of step #{step_nr}"
+        fig = make_plot_2x_1(s)
+        data_plot_i = fig.plots[0]
+        data_plot_E = fig.plots[1]
+        analyse_plot =  fig.plots[2]
+        # data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1(s)
+        #data_plot_i.title.set_text("")
+        #data_plot_E.title.set_text('')
+        analyse_plot.title.set_text('Tafel Plot')
+
+        #########################################################
+        # Make plot
+        data_kwargs = kwargs
+        data_kwargs["plot_i"] = data_plot_i
+        data_kwargs["plot_E"] = data_plot_E
+
         
         return
     

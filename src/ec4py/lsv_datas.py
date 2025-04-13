@@ -665,7 +665,7 @@ class LSV_Datas:
         df = pd.DataFrame.from_records(m,columns=col_names)
         return df
 
-
+"""
 def plots_for_rotations(datas: LSV_Datas, Epot: float, *args, **kwargs):
     rot = []
     y = []
@@ -696,3 +696,4 @@ def plots_for_rotations(datas: LSV_Datas, Epot: float, *args, **kwargs):
     CV_plot.plot(E, y, STYLE_POS_DL)
     CV_plot.legend()
     return rot, y, E, y_axis_title, y_axis_unit
+"""
