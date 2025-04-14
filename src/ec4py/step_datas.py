@@ -12,7 +12,7 @@ from .ec_data import EC_Data
 from .step_data import Step_Data
 from .ec_setup import EC_Setup
 from .analysis_levich import Levich
-
+from .ec_datas_util import EC_Datas_base
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
@@ -22,7 +22,7 @@ from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1
 STYLE_POS_DL = "bo"
 STYLE_NEG_DL = "ro"
 
-class Step_Datas:
+class Step_Datas(EC_Datas_base):
     """# Class to analyze CV datas. 
     Class Functions:
     - .plot() - plot data    
@@ -38,8 +38,8 @@ class Step_Datas:
     ### Options keywords:
     legend = "name"
     """
-    def __init__(self, paths:list[Path] | Path|None = None, **kwargs):
-        
+    def __init__(self, paths:list[Path] | Path|None = None, *args,**kwargs):
+        EC_Datas_base.__init__(self,*args, **kwargs)
         
         if paths is None:
             return

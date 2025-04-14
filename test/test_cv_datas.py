@@ -9,6 +9,8 @@ import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
 
+from test_ec_datas_util import pop_and_len
+
 E =np.array([1,2,3])
 paths = []
 path_to_dataSetFolder = Path(".").cwd() / "test_data" /"CV"
@@ -50,6 +52,10 @@ class Test_CV_Datas(unittest.TestCase):
         datas.plot(AREA)
         plt.close("all")
         
+class test_CV_Data_arrays(unittest.TestCase):
+    def test_pop_and_len(self):
+        pop_and_len(self, CV_Datas(), CV_Data(),CV_Data())
+
 
 class test_CV_Datas_arithmetics( unittest.TestCase ):
     def test_s1_add(self):

@@ -37,6 +37,10 @@ class EC_Datas_base:
         else:
             return self.datas[item_index] 
     
+    def __len__(self):
+        """Return the number of items in the list."""
+        return len(self.datas)
+    
     #### basic functions.
     
     def pop(self,index):

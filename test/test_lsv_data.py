@@ -29,8 +29,8 @@ class test_lsv_data_basic( unittest.TestCase ):
     
     def test_lsv_voltammogram(self):
         data = LSV_Data()
-        l = len(data.E)
-        self.assertGreater(l,0)
+        data_E = len(data.E)
+        self.assertGreater(data_E,0)
         
     def test_add(self):
         data = LSV_Data()

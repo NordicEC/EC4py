@@ -2,11 +2,11 @@
 from ec4py.util_voltammetry import Voltammetry 
 from ec4py import Quantity_Value_Unit 
 
-from pathlib import Path
+#from pathlib import Path
 import numpy as np
 import math
 import unittest   # The test framework
-from numpy.testing import assert_almost_equal
+#from numpy.testing import assert_almost_equal
 
 gdata_u = np.array([range(0,101)])/100
 gdata_d = np.array([range(99,0,-1)])/100
