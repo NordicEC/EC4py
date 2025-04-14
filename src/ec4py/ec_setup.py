@@ -309,6 +309,36 @@ class EC_Setup:
         else:
             self.setup_data._rotation_unit = unit
         return
+    
+    def set_weight(self,value:float,unit:str = ""):
+        """sets the weight.
+
+        Args:
+            value (float): _description_
+            unit (str, optional): _description_. Defaults to "".
+        """
+        self.setup_data._weight = value
+        if unit == "":
+            pass
+        else:
+            self.setup_data._weight_unit = unit
+        return
+    
+    def set_loading(self,value:float,unit:str = ""):
+        """sets the loading.
+
+        Args:
+            value (float): _description_
+            unit (str, optional): _description_. Defaults to "".
+        """
+        self.setup_data._Loading = value
+        if unit == "":
+            pass
+        else:
+            self.setup_data._Loading_unit = unit
+        return
+    
+    
     #########################################################################
     def set_RHE(self, V_RHE_vs_refereceElectrode):
         self.setup_data._RHE = str(V_RHE_vs_refereceElectrode)
