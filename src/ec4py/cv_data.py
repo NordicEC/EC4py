@@ -72,6 +72,10 @@ class CV_Data(Voltammetry):
 
     #########################################  
     
+    def __repr__(self):
+        """Get the name of the data file.
+        """
+        return f"CV_Data('{self.setup_data.fileName}')"
     
        
     def __add__(self, other: CV_Data):

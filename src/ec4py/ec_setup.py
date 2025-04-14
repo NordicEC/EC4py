@@ -17,6 +17,7 @@ SQRT_ROT = "sqrt_rot"
 class ec_setup_data:
         def __init__(self):
             self.name =""
+            self.fileName=""
             self._setup = {"Current Range" : "", "Control Mode" : "", "Cell Switch": 0}
             self._area= 1.0
             self._area_unit="m^2"
@@ -41,6 +42,8 @@ class ec_setup_data:
             self._Support = None
             self._Loading = None
             return
+
+
 
         def setACTIVE_RE(self,ref):
             if ref is RHE:
@@ -106,6 +109,13 @@ class EC_Setup:
         #self._setup_rotation_unit ="/min"
         self.setup_data = ec_setup_data()
         return
+    
+    def __str__(self):
+        """Get the name of the data file.
+        """
+        return f"{self.setup_data.name}"
+    
+    
           
     def setup_reset(self):
         if 'Electrode.Area' in self.setup_data._setup:
@@ -123,6 +133,14 @@ class EC_Setup:
             
         self.setup_data.reset_SWE()
     
+    
+    def copy(self):
+        """Creates a copy of self object.
+
+        Returns:
+            Copy of the current object.
+        """
+        return copy.deepcopy(self)
     
     def copy_from(self, source):
         """Imports a copy of EC_Setup from source.

@@ -16,8 +16,7 @@ nav_order: 100
 
 | Keyword        | Meaning           | Where to use  |
 | ------------- |:-------------| -----:|
-| y_smooth = 3 | iR-compensation using measured <br> absolute impedance| When loading a dataset |
-| x_smooth = 4 | iR-compensation using measured <br>real part of the impedance |When loading a dataset|
-| IRCOMP = 1.0 | Manual iR-compensation<br>where the number corresponds to the Rsol | When loading a dataset |
-
+| y_smooth = 3 | moving averaging of the y data <br> number correspond to the width of the moving average. | When plotting a dataset|
+| x_smooth = 4 | moving averaging of the y data <br> number correspond to the width of the moving average.| When plotting a dataset |
+ 
 

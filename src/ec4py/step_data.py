@@ -20,7 +20,7 @@ from .util import Quantity_Value_Unit as QV
 from .analysis_tafel import Tafel
 
 
-#from .step_datas import Step_Datas
+#import ec4py.step_datas # import Step_Datas
 
 class Step_Data(EC_Setup):
 
@@ -107,10 +107,10 @@ class Step_Data(EC_Setup):
         options.update(kwargs)
         sel_channels = EC_Channels(*args,**kwargs)
         try:
-            data_E,q_E,u_E = ec_data.get_channel(sel_channels.Voltage)
-            data_i,q,u = ec_data.get_channel(sel_channels.Current)
-            data_Z,q,u = ec_data.get_channel(sel_channels.Impedance)
-            data_P,q,u = ec_data.get_channel(sel_channels.Phase)
+            data_E,q_E,u_E,_ = ec_data.get_channel(sel_channels.Voltage)
+            data_i,q,u,_ = ec_data.get_channel(sel_channels.Current)
+            data_Z,q,u,_ = ec_data.get_channel(sel_channels.Impedance)
+            data_P,q,u,_ = ec_data.get_channel(sel_channels.Phase)
             self.setup_data = ec_data.setup_data
             #self.convert(ec_data.Time,ec_data.E,ec_data.i,**kwargs)
             self.Time = ec_data.Time
@@ -126,8 +126,8 @@ class Step_Data(EC_Setup):
             self.step_E =List_Str2float(self.setup["Step.E"])
             self.step_Type = List_Str2Str(self.setup["Step.Type"])
             self.E_label = q_E + " vs " + self.RE
-        except ValueError:
-            print("no_data")
+        except ValueError as e:
+            print("no_data",e)
         #self.setup = data.setup
         #self.set_area(data._area, data._area_unit)
         #self.set_rotation(data.rotation, data.rotation_unit)
@@ -252,7 +252,14 @@ class Step_Data(EC_Setup):
         return imp
        ##################################################################################################################
     
-    def get_step(self,step_index:int, steprange:int = 1):
+    def get_steps(self, step_index:int=0, step_range:int = 1):
+        from ec4py.step_datas import Step_Datas
+        datas = Step_Datas()
+        for x in range(self.nr_of_steps): #step_index,step_range):
+            datas.append(self.get_step(x,step_range))
+        return datas
+    
+    def get_step(self,step_index:int, step_range:int = 1):
         singleStep = Step_Data()
         singleStep.setup_data = copy.deepcopy(self.setup_data)
         singleStep.setup_data.name =str(self.setup_data.name)  + '#' + str(step_index)
@@ -271,7 +278,7 @@ class Step_Data(EC_Setup):
         extra = s[total_nr_steps]*multi
       #  print("extra", extra)
         startT = s[idx]
-        endT = s[idx+steprange]
+        endT = s[idx+step_range]
          
      #   print("startT",startT)
       #  print("endT",endT)
@@ -468,12 +475,29 @@ class Step_Data(EC_Setup):
     def Tafel(self, lims=[-1,1], *args, **kwargs):
         x_data =np.empty(self.nr_of_steps)
         y_data =np.empty(self.nr_of_steps)
-        for i in self.nr_of_steps:
-            singleStep = self.get_step[i]
+        for i in range(self.nr_of_steps):
+            singleStep = self.get_step(i)
             maxIndex = len(singleStep.Time)-1
             x_data[i] = singleStep.E[maxIndex]
             y_data[i] = singleStep.i[maxIndex]
-        return Tafel(x_data, y_data, self.i_unit, self.i_label,  **kwargs)
+            
+        s = "Tafel Analysis"    
+        fig = make_plot_2x_1(s)
+        data_plot_i = fig.plots[0]
+        data_plot_E = fig.plots[1]
+        analyse_plot =  fig.plots[2]
+        #########################################################
+        # Make plot
+        data_kwargs = kwargs
+        data_kwargs["plot_i"] = data_plot_i
+        data_kwargs["plot_E"] = data_plot_E
+        
+        self.plot("Time","i", plot=data_plot_i)
+        self.plot("Time","E", plot=data_plot_E)
+            
+            
+            
+        return Tafel(x_data, y_data, self.i_unit, self.i_label, "b", plot=analyse_plot, **kwargs)
 ##END OF CLASS
 ########################################################################################## 
 

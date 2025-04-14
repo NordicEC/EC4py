@@ -2,6 +2,7 @@
 
     This module contains the public facing API for reading TDMS files produced by EC4 DAQ.
 """
+
 from nptdms import TdmsFile
 import math
 import numpy as np
@@ -9,14 +10,15 @@ import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter 
 from . import util
 from .ec_data import EC_Data
-from .step_data import Step_Data
+#import ec4py.step_data  # import Step_Data
 from .ec_setup import EC_Setup
 from .analysis_levich import Levich
 from .ec_datas_util import EC_Datas_base
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig,LEGEND
+from .analysis_tafel import Tafel
 
 
 STYLE_POS_DL = "bo"
@@ -38,16 +40,18 @@ class Step_Datas(EC_Datas_base):
     ### Options keywords:
     legend = "name"
     """
+
     def __init__(self, paths:list[Path] | Path|None = None, *args,**kwargs):
         EC_Datas_base.__init__(self,*args, **kwargs)
         
+
         if paths is None:
             return
         if isinstance(paths,Path ):
             path_list = [paths]
         else:
             path_list = paths
-        self.datas = [Step_Data() for i in range(len(path_list))]
+        self.datas = [ Step_Data() for i in range(len(path_list))]
         index=0
         for path in path_list:
             ec = EC_Data(path)
@@ -58,7 +62,7 @@ class Step_Datas(EC_Datas_base):
         #print(index)
         return
     #############################################################################
-    def __getitem__(self, item_index:slice|int) -> Step_Data: 
+    def __getitem__(self, item_index:slice|int): 
 
         if isinstance(item_index, slice):
             step = 1
@@ -74,18 +78,11 @@ class Step_Datas(EC_Datas_base):
         else:
             return self.datas[item_index]
     #############################################################################
-    def __setitem__(self, item_index:int, new_Step:Step_Data):
+    def __setitem__(self, item_index:int, new_Step):
         if not isinstance(item_index, int):
             raise TypeError("key must be an integer")
         self.datas[item_index] = new_Step
-    #############################################################################
-   
-    def __len__(self):
-        return len(self.datas)
-   
-    def pop(self,index):
-        self.datas.pop(index)
-        
+  
 ################################################################    
     def plot(self, *args, **kwargs):
         """Plot Stepss.
@@ -187,11 +184,13 @@ class Step_Datas(EC_Datas_base):
         return charge
     
     ##################################################################################################################
+
     def Tafel(self, lims=[-1,1], step_nr:int = -1, *args, **kwargs):
         
         s = "Tafel Analysis"
         if(step_nr>-1):
             s = s + f" of step #{step_nr}"
+
         fig = make_plot_2x_1(s)
         data_plot_i = fig.plots[0]
         data_plot_E = fig.plots[1]
@@ -201,11 +200,20 @@ class Step_Datas(EC_Datas_base):
         #data_plot_E.title.set_text('')
         analyse_plot.title.set_text('Tafel Plot')
 
-        #########################################################
+         #########################################################
         # Make plot
         data_kwargs = kwargs
         data_kwargs["plot_i"] = data_plot_i
         data_kwargs["plot_E"] = data_plot_E
+        
+        self.plot("Time","i", *args, plot=data_plot_i,**kwargs)
+        self.plot("Time","E", plot=data_plot_E)
+
+        current = self.get_current_at_time(t_lim[0], 0, 0, LEGEND.NONE, *args, **kwargs)
+        voltage = self.get_voltage_at_time(t_lim[0], 0, 0, *args, **kwargs)
+        
+        Tafel(voltage, current, current[0].unit, current[0].quantity, "b", "",plot=analyse_plot, **kwargs)
+            
 
         
         return
@@ -242,7 +250,7 @@ class Step_Datas(EC_Datas_base):
         data_kwargs = kwargs
         data_kwargs["plot_i"] = data_plot_i
         data_kwargs["plot_E"] = data_plot_E
-            
+        
         rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas, Time_s_, step_nr, *args, **data_kwargs)
   
         # Levich analysis
