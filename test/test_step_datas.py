@@ -1,6 +1,6 @@
 
 import copy
-from ec4py import Step_Data
+from ec4py import Step_Data, Step_Datas
 from ec4py.util import Quantity_Value_Unit as QVU
 #"import inc_dec    # "The code to test
 import unittest   # The test framework
@@ -55,7 +55,10 @@ class test_Step_Datas(unittest.TestCase):
         
                 
     
-       
+class test_Step_Datas_arrays(unittest.TestCase):
+    def test_pop_and_len(self):
+        from test_ec_datas_util import pop_and_len
+        pop_and_len(self, Step_Datas(), Step_Data(),Step_Data())       
         
         
     

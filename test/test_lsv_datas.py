@@ -153,7 +153,8 @@ class test_lsv_datas_basic( unittest.TestCase ):
         with self.assertRaises(TypeError):
             data2 =datas*datas  
         
-        
+
+
         
     def test_lsv_tafel(self):
         data = LSV_Data()
@@ -168,7 +169,10 @@ class test_lsv_datas_basic( unittest.TestCase ):
         self.assertEqual("V/dec",slope.unit)
 
 
-
+class test_LSV_Data_arrays(unittest.TestCase):
+    def test_pop_and_len(self):
+        from test_ec_datas_util import pop_and_len
+        pop_and_len(self, LSV_Datas(), LSV_Data(),LSV_Data())
 
 class test_lsv_datas( unittest.TestCase ):
 

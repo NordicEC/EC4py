@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 
 ### Changed
 
+## [0.7.0] - 
+### Added
+
+### Changed
+  - Fixed reading of CVs that did not start at an edge.
+
 ## [0.6.0] - 
 ### Added
   -  CV_Data,CV_Datas,LSV_Data,LSV_Datas

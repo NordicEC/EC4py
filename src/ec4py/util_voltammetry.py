@@ -97,11 +97,16 @@ class Voltammetry(EC_Setup):
 
 ####################################################################################################
     def get_index_of_E(self, E:float):
+        """Get the index of the potential in the E axis.
+        Args: E value:
+        
+        ###
+        """
         if E is None:
             return None
         index = int(0)
         for x in self.E:
-            if x >= E:
+            if x+0.0005 >= E:
                 break
             else:
                 index = index + 1
@@ -248,16 +253,17 @@ class Voltammetry(EC_Setup):
     
     
     
-    def clean_up_edges(self, current):
-        for i in range(1,current.size):
-            if current[i-1] == current[i]:
-                current[i-1] = math.nan
+    def clean_up_edges(self, current,toValue = math.nan):
+        lower_edgeValue = current[0]
+        for i in range(0,current.size):
+            if lower_edgeValue == current[i]:
+                current[i] = toValue
             else :
                 break
-            
-        for i in range(current.size-2,0,-1):
-            if current[i] == current[i+1]:
-                current[i+1] = math.nan
+        upper_edgeValue = current[current.size-1]
+        for i in range(current.size-1,0,-1):
+            if current[i] == upper_edgeValue:
+                current[i] = toValue
             else :
                 break
         return current
@@ -270,7 +276,7 @@ class Voltammetry(EC_Setup):
             current (list, optional): list like array of data points. Defaults to None.
 
         Returns:
-            _tuple_: shifted potential, and shifted data. or NONE
+            _tuple_: shifted potential value, and shifted data. or NONE
         """
         end_norm_factor = None
         # print("argeLIST", type(norm_to))

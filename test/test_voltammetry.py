@@ -2,11 +2,11 @@
 from ec4py.util_voltammetry import Voltammetry 
 from ec4py import Quantity_Value_Unit 
 
-from pathlib import Path
+#from pathlib import Path
 import numpy as np
 import math
 import unittest   # The test framework
-from numpy.testing import assert_almost_equal
+#from numpy.testing import assert_almost_equal
 
 gdata_u = np.array([range(0,101)])/100
 gdata_d = np.array([range(99,0,-1)])/100
@@ -141,25 +141,37 @@ class test_util_voltammetry( unittest.TestCase ):
         
  
     def test_set_active_RE(self):
+        #test_shift_Current_Arrayg
         data = Voltammetry(E_min=-2,E_max=2)
-        testdata=data.E.copy()
-       
+        testdata=data.E.copy()*np.nan
+        testdata[int(len(data.E)/2)]=1
+
         #r = data.set_active_RE("RHE",testdata)
-     
+        #test single data set.
         data.set_RHE(0.0)
         r1 = data.set_active_RE("RHE",testdata)
-        print(r1)
-        #self.assertSequenceEqual(r1[1],data.E )
-       
+        self.assertIsInstance(r1,tuple)
+        self.assertIsInstance(r1[0],float)
+        current = r1[1]
+        
+        self.assertTrue(np.allclose(current,testdata,  atol=1e-10, rtol=1e-10,equal_nan =True))
+        
+        ####List of test data
         data = Voltammetry(E_min=-2,E_max=2)
         data.set_RHE(1.0)
-        r1 = data.set_active_RE("RHE",[testdata])
-        print(r1)
+        rQVU, current = data.set_active_RE("RHE",[testdata])
+        #print("List", rQVU)
+        print(current)
+        self.assertIsInstance(current,list)
+        #self.assertTrue(np.allclose(current[0],testdata-1,  atol=1e-10, rtol=1e-10,equal_nan =True))
         #self.assertEqual(r1,[data.E])
-        self.assertIsInstance(r1,tuple)
+        #self.assertIsInstance(r1,tuple)
         r1 = data.set_active_RE("RE",[testdata,testdata])
         print(r1)
         self.assertIsInstance(r1,tuple)
+        self.assertIsInstance(r1[0],float)
+        self.assertIsInstance(r1[1],list)
+        self.assertEqual(len(r1[1]),2)
         r1 = data.set_active_RE("RHE",[testdata,testdata])
         self.assertIsNotNone(r1) #cannot shift twice.
 
@@ -167,6 +179,32 @@ class test_util_voltammetry( unittest.TestCase ):
 
         #self.assertEqual(r1,[data.E, data.E])
         
+        
+    def test_shift_Current_Array(self):
+        data = Voltammetry(E_min=-2,E_max=2)
+        testdata=data.E.copy()*0
+         
+        testdata[int(len(data.E)/2)]=1
+        
+        #shift zero
+        r1 = data._shift_Current_Array(testdata,0)
+        self.assertTrue(np.allclose(r1,testdata,  atol=1e-10, rtol=1e-10,equal_nan =True))
+        ###event shift
+        shift = 0.542
+        r1 = data._shift_Current_Array(testdata,shift)
+        r1_exp =np.array([x-shift*1000 for x in (np.nonzero(testdata > 0))])
+        #print("testdata",np.nonzero(testdata > 0) , r1_exp)
+        #print("index",np.nonzero(r1 > 0))
+        self.assertEqual(np.nonzero(r1 > 0),r1_exp)
+        ##even shift
+        test_shifts =[0.3,0.512,0.7321,0.92132,1.0012]
+        for x in test_shifts:
+            shift = x
+            r1 = data._shift_Current_Array(testdata,shift)
+            index_shift = int(round(shift*1000))
+            r1_exp =np.array([x-index_shift for x in (np.nonzero(testdata > 0))])
+            self.assertEqual(np.nonzero(r1 > 0),r1_exp)
+      
 
 if __name__ == '__main__':
     unittest.main()

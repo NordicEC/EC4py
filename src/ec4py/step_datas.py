@@ -10,10 +10,10 @@ import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter 
 from . import util
 from .ec_data import EC_Data
-#import ec4py.step_data  # import Step_Data
+from .step_data  import Step_Data
 from .ec_setup import EC_Setup
 from .analysis_levich import Levich
-from .util_array import EC_Array_class
+from .ec_datas_util import EC_Datas_base
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
@@ -24,7 +24,7 @@ from .analysis_tafel import Tafel
 STYLE_POS_DL = "bo"
 STYLE_NEG_DL = "ro"
 
-class Step_Datas(EC_Array_class):
+class Step_Datas(EC_Datas_base):
     """# Class to analyze CV datas. 
     Class Functions:
     - .plot() - plot data    
@@ -40,9 +40,10 @@ class Step_Datas(EC_Array_class):
     ### Options keywords:
     legend = "name"
     """
-    def __init__(self, paths:list[Path] | Path|None = None, **kwargs):
-        super().__init__()
-        from ec4py.step_data import Step_Data
+
+    def __init__(self, paths:list[Path] | Path|None = None, *args,**kwargs):
+        EC_Datas_base.__init__(self,*args, **kwargs)
+        
 
         if paths is None:
             return
@@ -81,14 +82,7 @@ class Step_Datas(EC_Array_class):
         if not isinstance(item_index, int):
             raise TypeError("key must be an integer")
         self.datas[item_index] = new_Step
-    #############################################################################
-    """
-    def __len__(self):
-        return len(self.datas)
-   
-    def pop(self,index):
-        self.datas.pop(index)
-    """
+  
 ################################################################    
     def plot(self, *args, **kwargs):
         """Plot Stepss.
@@ -190,15 +184,33 @@ class Step_Datas(EC_Array_class):
         return charge
     
     ##################################################################################################################
-    def Tafel(self, t_lim: float, E_lim: list[float,float], *args, **kwargs):
-        s = "Levich Analysis"
+
+    def Tafel(self, t_lim, E_lims=[-1,1], step_nr:int = -1, *args, **kwargs):
+        """_summary_
+
+        Args:
+            t_lim (_type_): time at which to take the data point, 
+            E_lims (list, optional): _description_. Defaults to [-1,1].
+            step_nr (int, optional): _description_. Defaults to -1.
+        """
         
-        
+        if not isinstance(t_lim, list):
+            t_lim =[t_lim]
+            
+        s = "Tafel Analysis"
+        if(step_nr>-1):
+            s = s + f" of step #{step_nr}"
+
         fig = make_plot_2x_1(s)
         data_plot_i = fig.plots[0]
         data_plot_E = fig.plots[1]
         analyse_plot =  fig.plots[2]
-        #########################################################
+        # data_plot_i,data_plot_E, analyse_plot = make_plot_2x_1(s)
+        #data_plot_i.title.set_text("")
+        #data_plot_E.title.set_text('')
+        analyse_plot.title.set_text('Tafel Plot')
+
+         #########################################################
         # Make plot
         data_kwargs = kwargs
         data_kwargs["plot_i"] = data_plot_i
@@ -212,6 +224,7 @@ class Step_Datas(EC_Array_class):
         
         Tafel(voltage, current, current[0].unit, current[0].quantity, "b", "",plot=analyse_plot, **kwargs)
             
+
         
         return
     

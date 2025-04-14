@@ -8,6 +8,8 @@ import pandas as pd
 
 from .ec_data import EC_Data
 from .lsv_data import LSV_Data
+from .ec_datas_util import EC_Datas_base,check_paths
+
 
 from pathlib import Path
 import copy
@@ -29,7 +31,7 @@ from .analysis_rate   import sweep_rate_analysis
 STYLE_POS_DL = "bo"
 STYLE_NEG_DL = "ro"
 
-class LSV_Datas:
+class LSV_Datas(EC_Datas_base):
     """# Class to analyze CV datas. 
     Class Functions:
     - .plot() - plot data    
@@ -46,8 +48,9 @@ class LSV_Datas:
     ### Options keywords:
     legend = "name"
     """
-    def __init__(self, paths:list[Path] | Path = None, **kwargs):
-        self.datas = []
+    def __init__(self, paths:list[Path] | Path = None,*args, **kwargs):
+        EC_Datas_base.__init__(self,*args, **kwargs)
+        # self.datas = []
         self.dir =""
         if paths is None:
             return
@@ -219,11 +222,13 @@ class LSV_Datas:
     
     
     
-    def append(self,LSV = LSV_Data):
-        self.datas.append(LSV)
-        
-    def pop(self,index):
-        self.datas.pop(index)
+    def append(self,LSV:LSV_Data):
+        if isinstance(LSV, LSV_Data):
+            self.datas.append(LSV)
+        else:
+            print("wrong type, must be 'LSV_Data'")
+    #def pop(self,index):
+    #    self.datas.pop(index)
         
     @property
     def rate(self):
@@ -665,7 +670,7 @@ class LSV_Datas:
         df = pd.DataFrame.from_records(m,columns=col_names)
         return df
 
-
+"""
 def plots_for_rotations(datas: LSV_Datas, Epot: float, *args, **kwargs):
     rot = []
     y = []
@@ -696,3 +701,4 @@ def plots_for_rotations(datas: LSV_Datas, Epot: float, *args, **kwargs):
     CV_plot.plot(E, y, STYLE_POS_DL)
     CV_plot.legend()
     return rot, y, E, y_axis_title, y_axis_unit
+"""

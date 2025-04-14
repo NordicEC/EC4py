@@ -159,8 +159,8 @@ class CV_Datas(EC_Datas_base):
         new_CVs.div(other)
         return new_CVs
 
-    def __len__(self):
-        return len(self.datas)
+    #def __len__(self):
+    #    return len(self.datas)
 
     #############################################################################
     

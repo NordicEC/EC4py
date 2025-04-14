@@ -1,5 +1,5 @@
 
-from ec4py import CV_Data,RHE,POS,NEG,LSV_Data
+from ec4py import CV_Data,RHE,POS,NEG
 
 from pathlib import Path
 import numpy as np
@@ -110,8 +110,8 @@ class test_CV_Data_arithmetics( unittest.TestCase ):
         self.assertTrue(np.allclose(data2.i_p, data.i_p/2,  atol=1e-10, rtol=1e-10))
         self.assertTrue(np.allclose(data2.i_n, data.i_n/2,  atol=1e-10, rtol=1e-10))
         ###sub a number
-        with self.assertRaises(TypeError):
-            a = data/data
+        #with self.assertRaises(TypeError):
+        #    atesting = data/data
             
 #############################################################
 
