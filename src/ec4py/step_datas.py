@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter 
 from . import util
 from .ec_data import EC_Data
-#import ec4py.step_data  # import Step_Data
+from .step_data  import Step_Data
 from .ec_setup import EC_Setup
 from .analysis_levich import Levich
 from .ec_datas_util import EC_Datas_base
@@ -185,8 +185,18 @@ class Step_Datas(EC_Datas_base):
     
     ##################################################################################################################
 
-    def Tafel(self, lims=[-1,1], step_nr:int = -1, *args, **kwargs):
+    def Tafel(self, t_lim, E_lims=[-1,1], step_nr:int = -1, *args, **kwargs):
+        """_summary_
+
+        Args:
+            t_lim (_type_): time at which to take the data point, 
+            E_lims (list, optional): _description_. Defaults to [-1,1].
+            step_nr (int, optional): _description_. Defaults to -1.
+        """
         
+        if not isinstance(t_lim, list):
+            t_lim =[t_lim]
+            
         s = "Tafel Analysis"
         if(step_nr>-1):
             s = s + f" of step #{step_nr}"
