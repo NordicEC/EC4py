@@ -97,11 +97,16 @@ class Voltammetry(EC_Setup):
 
 ####################################################################################################
     def get_index_of_E(self, E:float):
+        """Get the index of the potential in the E axis.
+        Args: E value:
+        
+        ###
+        """
         if E is None:
             return None
         index = int(0)
         for x in self.E:
-            if x >= E:
+            if x+0.0005 >= E:
                 break
             else:
                 index = index + 1
@@ -271,7 +276,7 @@ class Voltammetry(EC_Setup):
             current (list, optional): list like array of data points. Defaults to None.
 
         Returns:
-            _tuple_: shifted potential, and shifted data. or NONE
+            _tuple_: shifted potential value, and shifted data. or NONE
         """
         end_norm_factor = None
         # print("argeLIST", type(norm_to))

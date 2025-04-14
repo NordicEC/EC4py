@@ -1,5 +1,5 @@
 
-from ec4py import LSV_Data, CV_Data,RHE,POS,NEG
+from ec4py import LSV_Data, CV_Data,RHE,POS,NEG,AVG
 
 from pathlib import Path
 import numpy as np
@@ -165,12 +165,27 @@ class test_lsv_data( unittest.TestCase ):
           
     def test_Tafel(self):
         data = CV_Data(path_to_dataSetFolder/ "CV_153559_ 3.tdms").get_sweep(POS)
-        
         k = data.Tafel([-0.2,0],-0.6)
-        self.assertEqual(k[0].unit,"V/dec")
-        v =k[0].value
-        v=np.abs(k[0].value)*1000
+        self.assertEqual(k.unit,"V/dec")
+        v =k.value
+        v=np.abs(k.value)*1000
         self.assertTrue(v>40 and v<140)
+        
+        data = CV_Data(path_to_dataSetFolder/ "CV_153559_ 3.tdms").get_sweep(NEG)
+        k = data.Tafel([-0.2,0],-0.6)
+        self.assertEqual(k.unit,"V/dec")
+        v =k.value
+        v=np.abs(k.value)*1000
+        self.assertTrue(v>40 and v<140)
+        
+        data = CV_Data(path_to_dataSetFolder/ "CV_153559_ 3.tdms").get_sweep(AVG)
+        k = data.Tafel([-0.2,0],-0.6)
+        self.assertEqual(k.unit,"V/dec")
+        v =k.value
+        v=np.abs(k.value)*1000
+        self.assertTrue(v>40 and v<140)
+        
+        
     
     def test_Tafel_RHE(self):
         data = CV_Data(path_to_dataSetFolder/ "CV_153559_ 3.tdms")
