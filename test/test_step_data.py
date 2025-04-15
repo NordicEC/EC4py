@@ -46,7 +46,7 @@ class test_Step_Data(unittest.TestCase):
         i = data.get_current_at_time(2.3)
         # print(i)
         self.assertAlmostEqual(float(i),step_size)
-        data.area = "3.5 m^2"
+        data.set_area("3.5 m^2")
         data.norm("area")
         i = data.get_current_at_time(2.3)
         self.assertAlmostEqual(float(i),step_size / 3.5)
@@ -55,7 +55,7 @@ class test_Step_Data(unittest.TestCase):
         data = copy.deepcopy(gdata)
         i = data.get_current_at_time(2.3, 0.1)
         self.assertAlmostEqual(float(i),step_size)
-        data.area = "3.5 m^2"
+        data.set_area("3.5 m^2")
         data.norm("area")
         i = data.get_current_at_time(2.3)
         self.assertAlmostEqual(float(i),step_size / 3.5)
@@ -64,19 +64,19 @@ class test_Step_Data(unittest.TestCase):
         data = copy.deepcopy(gdata)
         u = data.get_voltage_at_time(2.3, 0.1)
         self.assertAlmostEqual(float(u),1.0)
-        data.area = "3.5 m^2"
+        data.set_area("3.5 m^2")
         data.norm("area")
         u= data.get_voltage_at_time(2.3)
         self.assertAlmostEqual(float(u),1.0)
         
     def test_normalize_current(self):
         data = copy.deepcopy(gdata)
-        data.area = "3.5 m^2"
+        data.set_area("3.5 m^2")
         data.norm(AREA)
         i = data.get_current_at_time(2.3)
         self.assertAlmostEqual(i.value,step_size / 3.5)
         data = copy.deepcopy(gdata) 
-        data.area = "4.5 m^2"
+        data.set_area("4.5 m^2")
         data.norm(AREA_CM) 
         i = data.get_current_at_time(2.3)
         self.assertAlmostEqual(i.value,step_size / 4.5/10000)     
@@ -87,7 +87,7 @@ class test_Step_Data(unittest.TestCase):
         v = data.integrate(2.0,4.0)
         self.assertAlmostEqual(v.value,4.0)
         self.assertEqual(v.unit,"C")
-        data.area = "10 m^2"
+        data.set_area("10 m^2")
         data.norm(AREA)
         v = data.integrate(2.0,4.0)
         self.assertAlmostEqual(v.value,0.40)

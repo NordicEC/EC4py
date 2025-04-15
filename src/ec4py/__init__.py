@@ -23,7 +23,7 @@ from .eis_datas import EIS_Datas
 from .util import Quantity_Value_Unit
 from .lsv_data import LSV_Data
 from .lsv_datas import LSV_Datas
-from .ec_setup import RHE,SHE,RATE,SQRT_RATE, AREA,AREA_CM,ROT,SQRT_ROT
+from .ec_setup import RHE,SHE,RATE,SQRT_RATE, AREA,AREA_CM,ROT,SQRT_ROT, MASS, LOADING
 from .util_graph import NO_PLOT,LEGEND
 from .util_voltammetry import POS,NEG,AVG,DIF
 
@@ -36,5 +36,6 @@ __all__ = ["EC_Data", "EC_Datas",
            "Step_Data", "Step_Datas", 
            "Quantity_Value_Unit",
            "LSV_Data","LSV_Datas",
-           "RHE","SHE","RATE","SQRT_RATE", "AREA","AREA_CM","ROT","SQRT_ROT",
+           "RHE","SHE",
+           "RATE","SQRT_RATE", "AREA","AREA_CM","ROT","SQRT_ROT", "MASS", "LOADING",
            "NO_PLOT","LEGEND"]

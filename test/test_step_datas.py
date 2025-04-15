@@ -46,7 +46,7 @@ class test_Step_Datas(unittest.TestCase):
         v = data.integrate(2.0,4.0)
         self.assertAlmostEqual(v.value,4.0)
         self.assertEqual(v.unit,"C")
-        data.area = "10 m^2"
+        data.set_area("10 m^2")
         data.norm("area")
         v = data.integrate(2.0,4.0)
         self.assertAlmostEqual(v.value,0.40)

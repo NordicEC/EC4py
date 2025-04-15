@@ -3,6 +3,7 @@
 from ec4py import Quantity_Value_Unit as QVU
 #"import inc_dec    # "The code to test
 import unittest   # The test framework
+import math
 
 a = QVU("5 m","l")
 b = QVU(2. ,"m","l")
@@ -15,6 +16,13 @@ class Test_Quantity_Value_Unit(unittest.TestCase):
         self.assertEqual(QVU("5 a^2 b^-3").unit, "a^2 b^-3")
         self.assertEqual(QVU(5,"m","q").quantity, "q")
         self.assertEqual(QVU(5,"m","q").unit, "m")
+        a =QVU("")
+        print(a)
+        self.assertEqual(str(a), "nan ")
+        a =QVU("","m","Q")
+        print(a)
+        self.assertEqual(str(a), "nan ")
+        self.assertEqual(QVU("").unit, "")
 
     def test_add(self):
         q = a+b

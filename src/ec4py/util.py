@@ -23,12 +23,18 @@ def extract_value_unit(s:str):
     """
     unit =""
     value = math.nan
-    try:
-        list = s.strip().split(" ",1)
-        value = float(list[0])
-        unit = list[1]    
-    finally:
-        pass
+    if  s == "":
+        return value, unit
+    else:
+        try:
+            lista = s.strip().split(" ",1)
+            if len(lista) > 0:
+                value = float(lista[0])
+            unit = lista[1]
+        except ValueError as e:
+            print(f"ValueError: {e} in {s}", lista) 
+        finally:
+            pass
     return value, unit
 
 #######################################################################################
@@ -137,7 +143,8 @@ class Quantity_Value_Unit:
         self.value = float(v)
         
     def __str__(self) -> str:
-        return f'{self.value:.3e} {self._unit}'
+        s = str(f'{self.value:.3e} {self._unit}')
+        return s
     
     def __float__(self) -> float:
         return self.value

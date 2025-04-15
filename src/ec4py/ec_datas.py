@@ -2,13 +2,16 @@
 
     This module contains the public facing API for reading TDMS files produced by EC4 DAQ.
 """
-from .util_graph import plot_options
-from .ec_data import EC_Data
 from pathlib import Path
 import copy
 
+from .util_graph import plot_options
+from .ec_data import EC_Data
+from .ec_datas_util import EC_Datas_base
 
-class EC_Datas:
+
+
+class EC_Datas(EC_Datas_base):
     """ Reads data from a TDMS file in the format of EC4 DAQ.
 
     When creating an opject the file path must be given.
@@ -52,8 +55,8 @@ class EC_Datas:
             raise TypeError("key must be an integer")
         self.datas[item_index] = new_data
     
-    def pop(self,index):
-        self.datas.pop(index)
+    #def pop(self,index):
+    #    self.datas.pop(index)
     
         
     def plot(self, x_channel:str = "E", y_channel:str = "i", *args, **kwargs):

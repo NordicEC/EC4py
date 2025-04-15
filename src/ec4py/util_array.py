@@ -25,7 +25,7 @@ class EC_Array_class:
     
     This class is used to handle arrays of data and perform operations on them.
     """
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.datas= []
         
     def __len__(self):

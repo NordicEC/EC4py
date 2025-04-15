@@ -151,8 +151,8 @@ class plot_options:
             PLOT : NEWPLOT,
             'dir' : "all",
             'legend' : "_",
-            'xlabel' : "def",
-            'ylabel' : "def",
+            'xlabel' : None,
+            'ylabel' : None,
             'style'  : "",
             'title'  : ""
         }
@@ -172,6 +172,8 @@ class plot_options:
         self.x_label = label
         self.x_unit = unit
         
+    def get_title(self):
+        return self.options['title']       
 
     def get_y_txt(self):
         return str(self.y_label + " ("+ self.y_unit +")")
@@ -320,11 +322,17 @@ class plot_options:
             
         except:  # noqa: E722
             pass
-        ax.set_xlabel(f'{quantity_plot_fix(self.x_label)} ({quantity_plot_fix(self.x_unit)})')
-        ylabel = quantity_plot_fix(self.y_label) + " (" + quantity_plot_fix(self.y_unit)+ ")"
-        #ax.set_ylabel(f'{quantity_plot_fix(self.y_label)}    {quantity_plot_fix(self.y_unit)}')
-        #print(f'{ylabel}')
-        ax.set_ylabel(f'{ylabel}')
+        #### X label
+        x_label = f'{quantity_plot_fix(self.x_label)} ({quantity_plot_fix(self.x_unit)})'
+        if self.options['xlabel'] is not None:
+            x_label = self.options['xlabel']
+        
+        ax.set_xlabel(x_label)
+        #### Y label
+        y_label = f'{quantity_plot_fix(self.y_label)} ({quantity_plot_fix(self.y_unit)})'
+        if self.options['ylabel'] is not None:
+            y_label = self.options['ylabel']
+        ax.set_ylabel(f'{y_label}')
         
         return line, ax
     
