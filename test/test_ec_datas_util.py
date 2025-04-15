@@ -55,7 +55,7 @@ def pop_and_len(self, datasType,value1,value2):
     datas.pop(1)
     self.assertEqual(len(datas), 1)
          
-def  test_quantities(self, datasType_with_a_length):
+def test_quantities(self, datasType_with_a_length):
     datas = datasType_with_a_length
     length = len(datasType_with_a_length)
     for data in datas:
