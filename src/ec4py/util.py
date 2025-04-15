@@ -143,7 +143,8 @@ class Quantity_Value_Unit:
         self.value = float(v)
         
     def __str__(self) -> str:
-        return f'{self.value:.3e} {self._unit}'
+        s = str(f'{self.value:.3e} {self._unit}')
+        return s
     
     def __float__(self) -> float:
         return self.value
