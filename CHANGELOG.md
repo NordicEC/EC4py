@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.1] - 
 ### Added
-
+  - Mass and loading can be used for normalization.
 ### Changed
   - 
 
