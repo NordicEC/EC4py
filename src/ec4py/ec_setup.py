@@ -91,7 +91,7 @@ class ec_setup_data:
                 self._Substrate = self._setup.get('Electrode.Cat.Substrate',"")
                 self._Electrode = self._setup.get('Electrode.ExElectrode',"")
                 self._Loading = QV(self._setup.get('Electrode.Cat.Loading',""))
-                self._Weight = self._setup.get('Electrode.Cat.Weight',"")
+                self._Weight = QV(self._setup.get('Electrode.Cat.Weight',""))
                 self._totWeight = self._setup.get('Electrode.Cat.totWeight',"")
                 self._totWeight = self._setup.get('Electrode.Cat.totWeight',"")
                 self._cat_w_ratio = self._setup.get('Electrode.Cat.w%',"")
@@ -349,7 +349,7 @@ class EC_Setup:
             self.setup_data._rotation_unit = unit
         return
     
-    def set_mass(self,value:float,unit:str = "V/s"):
+    def set_mass(self,value:float,unit:str = "g"):
         """sets the weight and calculates the loading."""
         return self.set_weight(value,unit)
     

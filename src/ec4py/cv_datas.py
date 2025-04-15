@@ -432,8 +432,8 @@ class CV_Datas(EC_Datas_base):
 
                 line, ax = cv.plot(*args, **cv_kwargs)
                 lines.append(line)
-                
-            CV_plot.legend()
+            if p.legend != "":     
+                CV_plot.legend()
             p.saveFig(**kwargs)
             return CV_plot
         else:
