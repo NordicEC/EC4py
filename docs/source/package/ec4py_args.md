@@ -33,6 +33,8 @@ Here below follows all the string constants and their meaning when used as an ar
 | SQRT_RATE | normalize to the square root of sweep rate| CV|
 | ROT | normalize to rotations rate| |
 | SQRT_ROT | normalize to square root of the rotations rate||
+| MASS | normalize to mass||
+| LOADING | normalize to loading, i.e mass per area||
 
 
 

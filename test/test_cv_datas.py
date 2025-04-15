@@ -57,6 +57,7 @@ class test_CV_Data_arrays(unittest.TestCase):
         pop_and_len(self, CV_Datas(), CV_Data(),CV_Data())
 
 
+
 class test_CV_Datas_arithmetics( unittest.TestCase ):
     def test_s1_add(self):
         data = CV_Data()

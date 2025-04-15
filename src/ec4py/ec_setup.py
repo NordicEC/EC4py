@@ -13,6 +13,9 @@ RATE = "rate"
 SQRT_RATE = "sqrt_rate"
 ROT = "rotation"
 SQRT_ROT = "sqrt_rot"
+MASS = "mass"
+WEIGHT = "mass"
+LOADING ="loading"
 
 class ec_setup_data:
         def __init__(self):
@@ -509,6 +512,12 @@ class EC_Setup:
         elif norm_to == "sqrt_rot_rate".casefold() or norm_to == "sqrt_rotation".casefold()or norm_to == SQRT_ROT.casefold() :
 
            norm_factor = self.rotation ** 0.5    
+        
+        elif norm_to == MASS.casefold() or norm_to == "weight".casefold()or norm_to == WEIGHT.casefold() :
+           norm_factor = self.mass  
+           
+        elif norm_to == LOADING.casefold():
+           norm_factor = self.loading  
         else:
             return
         return norm_factor

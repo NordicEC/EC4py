@@ -306,6 +306,12 @@ class CV_Data(Voltammetry):
         
         self.setup_data = copy.deepcopy(ec_data.setup_data)
         self.convert(ec_data.Time,data_E,data_i,**kwargs)
+        self.IR_COMPENSATED = ir_comp
+        E_title = "E"
+        #if ir_comp: ###NOT NEEDED
+        #    E_title ="E-iR"
+        self.setup_data.select_MWE_CH(sel_channels.MWE_CH)   
+        
         try:
             self.IR_COMPENSATED = ir_comp
             E_title = "E"
@@ -319,10 +325,10 @@ class CV_Data(Voltammetry):
             if self.is_MWE:
                 self.setup_data.select_MWE_CH(sel_channels.MWE_CH)
             
-            
 
-        except ValueError:
+        except ValueError as e:
             if(self.is_MWE):
+                print(e)
                 print("select a current channel, such as i_0")
             else:
                 print("no_data")
@@ -552,7 +558,7 @@ class CV_Data(Voltammetry):
             #print("AAAAAAAAAAAAAAAAAAAAAAA")
             #print(options.get_y_smooth())
             # print(options.get_legend(),self.legend(**kwargs))
-            
+            #print(options.get_title())
             if self.is_MWE:
                 options.set_title(f"{self.setup_data.name}#{self.setup_data._MWE_CH}")
             else:
