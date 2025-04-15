@@ -398,7 +398,7 @@ class CV_Data(Voltammetry):
         #print("argMIN",zero_crossings[0], np.argmin(x[0:zero_crossings[1]]))
         if not Two_vertex:  #if the CV consists of 2 LSV, there is only one zero crossing.
             zero_crossings = np.append(zero_crossings,len(x))
-        print("size",len(zero_crossings),zero_crossings,len(zero_crossings)<2)
+        # print("size",len(zero_crossings),zero_crossings,len(zero_crossings)<2)
         ### Manualy find the first Vertex.
         if positive_start:
             zero_crossings[0] = np.argmax(x[0:zero_crossings[1]])
@@ -430,7 +430,7 @@ class CV_Data(Voltammetry):
         # make E axis.
         self.E = self.make_E_axis()
         zero_crossings = np.append(zero_crossings, x.size)
-        print("ZERO:",len(zero_crossings),zero_crossings, "2x vertex", Two_vertex)
+        #print("ZERO:",len(zero_crossings),zero_crossings, "2x vertex", Two_vertex)
 
         if positive_start:
             x_u = x[0:zero_crossings[0]]
@@ -479,8 +479,8 @@ class CV_Data(Voltammetry):
             y_neg=y_neg+y_neg2
             #print("YNEG",y_neg[0])
             
-        print("YPOS",y_pos)        
-        print("YNEG",y_neg.size)
+        #print("YPOS",y_pos)        
+        #print("YNEG",y_neg.size)
         #"""
         if positive_start or (not positive_start and Two_vertex):
             indexes = y_pos.nonzero()[0]

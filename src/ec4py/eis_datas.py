@@ -8,6 +8,7 @@ from pathlib import Path
 
 import copy
 
+from .ec_datas_util import EC_Datas_base
 from .ec_data import EC_Data
 from .ec_data_util import EC_Channels
 from .eis_data import EIS_Data
@@ -19,7 +20,7 @@ from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1
 from .util_eis import make_Bode_plot
 
 
-class EIS_Datas:
+class EIS_Datas(EC_Datas_base):
     """
     """
     def __init__(self, paths:list[Path] | Path, *arg, **kwargs):

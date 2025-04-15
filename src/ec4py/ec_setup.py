@@ -26,8 +26,8 @@ class ec_setup_data:
             self._rate_V_s = 1
             #self._loading = None
             #self._loading_unit ="g/m^2"
-            self._weight = None
-            self._weight_unit ="g"
+            self._Weight = None
+            self._Weight_unit ="g"
             self._RHE = None
             self._SHE = None
             self._RE = ""
@@ -43,7 +43,20 @@ class ec_setup_data:
             self._Loading = None
             return
 
-
+        def get_area(self):
+            area = QV(self._area,self._area_unit)
+            area.set_quantity("A")
+            return area
+            
+        def get_mass(self):
+            if self._Weight is not None:
+                self._Weight.set_quantity("m")
+            return   self._Weight 
+        
+        def get_loading(self):
+            if self._Loading is not None:
+                self._Loading.set_quantity("L")
+            return self._Loading
 
         def setACTIVE_RE(self,ref):
             if ref is RHE:
@@ -74,7 +87,7 @@ class ec_setup_data:
                 self._Support = self._setup.get('Electrode.Cat.Support',"")
                 self._Substrate = self._setup.get('Electrode.Cat.Substrate',"")
                 self._Electrode = self._setup.get('Electrode.ExElectrode',"")
-                self._Loading = self._setup.get('Electrode.Cat.Loading',"")
+                self._Loading = QV(self._setup.get('Electrode.Cat.Loading',""))
                 self._Weight = self._setup.get('Electrode.Cat.Weight',"")
                 self._totWeight = self._setup.get('Electrode.Cat.totWeight',"")
                 self._totWeight = self._setup.get('Electrode.Cat.totWeight',"")
@@ -88,7 +101,7 @@ class ec_setup_data:
                 self._Serial = self._setup.get('MWE_{ch_number}.Serial',"")
                 self._Support = self._setup.get('MWE_{ch_number}.Support',"")
                 self._Electrode = self._setup.get('MWE_{ch_number}.Electrode',"")
-                self._Loading = self._setup.get('MWE_{ch_number}.Loading',"")
+                self._Loading = QV(self._setup.get('MWE_{ch_number}.Loading',""))
                         
 
 class EC_Setup:
@@ -174,7 +187,8 @@ class EC_Setup:
         Returns:
             area value and unit.
         """
-        return QV(self.setup_data._area,self.setup_data._area_unit,"A")
+        return self.setup_data.get_area()
+        #QV(self.setup_data._area,self.setup_data._area_unit,"A")
         
     @area.setter
     def area(self, value:float| str):
@@ -183,13 +197,23 @@ class EC_Setup:
         Args:
             value (float | str): area value as a number, or a string with the unit.
         """
-        if isinstance(value,str):
-            val = QV(value)
-            self.setup_data._area = val.value
-            self.setup_data._area_unit = val.unit
+        raise DeprecationWarning("area is deprecated, use set_area() instead")
+        #print("use the function set_area() instead")
+    
+    def set_area(self,value:float,unit:str = "m^2"):
+        """sets the area
 
-        else:
-            self.setup_data._area = value
+        Args:
+            value (float): area value as a number
+            unit (str, optional): unit of the area. Defaults to "m^2".
+        """
+        
+        self.setup_data._area = QV(value,unit)
+        #if unit == "":
+        #    pass
+        #else:
+        #    self.setup_data._area_unit = unit
+        return self.setup_data.get_area()
         
     @property 
     def area_unit(self):
@@ -258,8 +282,14 @@ class EC_Setup:
         Returns:
             float: weight in g
         """
-        v,u = extract_value_unit(self.setup_data._setup['Electrode.Cat.Weight'])
-        return QV(v,u,"m")
+        #v,u = extract_value_unit(self.setup_data._setup['Electrode.Cat.Weight'])
+        #return QV(v,u,"m")
+        return self.setup_data.get_mass()
+    @property
+    def mass(self):
+        """same as weight function.
+        """
+        return self.setup_data.get_mass()
     #####################################################
     ###loading
     @property
@@ -269,8 +299,14 @@ class EC_Setup:
         Returns:
             float: loading in g m^-2
         """
-        v,u = extract_value_unit(self.setup_data._setup['Electrode.Cat.Loading'])
-        return QV(v,u,"m /A")
+        if self.setup_data._Loading is None:
+           print("Loading has not been defined for {self.setup_data.name}")
+           return None
+        else:
+            return self.setup_data.get_loading() 
+        #QV(self.setup_data._Loading)
+        #v,u = extract_value_unit(self.setup_data._setup['Electrode.Cat.Loading'])
+        #return QV(v,u,"m /A")
     
     @property
     def temp0(self):
@@ -310,34 +346,34 @@ class EC_Setup:
             self.setup_data._rotation_unit = unit
         return
     
-    def set_weight(self,value:float,unit:str = ""):
-        """sets the weight.
+    def set_mass(self,value:float,unit:str = "V/s"):
+        """sets the weight and calculates the loading."""
+        return self.set_weight(value,unit)
+    
+    def set_weight(self,value:float,unit:str = "g"):
+        """sets the weight and calculates the loading.
+
+        Args:
+            value (float): _description_
+            unit (str, optional): _description_. Defaults to "g".
+        """
+        self.setup_data._Weight = QV(value,unit)
+        self.setup_data._Loading = self.setup_data.get_mass() / self.setup_data.get_area()
+        #if unit == "":
+        #    pass
+        #else:
+        #    self.setup_data._Weight_unit = unit
+        #return
+    
+    def set_loading(self,value:float,unit:str = "g m^-2"):
+        """sets the loading and weight.
 
         Args:
             value (float): _description_
             unit (str, optional): _description_. Defaults to "".
         """
-        self.setup_data._weight = value
-        if unit == "":
-            pass
-        else:
-            self.setup_data._weight_unit = unit
-        return
-    
-    def set_loading(self,value:float,unit:str = ""):
-        """sets the loading.
-
-        Args:
-            value (float): _description_
-            unit (str, optional): _description_. Defaults to "".
-        """
-        self.setup_data._Loading = value
-        if unit == "":
-            pass
-        else:
-            self.setup_data._Loading_unit = unit
-        return
-    
+        self.setup_data._Loading = QV(value,unit,"L")
+        self.setup_data._Weight = self.setup_data.get_loading() * self.setup_data.get_area()
     
     #########################################################################
     def set_RHE(self, V_RHE_vs_refereceElectrode):

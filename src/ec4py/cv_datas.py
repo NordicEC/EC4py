@@ -242,8 +242,8 @@ class CV_Datas(EC_Datas_base):
             for cv in other:
                 self.datas.append(cv)
     
-    def pop(self,index):
-        self.datas.pop(index)
+    #def pop(self,index):
+    #    self.datas.pop(index)
     
     
     
