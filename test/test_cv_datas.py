@@ -9,7 +9,9 @@ import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-from test_ec_datas_util import pop_and_len
+#from test_ec_datas_util import pop_and_len
+from help_fx import test_quantities
+from help_fx import pop_and_len
 
 E =np.array([1,2,3])
 paths = []
@@ -56,6 +58,11 @@ class test_CV_Data_arrays(unittest.TestCase):
     def test_pop_and_len(self):
         pop_and_len(self, CV_Datas(), CV_Data(),CV_Data())
 
+    def test_quantities(self):
+        datas = CV_Datas()
+        datas.append(CV_Data())
+        datas.append(CV_Data())
+        test_quantities(self, datas)
 
 
 class test_CV_Datas_arithmetics( unittest.TestCase ):

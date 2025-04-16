@@ -9,6 +9,8 @@ import unittest   # The test framework
 import numpy as np
 from pathlib import Path
 
+from help_fx import test_quantities
+from help_fx import pop_and_len
 
 class test_EC_Datas_base(unittest.TestCase):
 
@@ -36,45 +38,18 @@ class test_EC_Datas_base(unittest.TestCase):
         datas = EC_Datas_base()
         datas.append(EC_Setup())
         datas.append(EC_Setup())
-        datas[0].set_area("2 m^2" )
-        datas[1].set_area("1 m^2" )
-        datas[0].set_mass("3 g")
-        datas[1].set_mass("2 g")
+        #datas[0].set_area("2 m^2" )
+        #datas[1].set_area("1 m^2" )
+        #datas[0].set_mass("3 g")
+        #datas[1].set_mass("2 g")
         #datas[0].set_rate("1 V /s")
         #datas[1].set_rate("2 V /s")
         test_quantities(self, datas)
          
 
-def pop_and_len(testClassObj:unittest.TestCase, datasType,value1,value2):
-    datas = datasType
-    datas.append(value1)
-    datas.append(value2)
-    testClassObj.assertEqual(len(datas), 2)
-    testClassObj.assertEqual(datas[0], value1)
-    testClassObj.assertEqual(datas[1], value2)
-    datas.pop(1)
-    testClassObj.assertEqual(len(datas), 1)
+
          
-def  test_quantities(testClassObj:unittest.TestCase, datasType_with_a_length):
-    datas = datasType_with_a_length
-    length = len(datasType_with_a_length)
-    for data in datas:
-        data.set_area("2 m^2" )
-        data.set_area("1 m^2" )
-        data.set_mass("3 g")
-        data.set_mass("2 g")
-    
-    
-    area = datas.area
-    testClassObj.assertEqual(len(area), length)    
-    for a in area:
-        testClassObj.assertEqual(a.quantity, "A")
-    #mass
-    mass = datas.mass
-    #mass
-    testClassObj.assertEqual(len(mass), length)    
-    for a in mass:
-        testClassObj.assertEqual(a.quantity, "m")
+
 
 if __name__ == '__main__':
     unittest.main()
