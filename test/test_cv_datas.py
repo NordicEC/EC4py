@@ -10,7 +10,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 #from test_ec_datas_util import pop_and_len
-from help_fx import test_quantities_add
+#from help_fx import test_quantities_add
 from help_fx import pop_and_len
 
 E =np.array([1,2,3])
@@ -25,7 +25,17 @@ paths.append( path_to_dataSetFolder / "CV_153541_ 3.tdms")
 #paths.append( path_to_dataSetFolder / "CV_151300_ 3.tdms")
 #paths.append( path_to_dataSetFolder / "CV_151725_ 3.tdms")
 #paths.append( path_to_dataSetFolder / "CV_151512_ 3.tdms")
-        
+    
+
+
+
+def  test_quantities_add(datasType_with_a_length):
+    datas = datasType_with_a_length
+    for data in datas:
+        data.set_area("2 m^2" )
+        data.set_area("1 m^2" )
+        data.set_mass("3 g")
+        data.set_mass("2 g")      
 
 class Test_CV_Datas(unittest.TestCase):
     

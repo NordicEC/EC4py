@@ -15,9 +15,7 @@ import pytest
 def  rn(value):
     return round(value*1000000)/1000000
 
-#@pytest.fixture
-
-
+@pytest.fixture
 def  test_quantities_add(datasType_with_a_length):
     datas = datasType_with_a_length
     for data in datas:

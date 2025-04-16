@@ -12,8 +12,18 @@ import unittest   # The test framework
 import numpy as np
 from pathlib import Path
 
-from help_fx import test_quantities_add
+#from help_fx import test_quantities_add
 from help_fx import pop_and_len
+
+
+
+def  test_quantities_add(datasType_with_a_length):
+    datas = datasType_with_a_length
+    for data in datas:
+        data.set_area("2 m^2" )
+        data.set_area("1 m^2" )
+        data.set_mass("3 g")
+        data.set_mass("2 g")  
 
 class test_EC_Datas_base(unittest.TestCase):
 
