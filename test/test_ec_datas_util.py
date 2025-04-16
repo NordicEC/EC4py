@@ -45,7 +45,7 @@ class test_EC_Datas_base(unittest.TestCase):
         test_quantities(self, datas)
          
 
-def pop_and_len(testClassObj, datasType,value1,value2):
+def pop_and_len(testClassObj:unittest.TestCase, datasType,value1,value2):
     datas = datasType
     datas.append(value1)
     datas.append(value2)
@@ -55,7 +55,7 @@ def pop_and_len(testClassObj, datasType,value1,value2):
     datas.pop(1)
     testClassObj.assertEqual(len(datas), 1)
          
-def  test_quantities(testClassObj, datasType_with_a_length):
+def  test_quantities(testClassObj:unittest.TestCase, datasType_with_a_length):
     datas = datasType_with_a_length
     length = len(datasType_with_a_length)
     for data in datas:
