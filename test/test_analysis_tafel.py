@@ -17,9 +17,11 @@ class test_Analysis_Tafel(unittest.TestCase):
         y_data = np.power(10,E)
         unit = "AAA"
         result = Tafel(E, y_data, unit, "", "b" )
+        plt.close("all")
         self.assertEqual(rn(result.value), 1.0)
         y_data = np.power(10,E/5)
         result2 =  Tafel(E, y_data, unit, "", "b")
+        plt.close("all")
         self.assertEqual(rn(result2.value), 5.0)
         plt.close("all")
         # self.assertEqual(result.unit, "m")
@@ -30,6 +32,7 @@ class test_Analysis_Tafel(unittest.TestCase):
 
         unit = "AAA"
         result = Tafel(E, y_data, unit, "", "b")
+        plt.close("all")
         self.assertEqual(result.unit, "V/dec")
         # self.assertEqual(result.unit, "m")
     
