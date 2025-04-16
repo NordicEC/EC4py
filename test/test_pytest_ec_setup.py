@@ -12,7 +12,7 @@ import pytest
 # C:\Users\gusta\Documents\GitHub\Python\NordicEC\EC4py\test\test_step_data.py
 
 
-def pytest_test_set_area():
+def test_set_area():
         setup = EC_Setup()
         with pytest.raises(Exception) as context:
              setup.area = 5.0

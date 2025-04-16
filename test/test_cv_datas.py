@@ -29,7 +29,7 @@ paths.append( path_to_dataSetFolder / "CV_153541_ 3.tdms")
 
 
 
-def  test_quantities_add(datasType_with_a_length):
+def AAAquantities_add( datasType_with_a_length ):
     datas = datasType_with_a_length
     for data in datas:
         data.set_area("2 m^2" )
@@ -72,7 +72,7 @@ class test_CV_Data_arrays(unittest.TestCase):
         datas = CV_Datas()
         datas.append(CV_Data())
         datas.append(CV_Data())
-        test_quantities_add(datas)
+        AAAquantities_add(datas)
         length = len(datas)
         area = datas.area
         self.assertEqual(len(area), length)    

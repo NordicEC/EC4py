@@ -17,7 +17,7 @@ from help_fx import pop_and_len
 
 
 
-def  test_quantities_add(datasType_with_a_length):
+def  AAAtest_quantities_add(datasType_with_a_length):
     datas = datasType_with_a_length
     for data in datas:
         data.set_area("2 m^2" )
@@ -51,7 +51,7 @@ class test_EC_Datas_base(unittest.TestCase):
         datas = EC_Datas_base()
         datas.append(EC_Setup())
         datas.append(EC_Setup())
-        test_quantities_add(datas)
+        AAAtest_quantities_add(datas)
         
          
 
