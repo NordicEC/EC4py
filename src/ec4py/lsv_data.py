@@ -162,10 +162,6 @@ class LSV_Data(Voltammetry):
 
 
     #####################################################################################################
-    def set_area(self, value,unit):
-        self.setup_data._area = value
-        self.setup_data._area_unit = unit
-
     ######################################################################################################
     def conv(self, ec_data: EC_Data, *args, ** kwargs):
         """Converts EC_Data to a LSV

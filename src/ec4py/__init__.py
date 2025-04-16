@@ -17,7 +17,7 @@ from .cv_datas import CV_Datas
 from .step_data import Step_Data
 #import ec4py.step_data as step_data
 #if TYPE_CHECKING:  # Only imports the below statements during type checking
-from ec4py.step_datas import Step_Datas
+from .step_datas import Step_Datas
 from .eis_data import EIS_Data
 from .eis_datas import EIS_Datas
 from .util import Quantity_Value_Unit
