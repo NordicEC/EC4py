@@ -45,17 +45,17 @@ class test_EC_Datas_base(unittest.TestCase):
         test_quantities(self, datas)
          
 
-def pop_and_len(obj, datasType,value1,value2):
+def pop_and_len(testClassObj, datasType,value1,value2):
     datas = datasType
     datas.append(value1)
     datas.append(value2)
-    obj.assertEqual(len(datas), 2)
-    obj.assertEqual(datas[0], value1)
-    obj.assertEqual(datas[1], value2)
+    testClassObj.assertEqual(len(datas), 2)
+    testClassObj.assertEqual(datas[0], value1)
+    testClassObj.assertEqual(datas[1], value2)
     datas.pop(1)
-    obj.assertEqual(len(datas), 1)
+    testClassObj.assertEqual(len(datas), 1)
          
-def  test_quantities(obj, datasType_with_a_length):
+def  test_quantities(testClassObj, datasType_with_a_length):
     datas = datasType_with_a_length
     length = len(datasType_with_a_length)
     for data in datas:
@@ -66,15 +66,15 @@ def  test_quantities(obj, datasType_with_a_length):
     
     
     area = datas.area
-    obj.assertEqual(len(area), length)    
+    testClassObj.assertEqual(len(area), length)    
     for a in area:
-        obj.assertEqual(a.quantity, "A")
+        testClassObj.assertEqual(a.quantity, "A")
     #mass
     mass = datas.mass
     #mass
-    obj.assertEqual(len(mass), length)    
+    testClassObj.assertEqual(len(mass), length)    
     for a in mass:
-        obj.assertEqual(a.quantity, "m")
+        testClassObj.assertEqual(a.quantity, "m")
 
 if __name__ == '__main__':
     unittest.main()
