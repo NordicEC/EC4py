@@ -149,7 +149,10 @@ class Voltammetry(EC_Setup):
             return smoothed_current
     
     def interpolate(self, E_data, y_data ):
-        return np.interp(self.E, E_data, y_data)
+        if len(E_data)==0 or len(y_data) == 0:
+            return np.zeros(len(self.E))
+        else:
+            return np.interp(self.E, E_data, y_data)
     
     def _offset(self, offset:float):
         return np.ones(self.E)*offset
