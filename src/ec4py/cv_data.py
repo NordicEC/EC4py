@@ -39,10 +39,12 @@ class CV_Data(Voltammetry):
     - .plot() - plot data    
     - .bg_corr() to back ground correct.
     
-    ### iR- Compensation
-    - add keyword IRCOMP = "Z" for using the absolute impedance
-    - add keyword IRCOMP = "R" for using the real-part of the impedance
-    - add keyword IRCOMP = 1.0 for manual ir compensation
+    ### iR- Correction
+    - add keyword IRCORR = "R" for using the real-part of the impedance
+    - add keyword IRCORR = "Rmed" for using the median real-part of the impedance
+    - add keyword IRCORR = "Z" for using the absolute impedance
+    - add keyword IRCORR = "Zmed" for using the median absolute impedance
+    - add keyword IRCORR = 1.0 for manual ir compensation
     
     ### Analysis: 
     - .Tafel() - Tafel analysis data    
@@ -252,7 +254,7 @@ class CV_Data(Voltammetry):
         options = {
             'x_smooth' : 0,
             'y_smooth' : 0,
-            'IRCOMP': 0,
+            'IRCORR': None,
             'E' : "E",
             'i' : 'i'
         }
@@ -268,34 +270,47 @@ class CV_Data(Voltammetry):
             return
         
         try:
-            comp = options.get("IRCOMP",None)
+            
+            comp = options.get("IRCORR",None)
             if comp is not None:
                 s_comp=str(comp).casefold()
-            if  s_comp == "Z".casefold():
-                data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
-                #print(sel_channels.Impedance)
-                if(len(data_E)!=len(data_Z)):
-                    data_t,q,u,dt_t = ec_data.get_channel("Time")
-                    data_t_z =dt_Z*np.array(range(len(data_Z)))
-                    data_Z = np.interp(data_t, data_t_z, data_Z)
-                data_E = data_E - data_i*data_Z
-                ir_comp =True
-            elif  s_comp == "R".casefold():
-                data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
-                data_phase,q,u,dt_p = ec_data.get_channel(sel_channels.Phase)
-                if(len(data_E)!=len(data_Z)):
-                    data_t,q,u,dt_t = ec_data.get_channel("Time")
-                    data_t_z =dt_Z*np.array(range(len(data_Z)))
-                    data_Z = np.interp(data_t, data_t_z, data_Z)
-                    data_phase = np.interp(data_t, data_t_z, data_phase)
-                data_E = data_E - data_i*data_Z*np.cos(data_phase)
-                ir_comp =True
-
-            else:
-                Rsol = float(comp)
-                if Rsol > 0:
-                    data_E = data_E - data_i*Rsol
+                if  s_comp == "Z".casefold():
+                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
+                    #print(sel_channels.Impedance)
+                    if(len(data_E)!=len(data_Z)):
+                        data_t,q,u,dt_t = ec_data.get_channel("Time")
+                        data_t_z =dt_Z*np.array(range(len(data_Z)))
+                        data_Z = np.interp(data_t, data_t_z, data_Z)
+                    data_E = data_E - data_i*data_Z
                     ir_comp =True
+                elif  s_comp == "R".casefold():
+                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
+                    data_phase,q,u,dt_p = ec_data.get_channel(sel_channels.Phase)
+                    if(len(data_E)!=len(data_Z)):
+                        data_t,q,u,dt_t = ec_data.get_channel("Time")
+                        data_t_z =dt_Z*np.array(range(len(data_Z)))
+                        data_Z = np.interp(data_t, data_t_z, data_Z)
+                        data_phase = np.interp(data_t, data_t_z, data_phase)
+                    data_E = data_E - data_i*data_Z*np.cos(data_phase)
+                    ir_comp =True
+                elif s_comp == "Rmed".casefold():
+                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
+                    data_phase,q,u,dt_p = ec_data.get_channel(sel_channels.Phase)
+                    data_E = data_E - data_i*np.median(data_Z*np.cos(data_phase))
+                elif s_comp == "Zmed".casefold():
+                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
+                    data_E = data_E - data_i*np.median(data_Z)
+
+                else:
+                    try:
+                        Rsol = float(comp)
+                        if Rsol > 0:
+                            data_E = data_E - data_i*Rsol
+                            ir_comp =True
+                    except ValueError as e:
+                        print(e)
+                        raise ValueError("Invalid value for IRCORR")
+                        return
 
             
         except NameError as e:

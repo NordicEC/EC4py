@@ -6,11 +6,14 @@ nav_order: 100
 
 # Keywords
 
+## IR correction
 | Keyword        | Meaning           | Where to use  |
 | ------------- |:-------------| -----:|
-| IRCOMP = "Z" | iR-compensation using measured <br> absolute impedance| When loading a dataset |
-| IRCOMP = "R" | iR-compensation using measured <br>real part of the impedance |When loading a dataset|
-| IRCOMP = 1.0 | Manual iR-compensation<br>where the number corresponds to the Rsol | When loading a dataset |
+| IRcorr = "R" | iR-compensation using measured <br>real part of the impedance |When loading a dataset|
+| IRcorr = "Z" | iR-correct using measured <br> absolute impedance| When loading a dataset |
+| IRcorr = "Rmed" | Calculates first the median of the real part of the impedance(Rmed), <br>and then i*Rmed to correct the potential| When loading a dataset |
+| IRcorr = "Zmed" | Calculates first the median of the absolute impedance(Zmed), <br>then  the calculated i*Zmed to correct the potential| When loading a dataset |
+| IRcorr = 1.0 | Manual iR-correct<br>where the number corresponds to the Rsol | When loading a dataset |
 
 ## For plotting
 
