@@ -44,7 +44,7 @@ jobs:
     - name: Test with unittest
       run: |
         conda install unittest
-        unittest
+        python -m unittest
     #- name: Test with pytest
     #  run: |
     #    conda install pytest
