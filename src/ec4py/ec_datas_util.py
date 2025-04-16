@@ -109,7 +109,6 @@ class EC_Datas_base(EC_Array_class):
     def rate(self):
         rate=[]
         for x in self.datas:
-            
             rate.append(x.rate)
         return rate
     

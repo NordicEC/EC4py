@@ -93,12 +93,6 @@ class test_Step_Data(unittest.TestCase):
         self.assertAlmostEqual(v.value,0.40)
         self.assertEqual(v.unit,"C m^-2")
 
-        
-                
-    
-       
-        
-        
     
   
 

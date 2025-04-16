@@ -51,7 +51,7 @@ def Levich(rot, y_data, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str
         p.no_smooth()
        
         p.set_title("Levich",1)
-        s="\omega"
+        s=r"\omega"
         p.set_x_txt(f"${s}$^0.5", f"{rot_unit}^0.5")
         p.set_y_txt(y_axis_title, y_axis_unit)
 

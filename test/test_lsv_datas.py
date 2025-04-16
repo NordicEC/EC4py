@@ -156,17 +156,7 @@ class test_lsv_datas_basic( unittest.TestCase ):
 
 
         
-    def test_lsv_tafel(self):
-        data = LSV_Data()
-        tafel=100.0
-        data.i = np.pow(10,data.E/tafel)
-        slope=data.Tafel([0,1])
-        self.assertAlmostEqual(tafel,slope.value)
-        tafel=-60.0
-        data.i = np.pow(10,data.E/tafel)
-        slope=data.Tafel([0,1])
-        self.assertAlmostEqual(tafel,slope.value)
-        self.assertEqual("V/dec",slope.unit)
+ 
 
 
 class test_LSV_Data_arrays(unittest.TestCase):
@@ -206,6 +196,18 @@ class test_lsv_datas( unittest.TestCase ):
         datas.set_i_at_E_to_zero(-2.5)
         for d in datas:
             self.assertTrue(np.allclose(d.i, d.E*0,  atol=1e-10, rtol=1e-10))
+            
+    def test_lsv_tafel(self):
+        data = LSV_Data()
+        tafel=100.0
+        data.i = np.pow(10,data.E/tafel)
+        slope=data.Tafel([0,1])
+        self.assertAlmostEqual(tafel,slope.value)
+        tafel=-60.0
+        data.i = np.pow(10,data.E/tafel)
+        slope=data.Tafel([0,1])
+        self.assertAlmostEqual(tafel,slope.value)
+        self.assertEqual("V/dec",slope.unit)
 
           
      

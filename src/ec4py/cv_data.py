@@ -87,7 +87,7 @@ class CV_Data(Voltammetry):
         Returns:
             CV_Data: returns a copy of the inital dataset. 
         """
-        new_cv = copy.deepcopy(self)
+        new_cv = self.copy() # copy.deepcopy(self)
         new_cv.add(other)
         return new_cv   
     
@@ -100,7 +100,7 @@ class CV_Data(Voltammetry):
         Returns:
             CV_Data: a copy of the original data
         """
-        new_cv = copy.deepcopy(self)
+        new_cv = self.copy() # copy.deepcopy(self)
         new_cv.sub(other)
         return new_cv
     
@@ -113,7 +113,7 @@ class CV_Data(Voltammetry):
         Returns:
             CV_Data: a copy of the original data
         """
-        new_cv = copy.deepcopy(self)
+        new_cv = self.copy() #copy.deepcopy(self)
         new_cv.mul(other)
         return new_cv
     #############################################################################
@@ -126,7 +126,7 @@ class CV_Data(Voltammetry):
         Returns:
             CV_Data: a copy of the original data
         """
-        new_cv = copy.deepcopy(self)
+        new_cv = self.copy() # copy.deepcopy(self)
         new_cv.div(other)
         return new_cv
     #############################################################################   

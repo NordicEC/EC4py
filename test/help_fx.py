@@ -3,6 +3,8 @@ from ec4py.ec_setup import EC_Setup
 from ec4py.util import Quantity_Value_Unit as QVU
 from ec4py.util_graph import LEGEND
 from ec4py.ec_datas_util import EC_Datas_base
+from ec4py import AREA, AREA_CM, MASS
+
 #"import inc_dec    # "The code to test
 import unittest   # The test framework
 import numpy as np
@@ -23,6 +25,9 @@ def  help_quantities_add(datasType_with_a_length):
         data.set_mass("3 g")
         data.set_mass("2 g")    
 
+
+
+ 
  
 def unithelp_quantities_add(testClassObj:unittest.TestCase, datasType_with_a_length):
     datas = datasType_with_a_length

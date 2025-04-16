@@ -60,9 +60,10 @@ class Voltammetry(EC_Setup):
         self.E = self.make_E_axis()
         self.E_shifted_by = None
         self.IR_COMPENSATED = False
+       
     
-    def copy(self):
-        return copy.deepcopy(self)
+    #def copy(self):
+    #    return copy.deepcopy(self)
     
     def copy_from(self, source:Voltammetry):
         """Voltammetry copy from source voltammetry
