@@ -41,7 +41,11 @@ jobs:
 
       run: |
         pip install -e .
-    - name: Test with pytest
+    - name: Test with unittest
       run: |
-        conda install pytest
-        pytest
+        conda install unittest
+        python -m unittest
+    #- name: Test with pytest
+    #  run: |
+    #    conda install pytest
+    #    pytest
