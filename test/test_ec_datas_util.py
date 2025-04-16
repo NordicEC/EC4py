@@ -12,7 +12,7 @@ import unittest   # The test framework
 import numpy as np
 from pathlib import Path
 
-#from help_fx import test_quantities_add
+from help_fx import unithelp_quantities_add
 from help_fx import pop_and_len
 
 
@@ -51,7 +51,7 @@ class test_EC_Datas_base(unittest.TestCase):
         datas = EC_Datas_base()
         datas.append(EC_Setup())
         datas.append(EC_Setup())
-        AAAtest_quantities_add(datas)
+        unithelp_quantities_add(self,datas)
         
          
 

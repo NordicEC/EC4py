@@ -14,20 +14,6 @@ import pytest
 
 
 
-def pytest_test_set_area():
-        setup = EC_Setup()
-        with pytest.raises(Exception) as context:
-             setup.area = 5.0
-        #self.assertTrue('This is broken' in context.exception)
-        #self.assertRaises(ValueError, setup.area = 5, "3.0 m^2")
-        setup.set_area(5.0)
-        assert setup.area.value == 5
-        setup2= EC_Setup()
-        setup2.set_area("3.0 m")
-        assert setup2.area.value == 3
-        assert(setup2.area.unit == "m")
-        assert(setup2.area.quantity == "A")
-
 
 class test_EC_Setup(unittest.TestCase):
 
