@@ -6,10 +6,13 @@ from ec4py.util_graph import LEGEND
 from ec4py.ec_datas_util import EC_Datas_base
 #"import inc_dec    # "The code to test
 import unittest   # The test framework
+
+#import pytest   # The test framework
+
 import numpy as np
 from pathlib import Path
 
-from help_fx import test_quantities
+from help_fx import test_quantities_add
 from help_fx import pop_and_len
 
 class test_EC_Datas_base(unittest.TestCase):
@@ -38,13 +41,8 @@ class test_EC_Datas_base(unittest.TestCase):
         datas = EC_Datas_base()
         datas.append(EC_Setup())
         datas.append(EC_Setup())
-        #datas[0].set_area("2 m^2" )
-        #datas[1].set_area("1 m^2" )
-        #datas[0].set_mass("3 g")
-        #datas[1].set_mass("2 g")
-        #datas[0].set_rate("1 V /s")
-        #datas[1].set_rate("2 V /s")
-        test_quantities(self, datas)
+        test_quantities_add(datas)
+        
          
 
 

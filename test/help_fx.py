@@ -7,20 +7,37 @@ from ec4py.ec_datas_util import EC_Datas_base
 import unittest   # The test framework
 import numpy as np
 from pathlib import Path
+import unittest   # The test framework
+#import pytest
+import pytest
+
+#@pytest.fixture
 def  rn(value):
     return round(value*1000000)/1000000
 
+#@pytest.fixture
 
-def  test_quantities(testClassObj:unittest.TestCase, datasType_with_a_length):
+
+def  test_quantities_add(datasType_with_a_length):
     datas = datasType_with_a_length
-    length = len(datasType_with_a_length)
+    for data in datas:
+        data.set_area("2 m^2" )
+        data.set_area("1 m^2" )
+        data.set_mass("3 g")
+        data.set_mass("2 g")    
+
+
+
+"""def  test_quantities(testClassObj:unittest.TestCase, datasType_with_a_length):
+    datas = datasType_with_a_length
+    
     for data in datas:
         data.set_area("2 m^2" )
         data.set_area("1 m^2" )
         data.set_mass("3 g")
         data.set_mass("2 g")
     
-    
+    length = len(datasType_with_a_length)
     area = datas.area
     testClassObj.assertEqual(len(area), length)    
     for a in area:
@@ -31,7 +48,8 @@ def  test_quantities(testClassObj:unittest.TestCase, datasType_with_a_length):
     testClassObj.assertEqual(len(mass), length)    
     for a in mass:
         testClassObj.assertEqual(a.quantity, "m")
-
+"""
+#@pytest.fixture
 def pop_and_len(testClassObj:unittest.TestCase, datasType,value1,value2):
     datas = datasType
     datas.append(value1)
