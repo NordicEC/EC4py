@@ -33,6 +33,9 @@ STYLE_NEG_DL = "ro"
 #AVG = "avg"
 #DIF = "dif"
 
+
+
+
 class CV_Data(Voltammetry):
     """# Class to analyze a single CV data. 
     Class Functions:
@@ -261,6 +264,8 @@ class CV_Data(Voltammetry):
         options.update(kwargs)
         sel_channels = EC_Channels(*args,**kwargs)
         ir_comp =False
+        r_comp=None
+        vertex =[]
         try:
             data_E,q,u,dt_x = ec_data.get_channel(sel_channels.Voltage)
             data_i,q,u,dt_y = ec_data.get_channel(sel_channels.Current)
@@ -270,10 +275,10 @@ class CV_Data(Voltammetry):
             return
         
         try:
-            
             comp = options.get("IRCORR",None)
             if comp is not None:
                 s_comp=str(comp).casefold()
+                #vertex =find_vertex(data_E)
                 if  s_comp == "Z".casefold():
                     data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
                     #print(sel_channels.Impedance)
@@ -283,6 +288,7 @@ class CV_Data(Voltammetry):
                         data_Z = np.interp(data_t, data_t_z, data_Z)
                     data_E = data_E - data_i*data_Z
                     ir_comp =True
+                    r_comp=[np.min(data_Z),np.max(data_Z)]
                 elif  s_comp == "R".casefold():
                     data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
                     data_phase,q,u,dt_p = ec_data.get_channel(sel_channels.Phase)
@@ -291,22 +297,31 @@ class CV_Data(Voltammetry):
                         data_t_z =dt_Z*np.array(range(len(data_Z)))
                         data_Z = np.interp(data_t, data_t_z, data_Z)
                         data_phase = np.interp(data_t, data_t_z, data_phase)
-                    data_E = data_E - data_i*data_Z*np.cos(data_phase)
+                    R = data_Z*np.cos(data_phase)
+                    data_E = data_E - data_i*R
                     ir_comp =True
+                    r_comp=[np.min(R),np.max(R)]
                 elif s_comp == "Rmed".casefold():
                     data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
                     data_phase,q,u,dt_p = ec_data.get_channel(sel_channels.Phase)
-                    data_E = data_E - data_i*np.median(data_Z*np.cos(data_phase))
+                    r_comp = np.median(data_Z*np.cos(data_phase))
+                    print("Rmed",r_comp)
+                    data_E = data_E - data_i*r_comp
+                    ir_comp =True
                 elif s_comp == "Zmed".casefold():
                     data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
-                    data_E = data_E - data_i*np.median(data_Z)
+                    r_comp = np.median(data_Z)
+                    data_E = data_E - data_i*r_comp
+                    ir_comp =True
+                    
 
                 else:
                     try:
                         Rsol = float(comp)
                         if Rsol > 0:
-                            data_E = data_E - data_i*Rsol
                             ir_comp =True
+                            r_comp = Rsol
+                            data_E = data_E - data_i*r_comp
                     except ValueError as e:
                         print(e)
                         raise ValueError("Invalid value for IRCORR")
@@ -320,8 +335,9 @@ class CV_Data(Voltammetry):
 
         
         self.setup_data = copy.deepcopy(ec_data.setup_data)
-        self.convert(ec_data.Time,data_E,data_i,**kwargs)
+        self.convert(ec_data.Time,data_E,data_i,verter = vertex, **kwargs)
         self.IR_COMPENSATED = ir_comp
+        self.R_COMP = r_comp
         E_title = "E"
         #if ir_comp: ###NOT NEEDED
         #    E_title ="E-iR"
@@ -367,6 +383,9 @@ class CV_Data(Voltammetry):
         x= Potential_V
         y= Current_A
 
+        vertex =kwargs.get("vertex",None)
+        #if vertex is None:
+        #    vertex = find_vertex(x)
         #print("Convert", len(E))
         #print("SETP",self.setup)
         #Start_Delay, = extract_value_unit(self.setup_data._setup['Start_Delay'])
@@ -903,4 +922,3 @@ class CV_Data(Voltammetry):
 
         return Tafel_pos, Tafel_neg
     
-
