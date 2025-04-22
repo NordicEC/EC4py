@@ -472,6 +472,27 @@ class Step_Data(EC_Setup):
         return Charge
     
     
+    def export2lsv(self,step, *args, **kwargs):
+        """Export the data to a lsv file.
+
+        Args:
+            step (_type_): _description_
+        """
+        #print("export2lsv",step)
+        #print("export2lsv",self)
+        #print("export2lsv",args)
+        #print("export2lsv",kwargs)
+        if step is None:
+            step = self.get_step(0)
+        
+        if len(args) > 0:
+            step.set_area(args[0])
+        
+        if len(kwargs) > 0:
+            step.set_area(kwargs["area"])
+        
+        step.export2lsv(*args, **kwargs)
+    
     def Tafel(self, lims=[-1,1], *args, **kwargs):
         x_data =np.empty(self.nr_of_steps)
         y_data =np.empty(self.nr_of_steps)

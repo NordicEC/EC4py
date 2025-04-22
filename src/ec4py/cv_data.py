@@ -18,9 +18,8 @@ from .lsv_data import LSV_Data
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
-from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot,POS,NEG,AVG,DIF
-
-
+from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot,POS,NEG,AVG,DIF,find_vertex
+from .util_data import get_IR
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, LEGEND,should_plot_be_made
 from .analysis_tafel import Tafel
 from .analysis_levich import diffusion_limit_corr
@@ -277,6 +276,14 @@ class CV_Data(Voltammetry):
         try:
             comp = options.get("IRCORR",None)
             if comp is not None:
+                
+                ir_comp, data_IR = get_IR(ec_data,sel_channels,comp)
+                vertex = find_vertex(data_E)
+                r_comp = data_IR/data_i
+                if ir_comp:
+                    data_E = data_E - data_IR
+                
+                """
                 s_comp=str(comp).casefold()
                 #vertex =find_vertex(data_E)
                 if  s_comp == "Z".casefold():
@@ -326,7 +333,7 @@ class CV_Data(Voltammetry):
                         print(e)
                         raise ValueError("Invalid value for IRCORR")
                         return
-
+                """
             
         except NameError as e:
             print(e)

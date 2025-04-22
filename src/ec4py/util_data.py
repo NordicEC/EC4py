@@ -1,17 +1,22 @@
 import numpy as np
+import warnings
 
 from .ec_data_util import EC_Channels
 from .ec_data   import EC_Data
 
+IR_comp_Z = "Z"
+IR_comp_R = "R" 
+IR_comp_Rmed = "Rmed"
+IR_comp_Zmed = "Zmed"
 
-IR_COMP_KWs = ["Z","R","Rmed","Zmed"]
+IR_COMP_KWs = [IR_comp_Z,IR_comp_R,"Rmed","Zmed"]
 
 
 def get_Impedance(ec_data:EC_Data,sel_channels:EC_Channels):
     data_E,q,u,dt_x = ec_data.get_channel(sel_channels.Voltage)
     data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
     data_phase,q,u,dt_p = ec_data.get_channel(sel_channels.Phase)
-
+    print("get_Impedance",dt_x,dt_Z,dt_p)
     if(len(data_E)!=len(data_Z)):
         data_t,q,u,dt_t = ec_data.get_channel("Time")
         data_t_z =dt_Z*np.array(range(len(data_Z)))
@@ -52,6 +57,11 @@ def calc_ir(ec_data:EC_Data,sel_channels:EC_Channels,s_comp,**kwargs):
         data_IR = data_i*R
         ir_comp =True
         r_comp=[np.min(R),np.max(R)]
+        for r in R: 
+            if r <0:
+                ir_comp = False
+                warnings.warn("Negative Resistance Detected. Consider using Z instead of R")
+                break
     elif s_comp == "Rmed".casefold():
         r_comp = np.median(data_Z*np.cos(data_phase))
         data_IR = data_i*r_comp
