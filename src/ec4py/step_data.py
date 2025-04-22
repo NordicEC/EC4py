@@ -12,11 +12,15 @@ import copy
 
 from .ec_data import EC_Data,index_at_time
 from .ec_data_util import EC_Channels
+from .util_data import get_IR
+
 
 from .ec_setup import EC_Setup
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
+ 
+
 from .analysis_tafel import Tafel
 
 
@@ -47,6 +51,7 @@ class Step_Data(EC_Setup):
         self.step_E =[]
         self.step_Type =[]
         self.E_shifted_by = None
+        self.IR_COMPENSATED = False
         if not args:
             return
         else:
@@ -102,9 +107,12 @@ class Step_Data(EC_Setup):
         options = {
             'x_smooth' : 0,
             'y_smooth' : 0,
-            'IR': 0
+            'IRCORR': None,
+            'E' : "E",
+            'i' : 'i'
         }
         options.update(kwargs)
+      
         sel_channels = EC_Channels(*args,**kwargs)
         try:
             data_E,q_E,u_E,_ = ec_data.get_channel(sel_channels.Voltage)
@@ -113,19 +121,31 @@ class Step_Data(EC_Setup):
             data_P,q,u,_ = ec_data.get_channel(sel_channels.Phase)
             self.setup_data = ec_data.setup_data
             #self.convert(ec_data.Time,ec_data.E,ec_data.i,**kwargs)
+
             self.Time = ec_data.Time
             self.i = data_i
             self.E = data_E
             self.Z = data_Z
             self.P = data_P
             
+            
+            self.step_Time = List_Str2float(self.setup.get("Step.Time",str(f"{max(self.Time)};")))
+            self.step_E =List_Str2float(self.setup.get("Step.E",f"{np.mean(data_E)};"))
+            self.step_Type = List_Str2Str(self.setup.get("Step.Type","H"))
+            self.E_label = q_E + " vs " + self.RE
+
+            comp = options.get("IRCORR",None)
+            if comp is not None:
+                ir_comp, data_IR = get_IR(ec_data,sel_channels,comp)
+                if ir_comp:
+                    self.E = data_E - data_IR
+                    self.E_label = q_E + " vs " + self.RE + " - IR"
+                    self.IR_COMPENSATED = True
+               
             #self.step_Time = self.setup["Step.Time"].split(";",-1)
             #self.step_E = self.setup["Step.E"].split(";",-1)
             #self.step_Type = self.setup_data._setup["Step.Type"].split(";",-1)
-            self.step_Time = List_Str2float(self.setup["Step.Time"])
-            self.step_E =List_Str2float(self.setup["Step.E"])
-            self.step_Type = List_Str2Str(self.setup["Step.Type"])
-            self.E_label = q_E + " vs " + self.RE
+            
         except ValueError as e:
             print("no_data",e)
         #self.setup = data.setup
@@ -382,8 +402,10 @@ class Step_Data(EC_Setup):
         
         last_Active_RE = self.setup_data.getACTIVE_RE()
         end_norm_factor = EC_Setup.set_active_RE(self, shift_to)
-    
-        self.E_label = "E vs "+ self.setup_data.getACTIVE_RE()      
+        baseLabel = "E"
+        if self.IR_COMPENSATED:
+            baseLabel = "E - iR"
+        self.E_label = f"{baseLabel} vs "+ self.setup_data.getACTIVE_RE()      
         if end_norm_factor is not None:
             if  self.E_shifted_by == end_norm_factor.value :  
                 pass #potential is already shifted.
@@ -394,7 +416,7 @@ class Step_Data(EC_Setup):
                     self.E_shifted_by = end_norm_factor.value
                     self.E = self.E - self.E_shifted_by
                 else:
-                    self.E_label = "fdsdE vs "+ self.RE
+                    self.E_label = f"{baseLabel} vs "+ self.RE
                     self.E_unit = self.E_unit = "V" 
                     self.E = self.E + self.E_shifted_by
                     self.E_shifted_by = None   
@@ -472,27 +494,22 @@ class Step_Data(EC_Setup):
         return Charge
     
     
-    def export2lsv(self,step, *args, **kwargs):
+    def export_to_lsv(self,step_nr, *args, **kwargs):
         """Export the data to a lsv file.
 
         Args:
             step (_type_): _description_
-        """
-        #print("export2lsv",step)
-        #print("export2lsv",self)
-        #print("export2lsv",args)
-        #print("export2lsv",kwargs)
-        if step is None:
-            step = self.get_step(0)
+        """ 
+        from .lsv_data import LSV_Data
         
-        if len(args) > 0:
-            step.set_area(args[0])
-        
-        if len(kwargs) > 0:
-            step.set_area(kwargs["area"])
-        
-        step.export2lsv(*args, **kwargs)
-    
+        lsv = LSV_Data()
+        step = self.get_step(step_nr)
+        lsv.setup_data = copy.deepcopy(self.setup_data)
+        lsv.setup_data.name =str(self.setup_data.name)  + '#' + str(step_nr)
+        #lsv.setup_data.dateTime = self.setup_data.dateTime + np.timedelta64(int(self.Time[0]*1000000),'us')
+        lsv.convert(step.Time, step.E,step.i,step.E[0],step.E[len(step.E)-1])
+        return lsv
+            
     def Tafel(self, lims=[-1,1], *args, **kwargs):
         x_data =np.empty(self.nr_of_steps)
         y_data =np.empty(self.nr_of_steps)

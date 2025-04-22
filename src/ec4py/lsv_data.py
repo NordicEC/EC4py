@@ -49,8 +49,9 @@ class LSV_Data(Voltammetry):
        
         self.rate_V_s = 1
 
-        """max voltage""" 
-        self.E_min = -2.5
+        """max voltage"""
+        #self.E_max = 2.5 
+        #self.E_min = -2.5
         """min voltage"""
         ##self.name="CV" name is given in the setup.
         self.xmin = -2.5
@@ -241,11 +242,11 @@ class LSV_Data(Voltammetry):
         if(len(zero_crossings)==0):
             zero_crossings =[len(time)-1]
             print("APPEN DING")
-        self.E_max = 2.5
-        self.E_min = -2.5
-        dE_range = int((self.E_max - self.E_min)*1000)
-        x_sweep = np.linspace(self.E_min, self.E_max, dE_range) 
-        self.E = x_sweep
+        #E_max = self.E_axis["E_max"]
+        #E_min = self.E_axis["E_min"]
+        #dE_range = int((E_max - E_min)*1000)
+        #x_sweep = np.linspace(E_min, E_max, dE_range) 
+        #self.E = x_sweep
         print("zero_crossings",zero_crossings)
         if positive_start:
             x_sub = x[0:zero_crossings[0]]
@@ -253,9 +254,15 @@ class LSV_Data(Voltammetry):
         else:
             x_sub = np.flipud(x[0:zero_crossings[0]])
             y_sub = np.flipud(y[0:zero_crossings[0]])
-
-        y_pos=np.interp(x_sweep, x_sub, y_sub)
-
+        print(x_sub)
+        print("y\n",y_sub)
+        print("E\n",self.E)
+        y_pos = self.interpolate(x_sub, y_sub)
+        print("y_pos",y_pos)
+        #y_pos=np.interp(x_sweep, x_sub, y_sub)
+        self.i = self.clean_up_edges(y_pos,0)
+        print("i_pos",self.i)
+        """
         for index in range(1,y_pos.size):
             if y_pos[index-1] == y_pos[index]:
                 y_pos[index-1] = math.nan
@@ -269,7 +276,7 @@ class LSV_Data(Voltammetry):
                 break
             
         self.i = y_pos     
-    
+        """
    ######################################################################################### 
     def norm(self, norm_to:str| tuple):
         """Normalize lsv current

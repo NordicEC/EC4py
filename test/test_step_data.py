@@ -1,5 +1,7 @@
 
 import copy
+
+from ec4py import EC_Data
 from ec4py import Step_Data,RHE,AREA,AREA_CM
 from ec4py.util import Quantity_Value_Unit as QVU
 #"import inc_dec    # "The code to test
@@ -94,6 +96,30 @@ class test_Step_Data(unittest.TestCase):
         self.assertEqual(v.unit,"C m^-2")
 
     
+    def test_ircorr(self):
+        d = EC_Data()
+        dataPoints = 12
+        d.E = np.ones(dataPoints)
+        d.i = np.ones(dataPoints)
+        d.Z_E = np.ones(dataPoints)*2
+        d.Phase_E = np.ones(dataPoints)*np.pi/6*2
+        d.Time = np.array(range(dataPoints))
+        #print(d.step_Time)
+        d.setup
+        s = Step_Data()
+        s.conv(d,IRCORR=2)
+        self.assertTrue(np.allclose(s.E, d.E-d.i*2,  atol=1e-10, rtol=1e-10))
+        s.conv(d,IRCORR=5)
+        self.assertTrue(np.allclose(s.E, d.E-d.i*5,  atol=1e-10, rtol=1e-10))
+        s.conv(d,IRCORR="Z")
+        self.assertTrue(np.allclose(s.E, d.E-d.i*d.Z_E,  atol=1e-10, rtol=1e-10))
+        s.conv(d,IRCORR="Zmed")
+        self.assertTrue(np.allclose(s.E, d.E-d.i*d.Z_E,  atol=1e-10, rtol=1e-10))
+        s.conv(d,IRCORR="R")
+        self.assertTrue(np.allclose(s.E, d.E-d.i*d.Z_E*np.cos(d.Phase_E),  atol=1e-10, rtol=1e-10))
+        s.conv(d,IRCORR="Rmed")
+        self.assertTrue(np.allclose(s.E, d.E-d.i*d.Z_E*np.cos(d.Phase_E),  atol=1e-10, rtol=1e-10))
+        
   
 
 if __name__ == '__main__':
