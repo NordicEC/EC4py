@@ -58,6 +58,27 @@ class test_EC_Datas_base(unittest.TestCase):
 
          
 
+def test_quantities(self, datasType_with_a_length):
+    datas = datasType_with_a_length
+    length = len(datasType_with_a_length)
+    for data in datas:
+        data.set_area("2 m^2" )
+        data.set_area("1 m^2" )
+        data.set_mass("3 g")
+        data.set_mass("2 g")
+    
+    
+    area = datas.area
+    self.assertEqual(len(area), length)    
+    for a in area:
+        self.assertEqual(a.quantity, "A")
+    #mass
+    mass = datas.mass
+    #mass
+    self.assertEqual(len(mass), length)    
+    for a in mass:
+        self.assertEqual(a.quantity, "m")
+
 
 if __name__ == '__main__':
     unittest.main()
