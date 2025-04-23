@@ -414,7 +414,7 @@ class CV_Datas(EC_Datas_base):
         """
         #CV_plot = make_plot_1x("CVs")
         if should_plot_be_made(*args,**kwargs):
-            p = plot_options(kwargs)
+            p = plot_options(**kwargs)
             p.set_title("CVs")
             line, CV_plot = p.exe()
             # legend = p.legend

@@ -245,7 +245,14 @@ class Voltammetry(EC_Setup):
         if len(E_data)==0 or len(y_data) == 0:
             return np.zeros(len(self.E))
         else:
-            return np.interp(self.E, E_data, y_data)
+            data = np.interp(self.E, E_data, y_data)
+            index_min = self.get_index_of_E(np.min(E_data))
+            index_max = self.get_index_of_E(np.max(E_data))
+            for i in range(index_min):
+                data[i]=0
+            for i in range(index_max+1,len(self.E)):
+                data[i]=0
+            return data
     
     def _offset(self, offset:float):
         return np.ones(self.E)*offset

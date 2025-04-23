@@ -81,7 +81,7 @@ class Step_Data(EC_Setup):
         Returns:
             dict[]: list of key words
         """
-        return self.setup_data._setup["Repetitions"]
+        return self.setup_data._setup.get("Repetitions","1")
     
     @property 
     def nr_of_steps(self):
@@ -90,7 +90,7 @@ class Step_Data(EC_Setup):
         Returns:
             dict[]: list of key words
         """
-        return int(self.setup_data._setup["Repetitions"])*len(self.step_Time)
+        return int(self.repetitions)*len(self.step_Time)
     ##########################       
     def conv(self, ec_data: EC_Data, *args, ** kwargs):
         """Converts EC_Data to a CV
@@ -128,8 +128,9 @@ class Step_Data(EC_Setup):
             self.Z = data_Z
             self.P = data_P
             
-            
-            self.step_Time = List_Str2float(self.setup.get("Step.Time",str(f"{max(self.Time)};")))
+            dt = (np.max(self.Time)-np.min(self.Time)) / (len(self.Time)-1)
+            #print("conv_dt", dt)
+            self.step_Time = List_Str2float(self.setup.get("Step.Time",str(f"{np.max(self.Time)+dt};")))
             self.step_E =List_Str2float(self.setup.get("Step.E",f"{np.mean(data_E)};"))
             self.step_Type = List_Str2Str(self.setup.get("Step.Type","H"))
             self.E_label = q_E + " vs " + self.RE
@@ -175,19 +176,20 @@ class Step_Data(EC_Setup):
         range.update(kwargs)
         #print(kwargs)
         #print(range)
-        options = plot_options(kwargs)
+        options = plot_options(**kwargs)
+       
         data = copy.deepcopy(self)
-        
-        # print("plotARGS",args)
+        options.legend = data.legend(x_channel,y_channel,*args, **kwargs)
+        #print("plotARGS",args)
         data.norm(args)
         data.set_active_RE(args)
         # print("QQQQ",data.E_label)
         index_min = 0
         if range["limit_min"] >0:
             index_min = data.index_at_time(range["limit_min"])
-        index_max = len(data.Time)-1
+        index_max = len(data.Time) #-1
         if range["limit_max"] >0:
-            index_max = data.index_at_time(range["limit_max"])
+            index_max = np.min([data.index_at_time(range["limit_max"]),len(data.Time)-1])
         
         #max_index = len(self.Time)-1
         #print("index", index_min,index_max)
@@ -289,7 +291,7 @@ class Step_Data(EC_Setup):
         for i in range(0, total_nr_steps):
             num =float(self.step_Time[i])
             s.append(s[i]+num)
-        #print(s)
+        #print("get_step_step_times",s)
         idx = step_index % total_nr_steps
        # print("total", total_nr_steps)
        # print("idx", idx)
@@ -300,19 +302,21 @@ class Step_Data(EC_Setup):
         startT = s[idx]
         endT = s[idx+step_range]
          
-     #   print("startT",startT)
-      #  print("endT",endT)
+        #print("startT",startT)
+        #print("endT",endT)
         
         
         
         start_index = self.index_at_time(startT+extra)-1
         if start_index< 0 : 
             start_index = 0
-        end_index =   self.index_at_time(endT+extra)-1
+        end_index =   self.index_at_time(endT+extra)  #+1
+        #if this is the last step, add 1 to the end index
+        if endT>= np.max(self.Time): 
+            end_index = end_index + 1
         #shift dateTime
         singleStep.setup_data.dateTime = self.setup_data.dateTime + np.timedelta64(int(self.Time[start_index]*1000000),'us')
-      #  print("startT",start_index)
-     #   print("endT",end_index)
+        # print("startIndex",start_index,"endIndex",end_index)
         aSize=end_index-start_index #+1
         singleStep.E = np.empty(aSize) 
         singleStep.i = np.empty(aSize) 
@@ -343,7 +347,7 @@ class Step_Data(EC_Setup):
         self.E= np.append(self.E, step_to_append.E)
         self.i=np.append(self.i, step_to_append.i)
         dt = (step_to_append.setup_data.dateTime-self.setup_data.dateTime) / np.timedelta64(1,'us') /1.0e6
-        print("dt", dt , len(step_to_append.Time+ dt))
+        # print("append_dt", dt , len(step_to_append.Time+ dt))
         step_to_append.Time[0]=np.nan
         self.Time=np.append(self.Time, (step_to_append.Time+ dt ))
         
@@ -481,7 +485,7 @@ class Step_Data(EC_Setup):
         array_Q = integrate.cumulative_simpson(step.i[idxmin:idxmax], x=step.Time[idxmin:idxmax], initial=0)
         Charge = QV(array_Q[len(array_Q)-1]-array_Q[0],step.i_unit.replace("A","C"),self.i_label.replace("i","Q")) #* QV(1,"s","t")
         
-        options = plot_options(kwargs)
+        options = plot_options(**kwargs)
         options.options["plot"] = analyse_plot
         options.x_data = step.Time[idxmin:idxmax]
         options.x_label, options.x_unit = "t", "s"
@@ -507,6 +511,8 @@ class Step_Data(EC_Setup):
         lsv.setup_data = copy.deepcopy(self.setup_data)
         lsv.setup_data.name =str(self.setup_data.name)  + '#' + str(step_nr)
         #lsv.setup_data.dateTime = self.setup_data.dateTime + np.timedelta64(int(self.Time[0]*1000000),'us')
+        #print("step", step.E[len(step.E)-1])
+        #print("step", step.E)
         lsv.convert(step.Time, step.E,step.i,step.E[0],step.E[len(step.E)-1])
         return lsv
             

@@ -404,7 +404,7 @@ class CV_Data(Voltammetry):
         #print("V2", self.setup['V2'])
         V2, V2_str = extract_value_unit(self.setup['V2'])
         # print("CV", V0,V1,V2)
-        options = plot_options(kwargs)
+        options = plot_options(**kwargs)
         #print("CONVERTING",len(time), len(E), len(i))
         #try:
         #    y_smooth = int(options['y_smooth'])
@@ -594,7 +594,7 @@ class CV_Data(Voltammetry):
                 return lsv.plot(*args,**kwargs)
             
             data = copy.deepcopy(self)
-            options = plot_options(kwargs)
+            options = plot_options(**kwargs)
             options.options["dir"]=dir
             #print("AAAAAAAAAAAAAAAAAAAAAAA")
             #print(options.get_y_smooth())

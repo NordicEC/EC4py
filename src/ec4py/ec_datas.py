@@ -88,7 +88,7 @@ class EC_Datas(EC_Datas_base):
     
         
     def plot(self, x_channel:str = "E", y_channel:str = "i", *args, **kwargs):
-        p = plot_options(kwargs)
+        p = plot_options(**kwargs)
         #options.update(kwargs)
         p.set_title("Data plot")
         line, ax = p.exe()
@@ -115,7 +115,7 @@ class EC_Datas(EC_Datas_base):
         else:
             plot_kwargs["yscale"] ="log"
             
-        p = plot_options(kwargs)
+        p = plot_options(**kwargs)
         p.set_title("Tafel plot")
         #options.update(kwargs)
         

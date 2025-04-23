@@ -132,7 +132,7 @@ def should_plot_be_made(*args, **kwargs):
 
 
 class plot_options:
-    def __init__(self, kwargs):
+    def __init__(self, **kwargs):
         self.fig = None
         self.name = NEWPLOT
         self.x_label="x"

@@ -47,7 +47,7 @@ class EIS_Datas(EC_Datas_base):
     
     def nq(self,*args, **kwargs):
         
-        p = plot_options(kwargs)
+        p = plot_options(**kwargs)
         p.set_title("NQ")
         line, EIS_plot = p.exe()
         # EIS_plot.lines.pop(0)

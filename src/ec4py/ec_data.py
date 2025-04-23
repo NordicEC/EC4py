@@ -252,7 +252,7 @@ class EC_Data(EC_Setup):
         }
         plot_range.update(kwargs)
 
-        options = plot_options(kwargs)
+        options = plot_options(**kwargs)
         options.legend = self.legend(*args, **kwargs)
 
         index_min = 0
@@ -350,8 +350,7 @@ class EC_Data(EC_Setup):
             if comp_value is None:
                 return y*comp_value
         
-        
-               
+     
 
 
 def index_at_time(Time, time_s_:float):

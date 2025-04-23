@@ -47,7 +47,7 @@ def Levich(rot, y_data, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str
         ##print("AAA",B_factor_pos, "BBB", B_factor_pos.quantity)
         
         #Levich Plot
-        p = plot_options(kwargs)
+        p = plot_options(**kwargs)
         p.no_smooth()
        
         p.set_title("Levich",1)

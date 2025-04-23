@@ -62,7 +62,7 @@ def ran_sev(rate_values, current, y_axis_unit:str="A", y_axis_title:str="i", STY
         ##print("AAA",B_factor_pos, "BBB", B_factor_pos.quantity)
         
         #Levich Plot
-        p = plot_options(kwargs)
+        p = plot_options(**kwargs)
         p.set_title("RanSev",1)
         p.set_x_txt("$v$", f"{x_qv.unit}")
         p.set_y_txt(y_axis_title, y_axis_unit)
