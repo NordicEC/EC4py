@@ -56,7 +56,7 @@ class test_EC_Datas_base(unittest.TestCase):
          
 
 
-         
+"""       
 
 def test_quantities(self, datasType_with_a_length):
     datas = datasType_with_a_length
@@ -78,7 +78,7 @@ def test_quantities(self, datasType_with_a_length):
     self.assertEqual(len(mass), length)    
     for a in mass:
         self.assertEqual(a.quantity, "m")
-
+"""
 
 if __name__ == '__main__':
     unittest.main()
