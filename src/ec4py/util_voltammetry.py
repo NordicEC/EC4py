@@ -385,7 +385,7 @@ class Voltammetry(EC_Setup):
         end_norm_factor = None
         # print("argeLIST", type(norm_to))
         # print(shift_to)
-        last_Active_RE = self.setup_data.getACTIVE_RE()
+        #last_Active_RE = self.setup_data.getACTIVE_RE()
         end_norm_factor = EC_Setup.set_active_RE(self, shift_to)
         E_label = "E"
         if self.IR_COMPENSATED:

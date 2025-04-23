@@ -489,7 +489,7 @@ class CV_Data(Voltammetry):
     ###############################
     ###under deve
     def set_active_RE(self,shift_to:str|tuple = None):
-        end_norm_factor = None
+        # end_norm_factor = None
         # print("argeLIST", type(norm_to))
         
         a = Voltammetry.set_active_RE(self,shift_to, [self.i_p, self.i_n])

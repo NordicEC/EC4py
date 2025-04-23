@@ -402,7 +402,7 @@ class Step_Data(EC_Setup):
         end_norm_factor = None
         # print("argeLIST", type(norm_to))
         
-        last_Active_RE = self.setup_data.getACTIVE_RE()
+        self.setup_data.getACTIVE_RE()
         end_norm_factor = EC_Setup.set_active_RE(self, shift_to)
         baseLabel = "E"
         if self.IR_COMPENSATED:
