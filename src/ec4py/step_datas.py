@@ -17,7 +17,7 @@ from .ec_datas_util import EC_Datas_base
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig,LEGEND,update_legend
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig,LEGEND,update_legend,update_plot_kwargs
 from .analysis_tafel import Tafel
 
 
@@ -108,18 +108,18 @@ class Step_Datas(EC_Datas_base):
         legend = p.legend
         datas = copy.deepcopy(self.datas)
         #CVs = [CV_Data() for i in range(len(paths))]
-        data_kwargs = kwargs
-        for data in datas:
+        
+        for index, data in enumerate(datas):
+            data_kwargs = update_plot_kwargs(index,kwargs)
             #rot.append(math.sqrt(cv.rotation))
             #for arg in args:
             #    data.norm(arg)
-
             data_kwargs["plot"] = data_plot
             # data_kwargs["name"] = data.setup_data.name
             #if legend != "_" :
             #    data_kwargs["legend"] = data.setup_data.name
             p = data.plot(*args, **data_kwargs)
-        if legend != "_": 
+        if legend != "_" : 
             data_plot.legend()
         return data_kwargs
     

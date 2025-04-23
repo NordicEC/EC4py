@@ -13,7 +13,7 @@ from collections import namedtuple
 #import matplotlib.pyplot as plt
 from enum import StrEnum
 #from .util import Quantity_Value_Unit as Q_V
-
+import copy
 
 
 NEWPLOT = "new_plot"
@@ -156,12 +156,14 @@ def update_plot_kwargs(index, **kwargs):
         
     """
     plot_kw = [x.value for x in ENUM_plotKW]
+    #loc_kwargs = copy.deepcopy(kwargs.copy())
     loc_kwargs = kwargs.copy()
     for key,value in loc_kwargs.items():
         is_list = isinstance(value,list)
         if key in plot_kw and is_list:
             loc_kwargs[key] = value[index]
             # print(key, value[index])
+    # print(loc_kwargs)
     return loc_kwargs
 
 class plot_options:
@@ -355,13 +357,20 @@ class plot_options:
         line = None
         try:
             line, = ax.plot(self.x_data, self.y_data, self.options['style'])
-            #line,=analyse_plot.plot(rot,y_pos,'-' )
+            # print("COLOR", self.options,self.options[ENUM_plotKW.COLOR.value])
+            # print("COLOR", self.options[ENUM_plotKW.COLOR.value])
+            # print("COLOR", ENUM_plotKW.COLOR.value,"SS")
             if self.x_data is not None:
-               
-                if self.get_legend()[0] != "_":
-                    line.set_label( quantity_plot_fix(self.get_legend()) )
-                    ax.legend()
+                
+                if len(self.get_legend())> 0:
+                    if self.get_legend()[0] != "_":
+                        line.set_label( quantity_plot_fix(self.get_legend()) )
+                        ax.legend()
+        
+                #print("COLOR2", self.options[ENUM_plotKW.COLOR.value],ENUM_plotKW.COLOR.value)
+                
                 if self.options[ENUM_plotKW.COLOR.value] is not None:
+                    #print("COLOR3", self.options[ENUM_plotKW.COLOR.value])
                     line.set_color(self.options[ENUM_plotKW.COLOR.value])
                 if self.options[ENUM_plotKW.LABEL.value] is not None:   
                     line.set_label(self.options[ENUM_plotKW.LABEL.value])
@@ -372,9 +381,10 @@ class plot_options:
                     line.set_linewidth(self.options[ENUM_plotKW.LINEWIDTH.value])
                 if self.options[ENUM_plotKW.ALPHA.value] is not None:   
                     line.set_alpha(self.options[ENUM_plotKW.ALPHA.value])
-            
+
         except:  # noqa: E722
-            pass
+       #     print("NO LINE",e)
+           pass
         #### X label
         x_label = f'{quantity_plot_fix(self.x_label)} ({quantity_plot_fix(self.x_unit)})'
         if self.options['xlabel'] is not None:
