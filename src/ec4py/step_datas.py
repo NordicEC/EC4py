@@ -110,7 +110,7 @@ class Step_Datas(EC_Datas_base):
         #CVs = [CV_Data() for i in range(len(paths))]
         
         for index, data in enumerate(datas):
-            data_kwargs = update_plot_kwargs(index,kwargs)
+            data_kwargs = update_plot_kwargs(index,**kwargs)
             #rot.append(math.sqrt(cv.rotation))
             #for arg in args:
             #    data.norm(arg)

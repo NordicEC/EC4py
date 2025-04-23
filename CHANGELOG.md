@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 
 ### Changed
 
+## [0.7.5] - 
+### Added
+  - MathplotLib key words: xlim, ylim
+
 ## [0.7.3] - 
 ### Added
   - MathplotLib key words are passed to plotting for more customization of plots.

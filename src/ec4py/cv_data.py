@@ -283,58 +283,6 @@ class CV_Data(Voltammetry):
                 if ir_comp:
                     data_E = data_E - data_IR
                 
-                """
-                s_comp=str(comp).casefold()
-                #vertex =find_vertex(data_E)
-                if  s_comp == "Z".casefold():
-                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
-                    #print(sel_channels.Impedance)
-                    if(len(data_E)!=len(data_Z)):
-                        data_t,q,u,dt_t = ec_data.get_channel("Time")
-                        data_t_z =dt_Z*np.array(range(len(data_Z)))
-                        data_Z = np.interp(data_t, data_t_z, data_Z)
-                    data_E = data_E - data_i*data_Z
-                    ir_comp =True
-                    r_comp=[np.min(data_Z),np.max(data_Z)]
-                elif  s_comp == "R".casefold():
-                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
-                    data_phase,q,u,dt_p = ec_data.get_channel(sel_channels.Phase)
-                    if(len(data_E)!=len(data_Z)):
-                        data_t,q,u,dt_t = ec_data.get_channel("Time")
-                        data_t_z =dt_Z*np.array(range(len(data_Z)))
-                        data_Z = np.interp(data_t, data_t_z, data_Z)
-                        data_phase = np.interp(data_t, data_t_z, data_phase)
-                    R = data_Z*np.cos(data_phase)
-                    data_E = data_E - data_i*R
-                    ir_comp =True
-                    r_comp=[np.min(R),np.max(R)]
-                elif s_comp == "Rmed".casefold():
-                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
-                    data_phase,q,u,dt_p = ec_data.get_channel(sel_channels.Phase)
-                    r_comp = np.median(data_Z*np.cos(data_phase))
-                    print("Rmed",r_comp)
-                    data_E = data_E - data_i*r_comp
-                    ir_comp =True
-                elif s_comp == "Zmed".casefold():
-                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
-                    r_comp = np.median(data_Z)
-                    data_E = data_E - data_i*r_comp
-                    ir_comp =True
-                    
-
-                else:
-                    try:
-                        Rsol = float(comp)
-                        if Rsol > 0:
-                            ir_comp =True
-                            r_comp = Rsol
-                            data_E = data_E - data_i*r_comp
-                    except ValueError as e:
-                        print(e)
-                        raise ValueError("Invalid value for IRCORR")
-                        return
-                """
-            
         except NameError as e:
             print(e)
             raise NameError(e)
@@ -342,7 +290,7 @@ class CV_Data(Voltammetry):
 
         
         self.setup_data = copy.deepcopy(ec_data.setup_data)
-        self.convert(ec_data.Time,data_E,data_i,verter = vertex, **kwargs)
+        self.convert(ec_data.Time,data_E,data_i,vertex = vertex, **kwargs)
         self.IR_COMPENSATED = ir_comp
         self.R_COMP = r_comp
         E_title = "E"
@@ -487,9 +435,12 @@ class CV_Data(Voltammetry):
             if Two_vertex:
                 x_u2 = x[zero_crossings[1]:zero_crossings[2]]
                 y_u2 = y[zero_crossings[1]:zero_crossings[2]] 
+                # print(zero_crossings)
                 mask = x_u2<x_u.min()
+                
                 x_u2=np.array(x_u2[mask])
-                y_u2=np.array(y_u2[mask])
+                if len(y_u2)>=len(mask):
+                    y_u2=np.array(y_u2[mask])
                         
         else:
             #print("neg first sweep")
@@ -506,7 +457,7 @@ class CV_Data(Voltammetry):
 
         #y_pos=np.interp(x_sweep, x_u, y_u)
         #y_neg=np.interp(x_sweep, x_n, y_n)
-        y_pos=self.interpolate(x_u, y_u)
+        y_pos=   self.interpolate(x_u, y_u)
         y_pos =  self.clean_up_edges(y_pos,0)
         
         if Two_vertex and positive_start:
