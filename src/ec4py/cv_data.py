@@ -15,13 +15,11 @@ from .ec_data_util import EC_Channels
 
 from .lsv_data import LSV_Data
 
-from .ec_setup import EC_Setup
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
 from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot,POS,NEG,AVG,DIF,find_vertex
 from .util_data import get_IR
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, LEGEND,should_plot_be_made,ANALYSE_PLOT,DATA_PLOT
-from .analysis_tafel import Tafel
+from .util_graph import plot_options, saveFig, should_plot_be_made,ANALYSE_PLOT,DATA_PLOT
 from .analysis_levich import diffusion_limit_corr
 
 STYLE_POS_DL = "bo"
@@ -249,10 +247,10 @@ class CV_Data(Voltammetry):
         """
         #print("Convert:",kwargs)
         
-        ch_E ="E"
-        for a in args:
-            if a == "IR":
-                ch_E = "E-IR"
+        #ch_E ="E"
+        #for a in args:
+        #    if a == "IR":
+        #        ch_E = "E-IR"
         options = {
             'x_smooth' : 0,
             'y_smooth' : 0,
@@ -372,9 +370,9 @@ class CV_Data(Voltammetry):
         self.xmin = x.min()
         self.xmax = x.max()
 
-        x_start = np.mean(x[0:3])
-        index_min = np.argmin(x)
-        index_max = np.argmax(x)
+        #x_start = np.mean(x[0:3])
+        #index_min = np.argmin(x)
+        #index_max = np.argmax(x)
 
         #array of dx
 
@@ -385,44 +383,20 @@ class CV_Data(Voltammetry):
         #print("ZERO:",zero_crossings)
         self.rate_V_s = np.mean(np.abs(x_div)) / t_div
         #print(f"Rate: {self.rate_V_s}")
-        up_start =0
-        up_end = 0
+        #up_start =0
+        #up_end = 0
         ## Number of vertext
         Two_vertex = len(zero_crossings)>1
         #print("MIN",x[zero_crossings[0]], np.min(x[0:zero_crossings[1]]))
         #print("argMIN",zero_crossings[0], np.argmin(x[0:zero_crossings[1]]))
         if not Two_vertex:  #if the CV consists of 2 LSV, there is only one zero crossing.
             zero_crossings = np.append(zero_crossings,len(x))
-        # print("size",len(zero_crossings),zero_crossings,len(zero_crossings)<2)
-        ### Manualy find the first Vertex.
+      
         if positive_start:
             zero_crossings[0] = np.argmax(x[0:zero_crossings[1]])
         else:
             zero_crossings[0] = np.argmin(x[0:zero_crossings[1]])
-        #print(f"ZeroCrossings: {zero_crossings}")
-        #print(zero_crossings)
-        if x[0]<x[zero_crossings[0]]:
-            up_start =0
-            up_end = zero_crossings[0]
-            dn_start = zero_crossings[0]
-            dn_end = x.size
-
-        else:
-            up_start =zero_crossings[0]
-            up_end = x.size
-            dn_start = 0
-            dn_end = zero_crossings[0]
-            reversed=True
-
-        """
-        self.E_max = 2.5
-        self.E_min = -2.5
-        dE_range = int((self.E_max - self.E_min)*1000)
-        x_sweep = np.linspace(self.E_min, self.E_max, dE_range) 
-        
-        self.E = x_sweep
-        """
-        # make E axis.
+      
         self.E = self.make_E_axis()
         zero_crossings = np.append(zero_crossings, x.size)
         #print("ZERO:",len(zero_crossings),zero_crossings, "2x vertex", Two_vertex)
@@ -806,11 +780,11 @@ class CV_Data(Voltammetry):
         Tafel_kwargs[ANALYSE_PLOT]=analyse_plot
         dir = self._direction(*args,**kwargs)
 
-        rot=[]
-        y = []
-        E = []
+        # rot=[]
+        # y = []
+        # E = []
         #Epot=-0.5
-        y_axis_title =""
+        # y_axis_title =""
         
         Tafel_pos = None
         Tafel_neg = None

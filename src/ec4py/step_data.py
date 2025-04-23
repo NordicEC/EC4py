@@ -6,7 +6,6 @@ from __future__ import annotations
 import math
 import numpy as np
 from scipy import integrate
-from scipy.signal import savgol_filter 
 
 import copy
 
@@ -16,8 +15,7 @@ from .util_data import get_IR
 
 
 from .ec_setup import EC_Setup
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig,update_plot_kwargs
-from .util import extract_value_unit     
+from .util_graph import plot_options, make_plot_2x_1,saveFig
 from .util import Quantity_Value_Unit as QV
  
 
@@ -100,10 +98,10 @@ class Step_Data(EC_Setup):
         """
         #print("Convert:",kwargs)
         
-        ch_E ="E"
-        for a in args:
-            if a == "IR":
-                ch_E = "E-IR"
+        #ch_E ="E"
+        #for a in args:
+        #    if a == "IR":
+        #        ch_E = "E-IR"
         options = {
             'x_smooth' : 0,
             'y_smooth' : 0,

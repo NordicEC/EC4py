@@ -8,12 +8,12 @@ import numpy as np
 from scipy import integrate
 from scipy.signal import savgol_filter 
 
-import copy
+# import copy
 
 from .ec_setup import EC_Setup
-from .util import extract_value_unit     
+# from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x, ANALYSE_PLOT, DATA_PLOT,NO_PLOT
+from .util_graph import make_plot_2x, ANALYSE_PLOT, DATA_PLOT,NO_PLOT
 
 
 OFFSET_AT_E_MIN ="offset_at_emin"

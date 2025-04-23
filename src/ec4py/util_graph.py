@@ -346,7 +346,7 @@ class plot_options:
             #fig = plt.figure()
             #  plt.subtitle(self.name)
             fig = make_plot_1x(self.options['title'],**kwargs)
-            ax = fig.plots[0]
+            # ax = fig.plots[0]
 
     def no_smooth(self):
         self.options["y_smooth"]=0
@@ -361,7 +361,7 @@ class plot_options:
             line, ax: Line and ax handlers
         """
         ax = self.options[PLOT]
-        fig = None
+        # fig = None
         if ax == NEWPLOT or ax is None:
            # fig = plt.figure()
            # plt.suptitle(self.name)
