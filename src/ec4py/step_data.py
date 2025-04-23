@@ -16,7 +16,7 @@ from .util_data import get_IR
 
 
 from .ec_setup import EC_Setup
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig,update_plot_kwargs
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
  

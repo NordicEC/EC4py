@@ -5,7 +5,7 @@
 from pathlib import Path
 import copy
 
-from .util_graph import plot_options
+from .util_graph import plot_options,update_plot_kwargs
 from .ec_data import EC_Data
 from .ec_datas_util import EC_Datas_base,check_paths
 
@@ -93,9 +93,10 @@ class EC_Datas(EC_Datas_base):
         p.set_title("Data plot")
         line, ax = p.exe()
         #ax = make_plot_1x(options.name)
-        plot_kwargs = kwargs
+        
         datas = copy.deepcopy(self.datas)
-        for data in datas:
+        for index, data in enumerate(datas):
+            plot_kwargs = update_plot_kwargs(index,**kwargs)
             plot_kwargs["plot"] = ax
             plot_kwargs["name"] = data.setup_data.name
             plot_kwargs["legend"] = data.setup_data.name

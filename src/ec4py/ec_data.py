@@ -254,7 +254,7 @@ class EC_Data(EC_Setup):
 
         options = plot_options(**kwargs)
         options.legend = self.legend(*args, **kwargs)
-
+        #print(self.legend(*args, **kwargs))
         index_min = 0
         if plot_range["limit_min"] > 0:
             index_min = self.index_at_time(plot_range["limit_min"])
@@ -290,7 +290,7 @@ class EC_Data(EC_Setup):
         except NameError:
             print(f"xchannel {x_channel} not supported")
         
-
+        #print(options.options["color"])
         return options.exe()
 
     def plot_rawdata(self):
