@@ -7,6 +7,7 @@ nav_order: 100
 # Keywords
 
 ## IR correction
+
 | Keyword        | Meaning           | Where to use  |
 | ------------- |:-------------| -----:|
 | IRcorr = "R" | iR-compensation using measured <br>real part of the impedance |When loading a dataset|
