@@ -45,6 +45,19 @@ class ENUM_legend(StrEnum):
 
 LEGEND = ENUM_legend
 
+class ENUM_plotKW(StrEnum):
+    LABEL = "label"
+    LINESTYLE = "linestyle"
+    LINEWIDTH = "linewidth"
+    COLOR ="color"
+    GRID = "grid"
+    XLABEL = "xlabel"
+    YLABEL = "ylabel"
+    ALPHA = "alpha"
+    TITLE = "title"
+
+
+
 def update_legend(*args,**kwargs):
     loc_args = list(args) 
     #loc_args.insert(0,listargs)
@@ -61,17 +74,21 @@ def update_legend(*args,**kwargs):
     return kwargs
 
 
-def make_plot_1x(Title:str):
+def make_plot_1x(Title:str,**kwargs):
+    grid = kwargs.get("grid",False)
+   
     fig = plt.figure()
     fig.set_figheight(5)
     fig.set_figwidth(6)
     plt.suptitle(Title)
     fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=1.0, hspace=0.8)
     plot1 = fig.subplots()
-    
+    if grid:
+        plt.grid()
     return Figure(fig,[plot1])
 
-def make_plot_2x(Title:str,Vertical = False):
+def make_plot_2x(Title:str,Vertical = False,**kwargs):
+    grid = kwargs.get("grid",False)
     fig = plt.figure()
     fig.set_figheight(5)
     fig.set_figwidth(13)
@@ -131,6 +148,22 @@ def should_plot_be_made(*args, **kwargs):
     return makePlot
 
 
+
+def update_plot_kwargs(index, **kwargs):
+    """ 
+
+    Returns: kw
+        
+    """
+    plot_kw = [x.value for x in ENUM_plotKW]
+    loc_kwargs = kwargs.copy()
+    for key,value in loc_kwargs.items():
+        is_list = isinstance(value,list)
+        if key in plot_kw and is_list:
+            loc_kwargs[key] = value[index]
+            # print(key, value[index])
+    return loc_kwargs
+
 class plot_options:
     def __init__(self, **kwargs):
         self.fig = None
@@ -151,10 +184,18 @@ class plot_options:
             PLOT : NEWPLOT,
             'dir' : "all",
             'legend' : "_",
-            'xlabel' : None,
-            'ylabel' : None,
+            ENUM_plotKW.XLABEL.value : None,
+            ENUM_plotKW.YLABEL.value : None,
             'style'  : "",
-            'title'  : ""
+            ENUM_plotKW.TITLE.value  : "",
+            ENUM_plotKW.COLOR.value : None,
+            ENUM_plotKW.LABEL.value : None,
+            ENUM_plotKW.LINESTYLE.value : None,
+            ENUM_plotKW.LINEWIDTH.value : None,
+            ENUM_plotKW.GRID.value: False,
+            ENUM_plotKW.ALPHA.value: None
+            
+            
         }
 
         self.options.update(kwargs)
@@ -256,7 +297,7 @@ class plot_options:
         except KeyError("plot keyword was not found"):
             #fig = plt.figure()
             #  plt.subtitle(self.name)
-            fig = make_plot_1x(self.options['title'])
+            fig = make_plot_1x(self.options['title'],**kwargs)
             ax = fig.plots[0]
 
     def no_smooth(self):
@@ -276,7 +317,7 @@ class plot_options:
         if ax == NEWPLOT or ax is None:
            # fig = plt.figure()
            # plt.suptitle(self.name)
-            self.fig = make_plot_1x(self.options['title'])
+            self.fig = make_plot_1x(self.options['title'],**self.options)
             ax = self.fig.plots[0]
             if self.options['yscale']:
                 ax.set_yscale(self.options['yscale'])
@@ -316,9 +357,21 @@ class plot_options:
             line, = ax.plot(self.x_data, self.y_data, self.options['style'])
             #line,=analyse_plot.plot(rot,y_pos,'-' )
             if self.x_data is not None:
-                line.set_label( quantity_plot_fix(self.get_legend()) )
+               
                 if self.get_legend()[0] != "_":
+                    line.set_label( quantity_plot_fix(self.get_legend()) )
                     ax.legend()
+                if self.options[ENUM_plotKW.COLOR.value] is not None:
+                    line.set_color(self.options[ENUM_plotKW.COLOR.value])
+                if self.options[ENUM_plotKW.LABEL.value] is not None:   
+                    line.set_label(self.options[ENUM_plotKW.LABEL.value])
+                    ax.legend()
+                if self.options[ENUM_plotKW.LINESTYLE.value] is not None:   
+                    line.set_linestyle(self.options[ENUM_plotKW.LINESTYLE.value])
+                if self.options[ENUM_plotKW.LINEWIDTH.value] is not None:   
+                    line.set_linewidth(self.options[ENUM_plotKW.LINEWIDTH.value])
+                if self.options[ENUM_plotKW.ALPHA.value] is not None:   
+                    line.set_alpha(self.options[ENUM_plotKW.ALPHA.value])
             
         except:  # noqa: E722
             pass

@@ -90,3 +90,11 @@ A [Quantity_Value_Unit](ec4py_util.md) representation of the voltage where the c
    lsv1.get_E_of_min_i(0.1,0.5) # returns the voltage where the current reaches the max.
 ```
 
+### LSV_Data.**integrate(self, start_E:float, end_E:float, *args, **kwargs)**
+ A [Quantity_Value_Unit](ec4py_util.md) representation of the integrated current between two voltage limits. [Arguments](ec4py_args.md) can be used to normailze the current and shift the potential. 
+```python
+   lsv = LSV_Data()
+   lsv.integrate(0.1,1.1) # integrate the current between 0.1 and 1.1 V.
+   lsv.integrate(0.1,1.1,AREA) # Normalize the current to AREA and integrate the current density between 0.1 and 1.1 V.
+```
+

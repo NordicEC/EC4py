@@ -119,7 +119,7 @@ Convert a [EC_Data](ec4py_ec_data.md) to CV_Data.
 
 
 ### CV_Data.**integrate(self, start_E:float, end_E:float, *args, **kwargs)**
- A [Quantity_Value_Unit](ec4py_util.md) representation of the integrated current between two voltage limits. [Arguments](ec4py_args.md) can be used to normailze the current and shift the potential.
+ A [Quantity_Value_Unit](ec4py_util.md) representation of the integrated current between two voltage limits. [Arguments](ec4py_args.md) can be used to normailze the current and shift the potential. 
 ```python
    cv1 = CV_Data()
    cv1.integrate(0.1,1.1) # integrate the current between 0.1 and 1.1 V.

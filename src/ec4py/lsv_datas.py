@@ -15,13 +15,13 @@ from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT,LEGEND,ANALYSE_PLOT,DATA_PLOT,update_legend,should_plot_be_made
+from .util_graph import update_plot_kwargs
 
 from .util_voltammetry import create_Tafel_data_analysis_plot,create_RanSev_data_analysis_plot,create_Rate_data_analysis_plot,create_Levich_data_analysis_plot,create_KouLev_data_analysis_plot
 from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE
 
 
 from .analysis_levich import Levich
-from .analysis_tafel import Tafel
 from .analysis_ran_sev   import ran_sev
 from .analysis_rate   import sweep_rate_analysis
 
@@ -367,7 +367,7 @@ class LSV_Datas(EC_Datas_base):
                 #data_plot_kwargs["legend"] = LEGEND.NAME
             #    data_plot_kwargs = update_legend(LEGEND.NAME,**kwargs)
 
-            p = plot_options(data_plot_kwargs)
+            p = plot_options(**data_plot_kwargs)
             p.no_smooth()
             p.set_title("LSVs")
             p.x_data= None
@@ -377,19 +377,22 @@ class LSV_Datas(EC_Datas_base):
             datas = copy.deepcopy(self.datas)
             #data_plot_kwargs = kwargs
             data_plot_kwargs["plot"] = data_plot
-            for data in datas:
-                #rot.append(math.sqrt(cv.rotation))
-    
+            lines = [] 
+            for index, data in enumerate(datas):
+                # print(index)
+                data_plot_kwargs = update_plot_kwargs(index, **kwargs)
                 data_plot_kwargs["name"] = data.setup_data.name
+                data_plot_kwargs["plot"] = data_plot
                 # print(data_plot_kwargs["legend"])
                 #if legend == "_"  :
                 #    data_plot_kwargs["legend"] = data.setup_data.name
 
-                data.plot(*args, **data_plot_kwargs)
+                line,_ = data.plot(*args, **data_plot_kwargs)
+                lines.append(line)
 
             data_plot.legend()
             p.saveFig(**kwargs)
-            return data_plot
+            return lines, data_plot
         else:
             return None
 
@@ -470,8 +473,8 @@ class LSV_Datas(EC_Datas_base):
         style = self.datas[0].get_point_color()
 
         data_plot.plot(E, y, style)
-        y_axis_title =y[0].quantity
-        y_axis_unit = y[0].unit
+        y_axis_title = y[0].quantity
+        y_axis_unit  = y[0].unit
         # print(y_axis_title)
         B_factor=0
         B_factor = ran_sev(rate, y, y_axis_unit, y_axis_title, style, self.dir,plot=analyse_plot )
@@ -577,7 +580,7 @@ class LSV_Datas(EC_Datas_base):
         
         pkwargs={"plot" : analyse_plot,
                  "style" : point_style}
-        p = plot_options(pkwargs)
+        p = plot_options(**pkwargs)
         p.options["plot"]=analyse_plot
         p.set_x_txt(rot_inv[0].quantity,rot_inv[0].unit)
         p.set_y_txt(y_inv[0].quantity,y_inv[0].unit)
@@ -617,19 +620,22 @@ class LSV_Datas(EC_Datas_base):
     ##################################################################################################################
     
     
-    def Tafel2(self, lims=[-1,1], E_for_idl:float=None , *args, **kwargs):
-        fig = make_plot_2x("Tafel Analysis")
-        data_plot = fig.plots[0]
-        analyse_plot =  fig.plots[1]
-        data_plot.title.set_text('LSV')
+    def Tafel(self, lims=[-1,1], E_for_idl:float=None , *args, **kwargs):
+        
+        data_plot,analyse_plot,fig = create_Tafel_data_analysis_plot('LSV',**kwargs)
+        #fig = make_plot_2x("Tafel Analysis")
+        # data_plot = fig.plots[0]
+        # analyse_plot =  fig.plots[1]
+        #data_plot.title.set_text('LSV')
 
-        analyse_plot.title.set_text('Tafel Plot')   
+        #analyse_plot.title.set_text('Tafel Plot')   
         dataPlot_kwargs = kwargs
-        dataPlot_kwargs['cv_plot'] = data_plot
-        dataPlot_kwargs['analyse_plot'] = analyse_plot
+        dataPlot_kwargs[DATA_PLOT] = data_plot
+        dataPlot_kwargs[ANALYSE_PLOT] = analyse_plot
         Tafel_pos =[]
-        for data in self.datas:
-            a, b = data.Tafel(lims, E_for_idl, **dataPlot_kwargs)
+        for index, data in enumerate(self.datas):
+            data_plot_kwargs2 = update_plot_kwargs(index, **dataPlot_kwargs)
+            a = data.Tafel(lims, E_for_idl, **data_plot_kwargs2)
             Tafel_pos.append(a)
         return Tafel_pos
 ##################################################################################################################

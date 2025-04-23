@@ -12,7 +12,7 @@ from .cv_data import CV_Data,STYLE_POS_DL,STYLE_NEG_DL, POS, NEG
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT,LEGEND,should_plot_be_made
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT,LEGEND,should_plot_be_made,update_plot_kwargs
 
 from .analysis_levich import Levich
 from .analysis_ran_sev   import ran_sev
@@ -423,17 +423,15 @@ class CV_Datas(EC_Datas_base):
             
             cv_kwargs = kwargs
             lines = []
-            for cv in CVs:
-                #rot.append(math.sqrt(cv.rotation))
-
-
+            for index, cv in enumerate(CVs):
+                cv_kwargs = update_plot_kwargs(index, **kwargs)
+               
                 cv_kwargs["plot"] = CV_plot
                 cv_kwargs["name"] = cv.setup_data.name
-
                 line, ax = cv.plot(*args, **cv_kwargs)
                 lines.append(line)
             # print(p.legend)
-            if p.legend != "" and p.legend != LEGEND.NONE and p.legend != "_":     
+            if p.legend != "" and p.legend != LEGEND.NONE and p.legend != "_" or kwargs.get("label",None) is not None:     
                 CV_plot.legend()
             p.saveFig(**kwargs)
             return CV_plot
