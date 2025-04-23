@@ -20,7 +20,7 @@ from .util import extract_value_unit
 from .util import Quantity_Value_Unit as QV
 from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot,POS,NEG,AVG,DIF,find_vertex
 from .util_data import get_IR
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, LEGEND,should_plot_be_made
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, LEGEND,should_plot_be_made,ANALYSE_PLOT,DATA_PLOT
 from .analysis_tafel import Tafel
 from .analysis_levich import diffusion_limit_corr
 
@@ -850,9 +850,9 @@ class CV_Data(Voltammetry):
         """
         
         data_plot,analyse_plot,fig = create_Tafel_data_analysis_plot("CV", **kwargs)   
-        Tafel_kwargs = kwargs
-        Tafel_kwargs["data_plot"]=data_plot
-        Tafel_kwargs["analyse_plot"]=analyse_plot
+        Tafel_kwargs = kwargs.copy()
+        Tafel_kwargs[DATA_PLOT]=data_plot
+        Tafel_kwargs[ANALYSE_PLOT]=analyse_plot
         dir = self._direction(*args,**kwargs)
 
         rot=[]
@@ -876,55 +876,7 @@ class CV_Data(Voltammetry):
             lsv_neg =self.get_sweep(NEG,True)
             Tafel_neg = lsv_neg.Tafel(lims,E_for_idl,*args, **Tafel_kwargs)
         
-            
-        
-        """
-        cv = copy.deepcopy(self)
-        cv.norm(args)
-        cv.set_active_RE(args)
-        
-        cv_kwargs = kwargs
-        Tafel_kwargs = kwargs
-
-        dir = kwargs.get("dir", "all")
-        plot_color2= []
-        
-        rot.append( math.sqrt(cv.rotation))
-    
-        cv_kwargs["legend"] = str(f"{float(cv.rotation):.0f}")
-        cv_kwargs["plot"] = data_plot
-        line,a = cv.plot(**cv_kwargs)
-        plot_color2.append(line.get_color())
-        plot_color =line.get_color()
-        #.get_color()
-        #color = line.get_color()
-        xmin = cv.get_index_of_E(min(lims))
-        xmax = cv.get_index_of_E(max(lims))
-            
-            
-            
-        if E_for_idl != None:
-            i_dl_p,i_dl_n = cv.get_i_at_E(E_for_idl)
-            y.append(cv.get_i_at_E(E_for_idl))
-            E.append(E_for_idl)
-            
-            y_data_p =(np.abs(diffusion_limit_corr(cv.i_p,i_dl_p)))
-            y_data_n =(np.abs(diffusion_limit_corr(cv.i_n,i_dl_n)))
-
-        else:
-            y_data_p = cv.i_p
-            y_data_n = cv.i_n 
-                
-        Tafel_pos = Tafel(cv.E[xmin:xmax],y_data_p[xmin:xmax],cv.i_unit,cv.i_label,plot_color,"Pos",cv.E, y_data_p, plot=analyse_plot, x_label = "E vs "+ self.setup_data.getACTIVE_RE())
-        Tafel_neg = Tafel(cv.E[xmin:xmax],y_data_n[xmin:xmax],cv.i_unit,cv.i_label,plot_color,"Neg",cv.E, y_data_n, plot=analyse_plot, x_label = "E vs "+ self.setup_data.getACTIVE_RE())
-        
-        
-        
-        y_values = np.array(y)
-        if E_for_idl is not None:
-            data_plot.plot(E,y_values[:,0], STYLE_POS_DL, E,y_values[:,1],STYLE_NEG_DL)
-        data_plot.legend()
-        """
+     
         saveFig(fig,**kwargs)
 
         return Tafel_pos, Tafel_neg

@@ -12,9 +12,10 @@ from .cv_data import CV_Data,STYLE_POS_DL,STYLE_NEG_DL, POS, NEG
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT,LEGEND,should_plot_be_made,update_plot_kwargs
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT
+from .util_graph import LEGEND,should_plot_be_made,update_plot_kwargs, ENUM_plotKW,ANALYSE_PLOT,DATA_PLOT
 
-from .analysis_levich import Levich
+# from .analysis_levich import Levich
 from .analysis_ran_sev   import ran_sev
 from .analysis_rate   import sweep_rate_analysis
 
@@ -431,7 +432,7 @@ class CV_Datas(EC_Datas_base):
                 line, ax = cv.plot(*args, **cv_kwargs)
                 lines.append(line)
             # print(p.legend)
-            if p.legend != "" and p.legend != LEGEND.NONE and p.legend != "_" or kwargs.get("label",None) is not None:     
+            if p.legend != "" and p.legend != LEGEND.NONE and p.legend != "_" or kwargs.get(ENUM_plotKW.LABEL,None) is not None:     
                 CV_plot.legend()
             p.saveFig(**kwargs)
             return CV_plot
@@ -640,7 +641,10 @@ class CV_Datas(EC_Datas_base):
         cv_kwargs['analyse_plot'] = analyse_plot
         Tafel_pos =[]
         Tafel_neg =[]
-        for cv in self.datas:
+        for index, cv in enumerate(self.datas):
+            cv_kwargs = update_plot_kwargs(index, **kwargs)
+            cv_kwargs[DATA_PLOT] = data_plot
+            cv_kwargs[ANALYSE_PLOT] = analyse_plot
             a, b = cv.Tafel(lims, E_for_idl, **cv_kwargs)
             Tafel_pos.append(a)
             Tafel_neg.append(b)
