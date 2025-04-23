@@ -14,6 +14,18 @@ from .util import Quantity_Value_Unit as QV
 from .ec_data_util import EC_Channels
 from pathlib import Path
 
+
+def help_get_wf_prop(rawdata, datachannel: str):
+    if rawdata is not None:
+        unit = str(rawdata[datachannel].properties.get("unit_string", ""))
+        quantity = str(rawdata[datachannel].properties.get("Quantity", ""))
+        dT = rawdata[datachannel].properties.get("wf_increment", 1)
+    else:
+        unit = "No channel"
+        quantity = "No channel"
+        dT = 1
+    return unit, quantity, dT
+
 class EC_Data(EC_Setup):
     """ Reads and stores data from a TDMS file in the format of EC4 DAQ.
 
@@ -129,22 +141,27 @@ class EC_Data(EC_Setup):
         - Z_E. Z_U
 
         """
-        info=[None,"","",self.rawdata["Time"].properties.get("wf_increment", 1)]
+        if self.rawdata is not None:
+            info=[None,"","",self.rawdata["Time"].properties.get("wf_increment", 1)]
+        else:
+            info=[None,"","",1]
         match datachannel:
             case "Time":
                 info[0:3] = [self.Time, "t", "s"]
-            # case "E":
-            #    return self.E, "E", "V"
+            case "E":
+                info[0:3] = [self.E, "E", "V"]
             case "U":
                 info[0:3] = [ self.U, "U", "V"]
             case "i":
                 info[0:3] = [ self.i, "i", "A"]
             case "j":
                 info[0:3] = [ self.i/self._area, "j", f"A/{self._area_unit}"]
-            case "Z_E1":
+            case "Z_E":
                 info[0:3] = [ self.Z_E, "Z_E", "Ohm"]
+                info[1:4] = help_get_wf_prop(self.rawdata, datachannel)
             case "Z_U":
                 info[0:3] = [ self.Z_U, "Z_U", "Ohm"]
+                info[1:4] = help_get_wf_prop(self.rawdata, datachannel)
             case "Phase_E":
                 info[0:3] = [ self.Phase_E, "Phase_E", "rad"]
             case "Phase_U":
@@ -164,9 +181,14 @@ class EC_Data(EC_Setup):
             case _:
                 # if datachannel in self.rawdata.channels():
                 try:
-                    unit = self.rawdata[datachannel].properties.get("unit_string", "")
-                    quantity = self.rawdata[datachannel].properties.get("Quantity", "")
-                    dT = self.rawdata[datachannel].properties.get("wf_increment", 1)
+                    if self.rawdata is not None:
+                        unit = self.rawdata[datachannel].properties.get("unit_string", "")
+                        quantity = self.rawdata[datachannel].properties.get("Quantity", "")
+                        dT = self.rawdata[datachannel].properties.get("wf_increment", 1)
+                    else:
+                        unit = "No channel"
+                        quantity = "No channel"
+                        dT = 1
                     info = [ self.rawdata[datachannel].data, str(quantity) , str(unit), dT]
                 except KeyError:
                     raise NameError("Error:" + datachannel + " channel name is not supported")
@@ -224,33 +246,21 @@ class EC_Data(EC_Setup):
         # ylable ="wrong channel name"
         # yunit = "wrong channel name"
 
-        range = {
+        plot_range = {
             'limit_min': -1,
             'limit_max': -1
         }
-        range.update(kwargs)
+        plot_range.update(kwargs)
 
-        options = plot_options(kwargs)
+        options = plot_options(**kwargs)
         options.legend = self.legend(*args, **kwargs)
 
         index_min = 0
-        if range["limit_min"] > 0:
-            index_min = self.index_at_time(range["limit_min"])
+        if plot_range["limit_min"] > 0:
+            index_min = self.index_at_time(plot_range["limit_min"])
         index_max = len(self.Time)-1
-        if range["limit_max"] >0:
-            index_max = self.index_at_time(range["limit_max"])
-
-        try:
-            x_data, options.x_label, options.x_unit,x_dT = self.get_channel(x_channel)
-            if(options.y_unit == "A"):
-                loc_args = args
-                x_data,qv = self._norm(x_data,QV(1,options.x_unit,options.x_label),*loc_args)
-                options.x_label = qv.quantity
-                options.x_unit = qv.unit
-                
-            options.x_data = x_data[index_min:index_max]
-        except NameError:
-            print(f"xchannel {x_channel} not supported")
+        if plot_range["limit_max"] >0:
+            index_max = self.index_at_time(plot_range["limit_max"])
         try:
             y_data, options.y_label, options.y_unit,y_dT = self.get_channel(y_channel)
             if(options.y_unit == "A"):
@@ -261,6 +271,25 @@ class EC_Data(EC_Setup):
             options.y_data = y_data[index_min:index_max]
         except NameError:
             print(f"ychannel {y_channel} not supported")
+            
+        try:
+            if x_channel == "index".casefold():
+                x_data = np.array(range(len(options.y_data)))
+                options.x_label = "index"
+                options.x_unit = ""
+                options.x_data = x_data[index_min:index_max]
+            else:
+                x_data, options.x_label, options.x_unit,x_dT = self.get_channel(x_channel)
+                if(options.y_unit == "A"):
+                    loc_args = args
+                    x_data,qv = self._norm(x_data,QV(1,options.x_unit,options.x_label),*loc_args)
+                    options.x_label = qv.quantity
+                    options.x_unit = qv.unit
+                    
+                options.x_data = x_data[index_min:index_max]
+        except NameError:
+            print(f"xchannel {x_channel} not supported")
+        
 
         return options.exe()
 
@@ -321,8 +350,7 @@ class EC_Data(EC_Setup):
             if comp_value is None:
                 return y*comp_value
         
-        
-               
+     
 
 
 def index_at_time(Time, time_s_:float):

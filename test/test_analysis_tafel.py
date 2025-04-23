@@ -4,6 +4,7 @@ from ec4py.util import Quantity_Value_Unit as QVU
 #"import inc_dec    # "The code to test
 import unittest   # The test framework
 import numpy as np
+import matplotlib.pyplot as plt
 
 E =np.array([1,2,3,4])
 
@@ -12,13 +13,18 @@ def  rn(value):
 class test_Analysis_Tafel(unittest.TestCase):
     
     def test_linear_slope(self):
+       
         y_data = np.power(10,E)
         unit = "AAA"
-        result = Tafel(E, y_data, unit, "", "b")
+        result = Tafel(E, y_data, unit, "", "b" )
+        plt.close("all")
         self.assertEqual(rn(result.value), 1.0)
         y_data = np.power(10,E/5)
         result2 =  Tafel(E, y_data, unit, "", "b")
+        plt.close("all")
         self.assertEqual(rn(result2.value), 5.0)
+        plt.close("all")
+        # self.assertEqual(result.unit, "m")
        
         
     def test_units_slope(self):
@@ -26,6 +32,7 @@ class test_Analysis_Tafel(unittest.TestCase):
 
         unit = "AAA"
         result = Tafel(E, y_data, unit, "", "b")
+        plt.close("all")
         self.assertEqual(result.unit, "V/dec")
         # self.assertEqual(result.unit, "m")
     

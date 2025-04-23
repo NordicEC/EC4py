@@ -2,29 +2,28 @@
 from ec4py.util_voltammetry import Voltammetry 
 from ec4py import Quantity_Value_Unit 
 
-#from pathlib import Path
+# from pathlib import Path
 import numpy as np
 import math
 import unittest   # The test framework
-#from numpy.testing import assert_almost_equal
+# from numpy.testing import assert_almost_equal
 
-gdata_u = np.array([range(0,101)])/100
-gdata_d = np.array([range(99,0,-1)])/100
+gdata_u = np.array([range( 0 ,101)])/100
+gdata_d = np.array([range( 99 , 0 , -1)])/100
 
 gdata_ud = np.concatenate((gdata_u, gdata_d),axis=1)
 gdata_du = np.concatenate((gdata_d, gdata_u),axis=1)
 
 class test_util_voltammetry( unittest.TestCase ):
-    
-        
+
     def test_E_range(self):
-        data= Voltammetry()
-        self.assertEqual(data.E_axis["E_max"],2.5)
-        self.assertEqual(data.E_axis["E_min"],-2.5)
+        data = Voltammetry()
+        self.assertEqual(data.E_axis["E_max"] ,2.5)
+        self.assertEqual(data.E_axis["E_min"] ,-2.5)
         
         ma = 5
         mi = -5
-        data= Voltammetry(E_min = mi, E_max = ma)
+        data = Voltammetry(E_min = mi, E_max = ma)
         self.assertEqual(data.E_axis["E_max"],ma)
         self.assertEqual(data.E_axis["E_min"],mi)
         

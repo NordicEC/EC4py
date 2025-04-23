@@ -8,6 +8,7 @@ import numpy as np
 import unittest   # The test framework
 
 
+
 rate =np.array([300,400,500])
 
 def  rn(value):

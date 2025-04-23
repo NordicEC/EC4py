@@ -10,11 +10,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 
 ### Changed
 
+## [0.7.2] - 
+### Added
+  - IRCORR added for Step_Data.
+### Changed
+  - 
+### Fixed
+  - loading of CVs that did not generate a full sweep.
+
+
+
 ## [0.7.1] - 
 ### Added
   - Mass and loading can be used for normalization.
 ### Changed
-  - 
+  - IRCOMP, as in compensation, has been changed to IRCORR, as in IR correction.
 
 ## [0.7.0] - 
 ### Added

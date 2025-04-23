@@ -8,8 +8,11 @@ import unittest   # The test framework
 import numpy as np
 from pathlib import Path
 
+import pytest
 
 # C:\Users\gusta\Documents\GitHub\Python\NordicEC\EC4py\test\test_step_data.py
+
+
 
 
 class test_EC_Setup(unittest.TestCase):

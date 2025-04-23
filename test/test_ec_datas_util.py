@@ -6,9 +6,24 @@ from ec4py.util_graph import LEGEND
 from ec4py.ec_datas_util import EC_Datas_base
 #"import inc_dec    # "The code to test
 import unittest   # The test framework
+
+#import pytest   # The test framework
+
 import numpy as np
 from pathlib import Path
 
+from help_fx import unithelp_quantities_add
+from help_fx import pop_and_len
+
+
+
+def  AAAtest_quantities_add(datasType_with_a_length):
+    datas = datasType_with_a_length
+    for data in datas:
+        data.set_area("2 m^2" )
+        data.set_area("1 m^2" )
+        data.set_mass("3 g")
+        data.set_mass("2 g")  
 
 class test_EC_Datas_base(unittest.TestCase):
 
@@ -36,25 +51,13 @@ class test_EC_Datas_base(unittest.TestCase):
         datas = EC_Datas_base()
         datas.append(EC_Setup())
         datas.append(EC_Setup())
-        datas[0].set_area("2 m^2" )
-        datas[1].set_area("1 m^2" )
-        datas[0].set_mass("3 g")
-        datas[1].set_mass("2 g")
-        #datas[0].set_rate("1 V /s")
-        #datas[1].set_rate("2 V /s")
-        test_quantities(self, datas)
+        unithelp_quantities_add(self,datas)
+        
          
 
-def pop_and_len(self, datasType,value1,value2):
-    datas = datasType
-    datas.append(value1)
-    datas.append(value2)
-    self.assertEqual(len(datas), 2)
-    self.assertEqual(datas[0], value1)
-    self.assertEqual(datas[1], value2)
-    datas.pop(1)
-    self.assertEqual(len(datas), 1)
+
          
+
 def test_quantities(self, datasType_with_a_length):
     datas = datasType_with_a_length
     length = len(datasType_with_a_length)
@@ -75,6 +78,7 @@ def test_quantities(self, datasType_with_a_length):
     self.assertEqual(len(mass), length)    
     for a in mass:
         self.assertEqual(a.quantity, "m")
+
 
 if __name__ == '__main__':
     unittest.main()

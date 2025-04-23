@@ -7,7 +7,7 @@ import copy
 
 from .util_graph import plot_options
 from .ec_data import EC_Data
-from .ec_datas_util import EC_Datas_base
+from .ec_datas_util import EC_Datas_base,check_paths
 
 
 
@@ -17,8 +17,35 @@ class EC_Datas(EC_Datas_base):
     When creating an opject the file path must be given.
      
     """
-    def __init__(self, paths:Path|list[Path]=None, **kwargs):
+    def __init__(self, paths:Path|list[Path]=None, *args, **kwargs):
         
+        EC_Datas_base.__init__(self,*args, **kwargs)
+        #self.datas =[]
+        
+        if paths is not None:
+            path_list = check_paths(paths)
+            # paths = args[0]
+            """
+            if not isinstance(paths,list ):
+                path_list = [paths]
+            #if isinstance(paths,Path ):
+            #    path_list = [paths]
+            else:
+                path_list = paths
+            """
+            self.datas = [EC_Data() for i in range(len(path_list))]
+            index=0
+            for path in path_list:
+                ec = EC_Data(path)
+                #print([x for x in args])
+                try:
+                    
+                    self.datas[index]=ec
+                finally:
+                    index=index+1 
+            #print(index)
+        
+        """   
         if isinstance(paths,Path):
             paths = [paths]
         if isinstance(paths,str):
@@ -32,6 +59,7 @@ class EC_Datas(EC_Datas_base):
                 index=index+1 
         #print(index)
         return
+        """
     
         
     def __getitem__(self, item_index:slice|int) -> EC_Data: 
@@ -60,7 +88,7 @@ class EC_Datas(EC_Datas_base):
     
         
     def plot(self, x_channel:str = "E", y_channel:str = "i", *args, **kwargs):
-        p = plot_options(kwargs)
+        p = plot_options(**kwargs)
         #options.update(kwargs)
         p.set_title("Data plot")
         line, ax = p.exe()
@@ -87,7 +115,7 @@ class EC_Datas(EC_Datas_base):
         else:
             plot_kwargs["yscale"] ="log"
             
-        p = plot_options(kwargs)
+        p = plot_options(**kwargs)
         p.set_title("Tafel plot")
         #options.update(kwargs)
         

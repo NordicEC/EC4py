@@ -86,7 +86,7 @@ class EIS_Data(EC_Setup):
         if r is not None:
             data.Z= r[0]
         kwargs["style"]="o"
-        options = plot_options(kwargs)
+        options = plot_options(**kwargs)
         # print(options.get_legend(),self.legend(**kwargs))
         
         options.set_title(data.setup_data.name)
@@ -137,8 +137,8 @@ class EIS_Data(EC_Setup):
         plot_phase = BODE_op["bode_phase"]
         fig = None
      
-        bode_f = plot_options(kwargs)
-        bode_phase = plot_options(kwargs)
+        bode_f = plot_options(**kwargs)
+        bode_phase = plot_options(**kwargs)
 
         if BODE_op["bode_Z"] is None and BODE_op["bode_phase"] is None:
             fig = make_plot_2x("Bode Plot",True)
@@ -154,7 +154,7 @@ class EIS_Data(EC_Setup):
             bode_f_args["xscale"]="log"
             bode_f_args["style"]="o"
             
-            bode_f = plot_options(bode_f_args )
+            bode_f = plot_options(**bode_f_args )
             bode_f.set_x_txt("Freq", "Hz")
             bode_f.set_y_txt("Z", "Ohm")
             
@@ -163,7 +163,7 @@ class EIS_Data(EC_Setup):
             bode_A_args["plot"]=plot_phase
             bode_A_args["xscale"]="log"
             bode_A_args["style"]="o"
-            bode_phase = plot_options(bode_A_args )
+            bode_phase = plot_options(**bode_A_args )
             bode_phase.set_x_txt("Freq", "Hz")
             bode_phase.set_y_txt("Phase", "rad")
         else:

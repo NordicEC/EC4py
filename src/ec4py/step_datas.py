@@ -17,7 +17,7 @@ from .ec_datas_util import EC_Datas_base
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig,LEGEND
+from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig,LEGEND,update_legend
 from .analysis_tafel import Tafel
 
 
@@ -99,8 +99,11 @@ class Step_Datas(EC_Datas_base):
             
             
         """
-        p = plot_options(kwargs)
+        #loc_kwargs =update_legend(*args,**kwargs)
+        # print("loc_kwargs",loc_kwargs)
+        p = plot_options(**kwargs)
         p.set_title("Steps")
+        
         line, data_plot = p.exe()
         legend = p.legend
         datas = copy.deepcopy(self.datas)
@@ -112,12 +115,12 @@ class Step_Datas(EC_Datas_base):
             #    data.norm(arg)
 
             data_kwargs["plot"] = data_plot
-            data_kwargs["name"] = data.setup_data.name
-            if legend == "_" :
-                data_kwargs["legend"] = data.setup_data.name
+            # data_kwargs["name"] = data.setup_data.name
+            #if legend != "_" :
+            #    data_kwargs["legend"] = data.setup_data.name
             p = data.plot(*args, **data_kwargs)
-         
-        data_plot.legend()
+        if legend != "_": 
+            data_plot.legend()
         return data_kwargs
     
     #################################################################################################    
@@ -216,7 +219,7 @@ class Step_Datas(EC_Datas_base):
         data_kwargs["plot_i"] = data_plot_i
         data_kwargs["plot_E"] = data_plot_E
         
-        self.plot("Time","i", *args, plot=data_plot_i,**kwargs)
+        self.plot("Time","i", LEGEND.NONE, *args, plot=data_plot_i,**kwargs)
         self.plot("Time","E", plot=data_plot_E)
 
         current = self.get_current_at_time(t_lim[0], 0, 0, LEGEND.NONE, *args, **kwargs)
@@ -270,7 +273,7 @@ class Step_Datas(EC_Datas_base):
         #print("dir", "\tpos     ", "\tneg     " )
         print(" :    ",f"\t{y_axis_unit} / rpm^0.5")
         print("slope:", "\t{:.2e}".format(B_factor.value))
-        plot_options(kwargs).close(*args)
+        plot_options(**kwargs).close(*args)
         saveFig(fig,**kwargs)
         return B_factor
  
@@ -314,7 +317,7 @@ def plots_for_rotations(step_datas: Step_Datas, time_s_: float,step_nr: int =-1,
         index_end = None
         
         data.norm(args)
-        data.pot_shift(args)
+        data.set_active_RE(args)
         #print("AAAAAAAAAAA", str(data.i_unit))
         if rot_kwarge["t_end"] is not None:
             index_end = data.index_at_time(float(rot_kwarge["t_end"]))

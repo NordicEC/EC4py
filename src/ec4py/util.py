@@ -55,40 +55,41 @@ class symbol_string:
         return symbol_string(s)
 """
 
+
 class symbols:
-    def __init__(self,s:str=None):
+    def __init__(self ,s:str = None):
         self._sym = {}
         if s:
             list_of_quantities = (s.strip()).split(" ", 100)
-            if len(list_of_quantities)>0:
+            if len(list_of_quantities) > 0:
                 k={}
                 for single_quantity in list_of_quantities:
                     nyckel, exponent = get_unit_and_exponent(single_quantity)
-                    val = float(k.get(nyckel, 0))  
+                    val = float(k.get(nyckel, 0)) 
                     k[nyckel] = val + exponent
                 self._sym = k.copy()
-        #print(k)
-        
+        # print(k)
+       
     def __str__(self) -> str:
-        sr =""
+        sr = ""
         for key, value in self._sym.items():
-            if  int(value*10) == 0:
+            if int(value*10) == 0:
                 pass
             elif int(value*10) == 10:
-                sr = sr +f' {key}'
+                sr = sr + f' {key}'
             elif int(value) == value:
-                sr = sr+ f' {key}^{value:.0f}'
+                sr = sr + f' {key}^{value:.0f}'
             else:
-                sr = sr+ f' {key}^{value:.1f}'
+                sr = sr + f' {key}^{value:.1f}'
         return sr.strip()
     
     def __add__(self, other):
-        #s = quantity_fix(self.symbols + other.symbols)             
-        if isinstance(other,symbols):
-            k=symbols()
-            k=self._sym.copy()
-            for quantity,exponent in other._sym.items():
-                #print("aadd: ",quantity,quantity != "") 
+        # s = quantity_fix(self.symbols + other.symbols)             
+        if isinstance(other ,symbols):
+            k = symbols()
+            k = self._sym.copy()
+            for quantity , exponent in other._sym.items():
+                # print("aadd: ",quantity,quantity != "") 
                 if quantity != "":
                     val = float(self._sym.get(quantity, 0))
                     k[quantity] = val + exponent
@@ -98,23 +99,24 @@ class symbols:
         else:
             raise TypeError("must be of the same type") 
     
-    def __sub__(self,other):
-        k=symbols()
+    def __sub__(self ,other):
+        k = symbols()
         k = other*-1
         return (self+k)
-    
+
     def __mul__(self, other):
-        if isinstance(other,int) or isinstance(other,float):
-            r=symbols()
-            k=self._sym.copy()
-            for quantity,exponent in self._sym.items():
-                #print("q",quantity,quantity != "") 
+        if isinstance(other ,int) or isinstance(other ,float):
+            r = symbols()
+            k = self._sym.copy()
+            for quantity ,exponent in self._sym.items():
+                # print("q",quantity,quantity != "") 
                 if quantity != "":
                     k[quantity] = exponent * other
             r._sym = k.copy()
             return r
         else:
             raise TypeError("must be a float or an int")
+    
     def __eq__(self, other: object) -> bool:
         return str(self) == str(other)
 

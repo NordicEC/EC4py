@@ -37,6 +37,78 @@ STYLE_AVG_L = "g-"
 STYLE_DIF_L = "g-"
 
 
+
+
+
+def find_vertex(E:np.array):
+    #array of dx
+    x_div = np.gradient(savgol_filter(E, 10, 1))
+    
+    ##find vertext
+    zero_crossings = np.where(np.diff(np.signbit(x_div)))[0]
+    #print("ZERO:",zero_crossings)
+    vertex = zero_crossings  
+    ## add last index as a vertex
+    vertex = np.append(vertex,len(E)-1)
+
+    positive_start = E[0]<E[vertex[0]]
+    
+    if len(vertex)>1:
+        if positive_start:
+            vertex[0] = np.argmax(E[0:vertex[1]])
+        else:
+            vertex[0] = np.argmin(E[0:vertex[1]])
+    return vertex
+
+
+
+
+def split_rawData_into_sweeps(V:Voltammetry,x,y,vertex= None):
+            #print("ZERO:",len(zero_crossings),zero_crossings, "2x vertex", Two_vertex)
+    
+    if vertex is None:
+        vertex = find_vertex(x)
+    positive_start = x[0]<x[vertex[0]]
+    sweep_i = []
+    if len(vertex)>0:
+        sweep_i.append( V._from_xy_split_into_a_sweep(x[0:vertex[0]],y[0:vertex[0]]))
+    if len(vertex)>1: # if index is 1 or more.
+        rng = range(vertex[0],vertex[1])
+        sweep_i.append( V._from_xy_split_into_a_sweep(x[vertex[0]:vertex[1]],y[vertex[0]:vertex[1]]))
+    if len(vertex)>2:
+        x2 = x[vertex[1]:vertex[2]]
+        y2 = y[vertex[1]:vertex[2]] 
+        if positive_start:
+            mask = x2<x[0:vertex[0]].min()
+        else:
+            mask = x2>x[0:vertex[0]].max()
+        x2b=np.array(x2[mask])
+        y2b=np.array(y2[mask])
+        sweep_i.append( V._from_xy_split_into_a_sweep(x2b,x2b))
+    return sweep_i
+        
+
+def assemble_as_CV(x,y,x_nonIR= None):
+    V= Voltammetry()
+    i_pos = np.zeros(len(V.E))
+    i_neg = np.zeros(len(V.E))
+    vertex = None
+    if x_nonIR is not None:
+        vertex = find_vertex(x_nonIR)
+    sweeps = split_rawData_into_sweeps(V,x,y,vertex)
+    for sweep in sweeps:
+        if sweep[1] == POS:
+            i_pos = i_pos + sweep[0]
+        else:
+            i_neg = i_neg + sweep[0]
+        
+    return  V.clean_up_edges(i_pos), V.clean_up_edges(i_neg)  
+
+
+
+
+
+
 class Voltammetry(EC_Setup):
     def __init__(self,*args, **kwargs):
         super().__init__(args,kwargs)
@@ -60,9 +132,11 @@ class Voltammetry(EC_Setup):
         self.E = self.make_E_axis()
         self.E_shifted_by = None
         self.IR_COMPENSATED = False
+        self.R_COMP = None
+       
     
-    def copy(self):
-        return copy.deepcopy(self)
+    #def copy(self):
+    #    return copy.deepcopy(self)
     
     def copy_from(self, source:Voltammetry):
         """Voltammetry copy from source voltammetry
@@ -147,8 +221,38 @@ class Voltammetry(EC_Setup):
         finally:
             return smoothed_current
     
+    
+    def _from_xy_get_dir(self,E_data):
+        dir = POS
+        if  E_data[0]>E_data[len(E_data)-1]:
+            dir = NEG 
+        return dir
+    
+    
+    def _from_xy_split_into_a_sweep(self,E_data,i_data):
+        dir = self._from_xy_get_dir(E_data)
+        if dir == POS:
+            LSV_i=self.interpolate(E_data, i_data)
+        else:
+            x_n = np.flipud(E_data)
+            y_n = np.flipud(i_data)
+            LSV_i=self.interpolate(x_n, y_n)
+        LSV_i =  self.clean_up_edges(LSV_i,0) 
+        return LSV_i, dir
+    
+    
     def interpolate(self, E_data, y_data ):
-        return np.interp(self.E, E_data, y_data)
+        if len(E_data)==0 or len(y_data) == 0:
+            return np.zeros(len(self.E))
+        else:
+            data = np.interp(self.E, E_data, y_data)
+            index_min = self.get_index_of_E(np.min(E_data))
+            index_max = self.get_index_of_E(np.max(E_data))
+            for i in range(index_min):
+                data[i]=0
+            for i in range(index_max+1,len(self.E)):
+                data[i]=0
+            return data
     
     def _offset(self, offset:float):
         return np.ones(self.E)*offset

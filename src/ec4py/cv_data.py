@@ -18,9 +18,8 @@ from .lsv_data import LSV_Data
 from .ec_setup import EC_Setup
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
-from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot,POS,NEG,AVG,DIF
-
-
+from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot,POS,NEG,AVG,DIF,find_vertex
+from .util_data import get_IR
 from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, LEGEND,should_plot_be_made
 from .analysis_tafel import Tafel
 from .analysis_levich import diffusion_limit_corr
@@ -33,16 +32,21 @@ STYLE_NEG_DL = "ro"
 #AVG = "avg"
 #DIF = "dif"
 
+
+
+
 class CV_Data(Voltammetry):
     """# Class to analyze a single CV data. 
     Class Functions:
     - .plot() - plot data    
     - .bg_corr() to back ground correct.
     
-    ### iR- Compensation
-    - add keyword IRCOMP = "Z" for using the absolute impedance
-    - add keyword IRCOMP = "R" for using the real-part of the impedance
-    - add keyword IRCOMP = 1.0 for manual ir compensation
+    ### iR- Correction
+    - add keyword IRCORR = "R" for using the real-part of the impedance
+    - add keyword IRCORR = "Rmed" for using the median real-part of the impedance
+    - add keyword IRCORR = "Z" for using the absolute impedance
+    - add keyword IRCORR = "Zmed" for using the median absolute impedance
+    - add keyword IRCORR = 1.0 for manual ir compensation
     
     ### Analysis: 
     - .Tafel() - Tafel analysis data    
@@ -87,7 +91,7 @@ class CV_Data(Voltammetry):
         Returns:
             CV_Data: returns a copy of the inital dataset. 
         """
-        new_cv = copy.deepcopy(self)
+        new_cv = self.copy() # copy.deepcopy(self)
         new_cv.add(other)
         return new_cv   
     
@@ -100,7 +104,7 @@ class CV_Data(Voltammetry):
         Returns:
             CV_Data: a copy of the original data
         """
-        new_cv = copy.deepcopy(self)
+        new_cv = self.copy() # copy.deepcopy(self)
         new_cv.sub(other)
         return new_cv
     
@@ -113,7 +117,7 @@ class CV_Data(Voltammetry):
         Returns:
             CV_Data: a copy of the original data
         """
-        new_cv = copy.deepcopy(self)
+        new_cv = self.copy() #copy.deepcopy(self)
         new_cv.mul(other)
         return new_cv
     #############################################################################
@@ -126,7 +130,7 @@ class CV_Data(Voltammetry):
         Returns:
             CV_Data: a copy of the original data
         """
-        new_cv = copy.deepcopy(self)
+        new_cv = self.copy() # copy.deepcopy(self)
         new_cv.div(other)
         return new_cv
     #############################################################################   
@@ -252,13 +256,15 @@ class CV_Data(Voltammetry):
         options = {
             'x_smooth' : 0,
             'y_smooth' : 0,
-            'IRCOMP': 0,
+            'IRCORR': None,
             'E' : "E",
             'i' : 'i'
         }
         options.update(kwargs)
         sel_channels = EC_Channels(*args,**kwargs)
         ir_comp =False
+        r_comp=None
+        vertex =[]
         try:
             data_E,q,u,dt_x = ec_data.get_channel(sel_channels.Voltage)
             data_i,q,u,dt_y = ec_data.get_channel(sel_channels.Current)
@@ -268,35 +274,66 @@ class CV_Data(Voltammetry):
             return
         
         try:
-            comp = options.get("IRCOMP",None)
+            comp = options.get("IRCORR",None)
             if comp is not None:
+                
+                ir_comp, data_IR = get_IR(ec_data,sel_channels,comp)
+                vertex = find_vertex(data_E)
+                r_comp = data_IR/data_i
+                if ir_comp:
+                    data_E = data_E - data_IR
+                
+                """
                 s_comp=str(comp).casefold()
-            if  s_comp == "Z".casefold():
-                data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
-                #print(sel_channels.Impedance)
-                if(len(data_E)!=len(data_Z)):
-                    data_t,q,u,dt_t = ec_data.get_channel("Time")
-                    data_t_z =dt_Z*np.array(range(len(data_Z)))
-                    data_Z = np.interp(data_t, data_t_z, data_Z)
-                data_E = data_E - data_i*data_Z
-                ir_comp =True
-            elif  s_comp == "R".casefold():
-                data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
-                data_phase,q,u,dt_p = ec_data.get_channel(sel_channels.Phase)
-                if(len(data_E)!=len(data_Z)):
-                    data_t,q,u,dt_t = ec_data.get_channel("Time")
-                    data_t_z =dt_Z*np.array(range(len(data_Z)))
-                    data_Z = np.interp(data_t, data_t_z, data_Z)
-                    data_phase = np.interp(data_t, data_t_z, data_phase)
-                data_E = data_E - data_i*data_Z*np.cos(data_phase)
-                ir_comp =True
-
-            else:
-                Rsol = float(comp)
-                if Rsol > 0:
-                    data_E = data_E - data_i*Rsol
+                #vertex =find_vertex(data_E)
+                if  s_comp == "Z".casefold():
+                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
+                    #print(sel_channels.Impedance)
+                    if(len(data_E)!=len(data_Z)):
+                        data_t,q,u,dt_t = ec_data.get_channel("Time")
+                        data_t_z =dt_Z*np.array(range(len(data_Z)))
+                        data_Z = np.interp(data_t, data_t_z, data_Z)
+                    data_E = data_E - data_i*data_Z
                     ir_comp =True
+                    r_comp=[np.min(data_Z),np.max(data_Z)]
+                elif  s_comp == "R".casefold():
+                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
+                    data_phase,q,u,dt_p = ec_data.get_channel(sel_channels.Phase)
+                    if(len(data_E)!=len(data_Z)):
+                        data_t,q,u,dt_t = ec_data.get_channel("Time")
+                        data_t_z =dt_Z*np.array(range(len(data_Z)))
+                        data_Z = np.interp(data_t, data_t_z, data_Z)
+                        data_phase = np.interp(data_t, data_t_z, data_phase)
+                    R = data_Z*np.cos(data_phase)
+                    data_E = data_E - data_i*R
+                    ir_comp =True
+                    r_comp=[np.min(R),np.max(R)]
+                elif s_comp == "Rmed".casefold():
+                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
+                    data_phase,q,u,dt_p = ec_data.get_channel(sel_channels.Phase)
+                    r_comp = np.median(data_Z*np.cos(data_phase))
+                    print("Rmed",r_comp)
+                    data_E = data_E - data_i*r_comp
+                    ir_comp =True
+                elif s_comp == "Zmed".casefold():
+                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
+                    r_comp = np.median(data_Z)
+                    data_E = data_E - data_i*r_comp
+                    ir_comp =True
+                    
 
+                else:
+                    try:
+                        Rsol = float(comp)
+                        if Rsol > 0:
+                            ir_comp =True
+                            r_comp = Rsol
+                            data_E = data_E - data_i*r_comp
+                    except ValueError as e:
+                        print(e)
+                        raise ValueError("Invalid value for IRCORR")
+                        return
+                """
             
         except NameError as e:
             print(e)
@@ -305,8 +342,9 @@ class CV_Data(Voltammetry):
 
         
         self.setup_data = copy.deepcopy(ec_data.setup_data)
-        self.convert(ec_data.Time,data_E,data_i,**kwargs)
+        self.convert(ec_data.Time,data_E,data_i,verter = vertex, **kwargs)
         self.IR_COMPENSATED = ir_comp
+        self.R_COMP = r_comp
         E_title = "E"
         #if ir_comp: ###NOT NEEDED
         #    E_title ="E-iR"
@@ -352,6 +390,9 @@ class CV_Data(Voltammetry):
         x= Potential_V
         y= Current_A
 
+        vertex =kwargs.get("vertex",None)
+        #if vertex is None:
+        #    vertex = find_vertex(x)
         #print("Convert", len(E))
         #print("SETP",self.setup)
         #Start_Delay, = extract_value_unit(self.setup_data._setup['Start_Delay'])
@@ -363,7 +404,7 @@ class CV_Data(Voltammetry):
         #print("V2", self.setup['V2'])
         V2, V2_str = extract_value_unit(self.setup['V2'])
         # print("CV", V0,V1,V2)
-        options = plot_options(kwargs)
+        options = plot_options(**kwargs)
         #print("CONVERTING",len(time), len(E), len(i))
         #try:
         #    y_smooth = int(options['y_smooth'])
@@ -553,7 +594,7 @@ class CV_Data(Voltammetry):
                 return lsv.plot(*args,**kwargs)
             
             data = copy.deepcopy(self)
-            options = plot_options(kwargs)
+            options = plot_options(**kwargs)
             options.options["dir"]=dir
             #print("AAAAAAAAAAAAAAAAAAAAAAA")
             #print(options.get_y_smooth())
@@ -888,4 +929,3 @@ class CV_Data(Voltammetry):
 
         return Tafel_pos, Tafel_neg
     
-

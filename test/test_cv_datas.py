@@ -9,7 +9,9 @@ import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-from test_ec_datas_util import pop_and_len
+#from test_ec_datas_util import pop_and_len
+#from help_fx import test_quantities_add
+from help_fx import pop_and_len
 
 E =np.array([1,2,3])
 paths = []
@@ -23,7 +25,17 @@ paths.append( path_to_dataSetFolder / "CV_153541_ 3.tdms")
 #paths.append( path_to_dataSetFolder / "CV_151300_ 3.tdms")
 #paths.append( path_to_dataSetFolder / "CV_151725_ 3.tdms")
 #paths.append( path_to_dataSetFolder / "CV_151512_ 3.tdms")
-        
+    
+
+
+
+def AAAquantities_add( datasType_with_a_length ):
+    datas = datasType_with_a_length
+    for data in datas:
+        data.set_area("2 m^2" )
+        data.set_area("1 m^2" )
+        data.set_mass("3 g")
+        data.set_mass("2 g")      
 
 class Test_CV_Datas(unittest.TestCase):
     
@@ -56,6 +68,22 @@ class test_CV_Data_arrays(unittest.TestCase):
     def test_pop_and_len(self):
         pop_and_len(self, CV_Datas(), CV_Data(),CV_Data())
 
+    def test_quantities(self):
+        datas = CV_Datas()
+        datas.append(CV_Data())
+        datas.append(CV_Data())
+        AAAquantities_add(datas)
+        length = len(datas)
+        area = datas.area
+        self.assertEqual(len(area), length)    
+        for a in area:
+            self.assertEqual(a.quantity, "A")
+        #mass
+        mass = datas.mass
+        #mass
+        self.assertEqual(len(mass), length)    
+        for a in mass:
+            self.assertEqual(a.quantity, "m")
 
 
 class test_CV_Datas_arithmetics( unittest.TestCase ):

@@ -1,5 +1,7 @@
 
 import copy
+
+from ec4py import EC_Data
 from ec4py import Step_Data,RHE,AREA,AREA_CM
 from ec4py.util import Quantity_Value_Unit as QVU
 #"import inc_dec    # "The code to test
@@ -93,13 +95,52 @@ class test_Step_Data(unittest.TestCase):
         self.assertAlmostEqual(v.value,0.40)
         self.assertEqual(v.unit,"C m^-2")
 
-        
-                
     
+    def test_ircorr(self):
+        d = EC_Data()
+        dataPoints = 12
+        d.E = np.ones(dataPoints)
+        d.i = np.ones(dataPoints)
+        d.Z_E = np.ones(dataPoints)*2
+        d.Phase_E = np.ones(dataPoints)*np.pi/6*2
+        d.Time = np.array(range(dataPoints))
+        #print(d.step_Time)
+        d.setup
+        s = Step_Data()
+        s.conv(d,IRCORR=2)
+        self.assertTrue(np.allclose(s.E, d.E-d.i*2,  atol=1e-10, rtol=1e-10))
+        s.conv(d,IRCORR=5)
+        self.assertTrue(np.allclose(s.E, d.E-d.i*5,  atol=1e-10, rtol=1e-10))
+        s.conv(d,IRCORR="Z")
+        self.assertTrue(np.allclose(s.E, d.E-d.i*d.Z_E,  atol=1e-10, rtol=1e-10))
+        s.conv(d,IRCORR="Zmed")
+        self.assertTrue(np.allclose(s.E, d.E-d.i*d.Z_E,  atol=1e-10, rtol=1e-10))
+        s.conv(d,IRCORR="R")
+        self.assertTrue(np.allclose(s.E, d.E-d.i*d.Z_E*np.cos(d.Phase_E),  atol=1e-10, rtol=1e-10))
+        s.conv(d,IRCORR="Rmed")
+        self.assertTrue(np.allclose(s.E, d.E-d.i*d.Z_E*np.cos(d.Phase_E),  atol=1e-10, rtol=1e-10))
        
-        
-        
-    
+    def test_export_to_lsv(self):
+        d = EC_Data()
+        dataPoints = 21
+        d.E = np.array(range(dataPoints))/(dataPoints-1)-0.2
+        d.i = np.ones(dataPoints)
+        #d.i[0]=1.01
+        #d.i[1]=1.3
+        #d.i[2]=1.2
+        #d.i[dataPoints-1]=1.5
+        #d.i[dataPoints-2]=1.0
+        #d.i[dataPoints-3]=1.3
+        d.Z_E = np.ones(dataPoints)*2
+        d.Phase_E = np.ones(dataPoints)*0
+        d.Time = np.array(range(dataPoints)) 
+        s = Step_Data()
+        s.conv(d)
+        lsv = s.export_to_lsv(0)
+        self.assertTrue(lsv.get_i_at_E(0.8).value == 1.0)
+        self.assertFalse(lsv.get_i_at_E(0.805).value == 1.0)
+        self.assertTrue(lsv.get_i_at_E(-0.2).value == 1.0)
+        self.assertFalse(lsv.get_i_at_E(-0.205).value == 1.0)
   
 
 if __name__ == '__main__':

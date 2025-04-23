@@ -49,8 +49,9 @@ class LSV_Data(Voltammetry):
        
         self.rate_V_s = 1
 
-        """max voltage""" 
-        self.E_min = -2.5
+        """max voltage"""
+        #self.E_max = 2.5 
+        #self.E_min = -2.5
         """min voltage"""
         ##self.name="CV" name is given in the setup.
         self.xmin = -2.5
@@ -162,10 +163,6 @@ class LSV_Data(Voltammetry):
 
 
     #####################################################################################################
-    def set_area(self, value,unit):
-        self.setup_data._area = value
-        self.setup_data._area_unit = unit
-
     ######################################################################################################
     def conv(self, ec_data: EC_Data, *args, ** kwargs):
         """Converts EC_Data to a LSV
@@ -211,18 +208,18 @@ class LSV_Data(Voltammetry):
         """
         x= E
         y= i
-
+        #print("V0:", V0,V1)
         if V0 is None:
             V0, V0_str = extract_value_unit(self.setup['Start'])
 
         if V1 is None:
             V1, V1_str = extract_value_unit(self.setup['V1'])
 
-        options = plot_options(kwargs)
+        options = plot_options(**kwargs)
 
         positive_start = False
         positive_start = V0 < V1
-        #print("startDIR:", positive_start)
+        #print("startDIR:", positive_start,V0,V1)
 
         y = options.smooth_y(y)
 
@@ -244,36 +241,28 @@ class LSV_Data(Voltammetry):
         #print(f"Rate: {self.rate_V_s}")
         if(len(zero_crossings)==0):
             zero_crossings =[len(time)-1]
-            print("APPEN DING")
-        self.E_max = 2.5
-        self.E_min = -2.5
-        dE_range = int((self.E_max - self.E_min)*1000)
-        x_sweep = np.linspace(self.E_min, self.E_max, dE_range) 
-        self.E = x_sweep
-        print("zero_crossings",zero_crossings)
+            #print("APPEN DING")
+        #E_max = self.E_axis["E_max"]
+        #E_min = self.E_axis["E_min"]
+        #dE_range = int((E_max - E_min)*1000)
+        #x_sweep = np.linspace(E_min, E_max, dE_range) 
+        #self.E = x_sweep
+        #print("zero_crossings",zero_crossings)
         if positive_start:
-            x_sub = x[0:zero_crossings[0]]
-            y_sub = y[0:zero_crossings[0]]
+            x_sub = x[0:zero_crossings[0]+1]
+            y_sub = y[0:zero_crossings[0]+1]
         else:
-            x_sub = np.flipud(x[0:zero_crossings[0]])
-            y_sub = np.flipud(y[0:zero_crossings[0]])
-
-        y_pos=np.interp(x_sweep, x_sub, y_sub)
-
-        for index in range(1,y_pos.size):
-            if y_pos[index-1] == y_pos[index]:
-                y_pos[index-1] = math.nan
-            else :
-                break
-            
-        for index in range(y_pos.size-2,0,-1):
-            if y_pos[index] == y_pos[index+1]:
-                y_pos[index+1] = math.nan
-            else :
-                break
-            
-        self.i = y_pos     
-    
+            x_sub = np.flipud(x[0:zero_crossings[0]+1])
+            y_sub = np.flipud(y[0:zero_crossings[0]+1])
+        # print(x_sub)
+        # print("y\n",y_sub)
+        # print("E\n",self.E)
+        y_pos = self.interpolate(x_sub, y_sub)
+        # print("y_pos",y_pos)
+        #y_pos=np.interp(x_sweep, x_sub, y_sub)
+        self.i = self.clean_up_edges(y_pos)
+        # print("i_pos",self.i)
+        
    ######################################################################################### 
     def norm(self, norm_to:str| tuple):
         """Normalize lsv current
@@ -311,7 +300,7 @@ class LSV_Data(Voltammetry):
         '''
         if should_plot_be_made(*args):
             data = copy.deepcopy(self)
-            options = plot_options(kwargs)
+            options = plot_options(**kwargs)
             if self.is_MWE:
                 options.set_title(f"{self.setup_data.name}#{self.setup_data._MWE_CH}")
             else:

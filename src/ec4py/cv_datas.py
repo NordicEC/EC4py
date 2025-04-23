@@ -327,37 +327,37 @@ class CV_Datas(EC_Datas_base):
             LSVs.append(cv.get_sweep(sweep,update_label))
         return LSVs
     
-    @property
-    def rate(self):
-        rate=[]
-        for cv in self.datas:
-            
-            rate.append(cv.rate)
-        return rate
+#    @property
+#    def rate(self):
+#        rate=[]
+#        for cv in self.datas:
+#            
+#            rate.append(cv.rate)
+#        return rate
     
-    @property
-    def area(self):
-        return [x.area for x in self.datas]
+#    @property
+#    def area(self):
+#        return [x.area for x in self.datas]
 
-    @property
-    def name(self):
-        return [x.name for x in self.datas]
+#    @property
+#    def name(self):
+#        return [x.name for x in self.datas]
     
-    @property
-    def pressure(self):
-        """
-        Returns:
-            list[Quantity_Value_Unit]
-        """
-        return [x.pressure for x in self.datas]
+#    @property
+#    def pressure(self):
+#        """
+#        Returns:
+#            list[Quantity_Value_Unit]
+#        """
+#        return [x.pressure for x in self.datas]
     
-    @property
-    def temp0(self):
-        return [x.temp0 for x in self.datas]
+#    @property
+#    def temp0(self):
+#        return [x.temp0 for x in self.datas]
     
-    @property
-    def RE(self):
-        return [x.RE for x in self.datas]
+#    @property
+#    def RE(self):
+#        return [x.RE for x in self.datas]
 
     def get_E_of_max_i(self, E1:float,E2:float,*args,**kwargs):
         """get the potential of maximum current in a range.
@@ -414,7 +414,7 @@ class CV_Datas(EC_Datas_base):
         """
         #CV_plot = make_plot_1x("CVs")
         if should_plot_be_made(*args,**kwargs):
-            p = plot_options(kwargs)
+            p = plot_options(**kwargs)
             p.set_title("CVs")
             line, CV_plot = p.exe()
             # legend = p.legend
@@ -432,7 +432,8 @@ class CV_Datas(EC_Datas_base):
 
                 line, ax = cv.plot(*args, **cv_kwargs)
                 lines.append(line)
-            if p.legend != "":     
+            # print(p.legend)
+            if p.legend != "" and p.legend != LEGEND.NONE and p.legend != "_":     
                 CV_plot.legend()
             p.saveFig(**kwargs)
             return CV_plot
