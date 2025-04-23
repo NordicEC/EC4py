@@ -27,10 +27,11 @@ Load data set:
 ## Initialization
 
 ### class ec4py.lsv_data.LSV_Data(Path=None, args, kwargs)
+
 ```python
    data = LSV_Data() # empty object
    data = LSV_Data("PATH TO DATA FILE") # import the data from a file.
-   data = LSV_Data("PATH TO DATA FILE", IRCOMP="R") # import the data from a file and apply iR-compensation.
+   data = LSV_Data("PATH TO DATA FILE", IRCORR="R") # import the data from a file and apply iR-correction.
 ```
 
 
@@ -62,6 +63,7 @@ Arithemtics operators between **LSV_Data** and another **LSV_Data** are the foll
 
 
 ### LSV_Data.**get_i_at_E(E:float, direction:str = "all",*args, **kwargs)**
+
 A [Quantity_Value_Unit](ec4py_util.md) representation of the curent at a specific voltage. [Arguments](ec4py_args.md) can be used to normalize the current and shift the potential.
 ```python
    lsv1 = LSV_Data()
@@ -69,9 +71,11 @@ A [Quantity_Value_Unit](ec4py_util.md) representation of the curent at a specifi
 ```
 
 ### LSV_Data.**get_E_at_i(i:float,tolerance:float=0,  dir:str = "all", *args, **kwargs)**
+
 A [Quantity_Value_Unit](ec4py_util.md) representation of the voltage at a specific current. [Arguments](ec4py_args.md) can be used to normalize the current and shift the potential.
 
 ### LSV_Data.**get_E_of_max_i(self, E1:float,E2:float,*args,**kwargs)**
+
 A [Quantity_Value_Unit](ec4py_util.md) representation of the voltage where the current reaches a maximum between two voltage limits. [Arguments](ec4py_args.md#for-normalization-of-current) can be used to shift the potential.
 ```python
    lsv1 = LSV_Data()
@@ -79,6 +83,7 @@ A [Quantity_Value_Unit](ec4py_util.md) representation of the voltage where the c
 ```
 
 ### LSV_Data.**get_E_of_min_i(self, E1:float,E2:float,*args,**kwargs)**
+
 A [Quantity_Value_Unit](ec4py_util.md) representation of the voltage where the current reaches a minimum between two voltage limits. [Arguments](ec4py_args.md#for-normalization-of-current) can be used to shift the potential.
 ```python
    lsv1 = LSV_Data()

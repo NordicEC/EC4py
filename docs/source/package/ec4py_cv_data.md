@@ -32,7 +32,7 @@ Load data set:
 ```python
    data = CV_Data() # empty object
    data = CV_Data("PATH TO DATA FILE") # import the data from a file.
-   data = CV_Data("PATH TO DATA FILE", IRCOMP="R") # import the data from a file and apply iR-compensation.
+   data = CV_Data("PATH TO DATA FILE", IRCORR="R") # import the data from a file and apply iR-correction.
 ```
 
 ## Operators
@@ -61,8 +61,11 @@ Arithemtics operators between **CV_Data** and another **CV_Data** are the follow
 
 ### CV_Data.**plot()**
 
-Creates a standard plot of a CV data, i.e. current vs potental. The plot() support
-
+Creates a standard plot of a CV data, i.e. current vs potental. 
+```python
+   cv1 = CV_Data()
+   cv1.plot() 
+```
 
 ### CV_Data.**get_i_at_E(E:float, direction:str = "all",*args, **kwargs)**
 A [Quantity_Value_Unit](ec4py_util.md) representation of the curent at a specific voltage. [Arguments](ec4py_args.md) can be used to normalize the current and shift the potential.

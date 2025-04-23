@@ -29,10 +29,11 @@ Load data set:
 ## Initialization
 
 ### class ec4py.lsv_data.LSV_Datas(Path=None, args, kwargs)
+
 ```python
    data = LSV_Datas() # empty object
    data = LSV_Datas(["PATHs"]) # import the data from a file.
-   data = LSV_Datas(["PATHs TO DATA FILE"], IRCOMP="R") # import the data from a file and apply iR-compensation.
+   data = LSV_Datas(["PATHs TO DATA FILE"], IRCORR="R") # import the data from a file and apply iR-correction.
 ```
 
 ## Operators

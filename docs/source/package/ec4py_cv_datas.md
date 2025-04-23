@@ -33,7 +33,7 @@ Load data set:
 ```python
    data = CV_Datas() # empty object
    data = CV_Datas(["PATHs"]) # import the data from a file.
-   data = CV_Datas(["PATHs TO DATA FILE"], IRCOMP="R") # import the data from a file and apply iR-compensation.
+   data = CV_Datas(["PATHs TO DATA FILE"], IRCORR="R") # import the data from a file and apply iR-correction.
 ```
 
 ## Operators
