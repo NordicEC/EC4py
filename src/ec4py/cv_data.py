@@ -509,6 +509,7 @@ class CV_Data(Voltammetry):
         "x_smooth= number" - smoothing of the x-axis. \n
         "y_smooth= number" - smoothing of the y-axis. \n
         
+        
         Returns:
             line, ax: description
         '''
@@ -552,9 +553,7 @@ class CV_Data(Voltammetry):
             options.set_x_txt(data.E_label, data.E_unit)
             options.set_y_txt(data.i_label, data.i_unit) 
             
-            # print(options.get_legend())
-            #print("AAAAAAAAAAAAAAAAAAAAAAA")
-            #print(options.get_y_smooth())
+           
             return options.exe()
         else:
             return None,None
@@ -741,6 +740,7 @@ class CV_Data(Voltammetry):
         
         if kwargs.get("plot",None) is None:
             #line, ax = options.exe()
+            
             line, ax = data.plot(*args, **kwargs)
             kwargs["plot"]=ax
             
