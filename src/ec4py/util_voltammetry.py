@@ -8,12 +8,12 @@ import numpy as np
 from scipy import integrate
 from scipy.signal import savgol_filter 
 
-import copy
+# import copy
 
 from .ec_setup import EC_Setup
-from .util import extract_value_unit     
+# from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x, ANALYSE_PLOT, DATA_PLOT,NO_PLOT
+from .util_graph import make_plot_2x, ANALYSE_PLOT, DATA_PLOT,NO_PLOT
 
 
 OFFSET_AT_E_MIN ="offset_at_emin"
@@ -385,7 +385,7 @@ class Voltammetry(EC_Setup):
         end_norm_factor = None
         # print("argeLIST", type(norm_to))
         # print(shift_to)
-        last_Active_RE = self.setup_data.getACTIVE_RE()
+        #last_Active_RE = self.setup_data.getACTIVE_RE()
         end_norm_factor = EC_Setup.set_active_RE(self, shift_to)
         E_label = "E"
         if self.IR_COMPENSATED:
@@ -543,6 +543,7 @@ def create_Rate_data_analysis_plot(*args, **kwargs):
     return make_analysis_plot("Rate Analysis","Data","Rate Plot",*args, **kwargs)
 
 def make_analysis_plot(fig_title:str="Fig_Title", data_plot_title:str="data",analyse_plot_title:str='analyse',*args, **kwargs):
+    fig_title = kwargs.get("title",fig_title)
     op= {DATA_PLOT: None,ANALYSE_PLOT: None}
     op.update(kwargs)
     data_plot = op[DATA_PLOT]

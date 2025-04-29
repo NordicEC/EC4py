@@ -15,13 +15,11 @@ from .ec_data_util import EC_Channels
 
 from .lsv_data import LSV_Data
 
-from .ec_setup import EC_Setup
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
 from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot,POS,NEG,AVG,DIF,find_vertex
 from .util_data import get_IR
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, LEGEND,should_plot_be_made,ANALYSE_PLOT,DATA_PLOT
-from .analysis_tafel import Tafel
+from .util_graph import plot_options, saveFig, should_plot_be_made,ANALYSE_PLOT,DATA_PLOT
 from .analysis_levich import diffusion_limit_corr
 
 STYLE_POS_DL = "bo"
@@ -249,10 +247,10 @@ class CV_Data(Voltammetry):
         """
         #print("Convert:",kwargs)
         
-        ch_E ="E"
-        for a in args:
-            if a == "IR":
-                ch_E = "E-IR"
+        #ch_E ="E"
+        #for a in args:
+        #    if a == "IR":
+        #        ch_E = "E-IR"
         options = {
             'x_smooth' : 0,
             'y_smooth' : 0,
@@ -283,58 +281,6 @@ class CV_Data(Voltammetry):
                 if ir_comp:
                     data_E = data_E - data_IR
                 
-                """
-                s_comp=str(comp).casefold()
-                #vertex =find_vertex(data_E)
-                if  s_comp == "Z".casefold():
-                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
-                    #print(sel_channels.Impedance)
-                    if(len(data_E)!=len(data_Z)):
-                        data_t,q,u,dt_t = ec_data.get_channel("Time")
-                        data_t_z =dt_Z*np.array(range(len(data_Z)))
-                        data_Z = np.interp(data_t, data_t_z, data_Z)
-                    data_E = data_E - data_i*data_Z
-                    ir_comp =True
-                    r_comp=[np.min(data_Z),np.max(data_Z)]
-                elif  s_comp == "R".casefold():
-                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
-                    data_phase,q,u,dt_p = ec_data.get_channel(sel_channels.Phase)
-                    if(len(data_E)!=len(data_Z)):
-                        data_t,q,u,dt_t = ec_data.get_channel("Time")
-                        data_t_z =dt_Z*np.array(range(len(data_Z)))
-                        data_Z = np.interp(data_t, data_t_z, data_Z)
-                        data_phase = np.interp(data_t, data_t_z, data_phase)
-                    R = data_Z*np.cos(data_phase)
-                    data_E = data_E - data_i*R
-                    ir_comp =True
-                    r_comp=[np.min(R),np.max(R)]
-                elif s_comp == "Rmed".casefold():
-                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
-                    data_phase,q,u,dt_p = ec_data.get_channel(sel_channels.Phase)
-                    r_comp = np.median(data_Z*np.cos(data_phase))
-                    print("Rmed",r_comp)
-                    data_E = data_E - data_i*r_comp
-                    ir_comp =True
-                elif s_comp == "Zmed".casefold():
-                    data_Z,q,u,dt_Z = ec_data.get_channel(sel_channels.Impedance)
-                    r_comp = np.median(data_Z)
-                    data_E = data_E - data_i*r_comp
-                    ir_comp =True
-                    
-
-                else:
-                    try:
-                        Rsol = float(comp)
-                        if Rsol > 0:
-                            ir_comp =True
-                            r_comp = Rsol
-                            data_E = data_E - data_i*r_comp
-                    except ValueError as e:
-                        print(e)
-                        raise ValueError("Invalid value for IRCORR")
-                        return
-                """
-            
         except NameError as e:
             print(e)
             raise NameError(e)
@@ -342,7 +288,7 @@ class CV_Data(Voltammetry):
 
         
         self.setup_data = copy.deepcopy(ec_data.setup_data)
-        self.convert(ec_data.Time,data_E,data_i,verter = vertex, **kwargs)
+        self.convert(ec_data.Time,data_E,data_i,vertex = vertex, **kwargs)
         self.IR_COMPENSATED = ir_comp
         self.R_COMP = r_comp
         E_title = "E"
@@ -424,9 +370,9 @@ class CV_Data(Voltammetry):
         self.xmin = x.min()
         self.xmax = x.max()
 
-        x_start = np.mean(x[0:3])
-        index_min = np.argmin(x)
-        index_max = np.argmax(x)
+        #x_start = np.mean(x[0:3])
+        #index_min = np.argmin(x)
+        #index_max = np.argmax(x)
 
         #array of dx
 
@@ -437,44 +383,20 @@ class CV_Data(Voltammetry):
         #print("ZERO:",zero_crossings)
         self.rate_V_s = np.mean(np.abs(x_div)) / t_div
         #print(f"Rate: {self.rate_V_s}")
-        up_start =0
-        up_end = 0
+        #up_start =0
+        #up_end = 0
         ## Number of vertext
         Two_vertex = len(zero_crossings)>1
         #print("MIN",x[zero_crossings[0]], np.min(x[0:zero_crossings[1]]))
         #print("argMIN",zero_crossings[0], np.argmin(x[0:zero_crossings[1]]))
         if not Two_vertex:  #if the CV consists of 2 LSV, there is only one zero crossing.
             zero_crossings = np.append(zero_crossings,len(x))
-        # print("size",len(zero_crossings),zero_crossings,len(zero_crossings)<2)
-        ### Manualy find the first Vertex.
+      
         if positive_start:
             zero_crossings[0] = np.argmax(x[0:zero_crossings[1]])
         else:
             zero_crossings[0] = np.argmin(x[0:zero_crossings[1]])
-        #print(f"ZeroCrossings: {zero_crossings}")
-        #print(zero_crossings)
-        if x[0]<x[zero_crossings[0]]:
-            up_start =0
-            up_end = zero_crossings[0]
-            dn_start = zero_crossings[0]
-            dn_end = x.size
-
-        else:
-            up_start =zero_crossings[0]
-            up_end = x.size
-            dn_start = 0
-            dn_end = zero_crossings[0]
-            reversed=True
-
-        """
-        self.E_max = 2.5
-        self.E_min = -2.5
-        dE_range = int((self.E_max - self.E_min)*1000)
-        x_sweep = np.linspace(self.E_min, self.E_max, dE_range) 
-        
-        self.E = x_sweep
-        """
-        # make E axis.
+      
         self.E = self.make_E_axis()
         zero_crossings = np.append(zero_crossings, x.size)
         #print("ZERO:",len(zero_crossings),zero_crossings, "2x vertex", Two_vertex)
@@ -487,9 +409,12 @@ class CV_Data(Voltammetry):
             if Two_vertex:
                 x_u2 = x[zero_crossings[1]:zero_crossings[2]]
                 y_u2 = y[zero_crossings[1]:zero_crossings[2]] 
+                # print(zero_crossings)
                 mask = x_u2<x_u.min()
+                
                 x_u2=np.array(x_u2[mask])
-                y_u2=np.array(y_u2[mask])
+                if len(y_u2)>=len(mask):
+                    y_u2=np.array(y_u2[mask])
                         
         else:
             #print("neg first sweep")
@@ -506,7 +431,7 @@ class CV_Data(Voltammetry):
 
         #y_pos=np.interp(x_sweep, x_u, y_u)
         #y_neg=np.interp(x_sweep, x_n, y_n)
-        y_pos=self.interpolate(x_u, y_u)
+        y_pos=   self.interpolate(x_u, y_u)
         y_pos =  self.clean_up_edges(y_pos,0)
         
         if Two_vertex and positive_start:
@@ -564,7 +489,7 @@ class CV_Data(Voltammetry):
     ###############################
     ###under deve
     def set_active_RE(self,shift_to:str|tuple = None):
-        end_norm_factor = None
+        # end_norm_factor = None
         # print("argeLIST", type(norm_to))
         
         a = Voltammetry.set_active_RE(self,shift_to, [self.i_p, self.i_n])
@@ -583,6 +508,7 @@ class CV_Data(Voltammetry):
         "plot=subplot"\n
         "x_smooth= number" - smoothing of the x-axis. \n
         "y_smooth= number" - smoothing of the y-axis. \n
+        
         
         Returns:
             line, ax: description
@@ -627,9 +553,7 @@ class CV_Data(Voltammetry):
             options.set_x_txt(data.E_label, data.E_unit)
             options.set_y_txt(data.i_label, data.i_unit) 
             
-            # print(options.get_legend())
-            #print("AAAAAAAAAAAAAAAAAAAAAAA")
-            #print(options.get_y_smooth())
+           
             return options.exe()
         else:
             return None,None
@@ -816,6 +740,7 @@ class CV_Data(Voltammetry):
         
         if kwargs.get("plot",None) is None:
             #line, ax = options.exe()
+            
             line, ax = data.plot(*args, **kwargs)
             kwargs["plot"]=ax
             
@@ -855,11 +780,11 @@ class CV_Data(Voltammetry):
         Tafel_kwargs[ANALYSE_PLOT]=analyse_plot
         dir = self._direction(*args,**kwargs)
 
-        rot=[]
-        y = []
-        E = []
+        # rot=[]
+        # y = []
+        # E = []
         #Epot=-0.5
-        y_axis_title =""
+        # y_axis_title =""
         
         Tafel_pos = None
         Tafel_neg = None

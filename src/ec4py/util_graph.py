@@ -55,6 +55,10 @@ class ENUM_plotKW(StrEnum):
     YLABEL = "ylabel"
     ALPHA = "alpha"
     TITLE = "title"
+    XLIM = "xlim"
+    YLIM = "ylim"
+    figheight = "figheight"
+    figwidth = "figwidth"
 
 
 
@@ -74,21 +78,58 @@ def update_legend(*args,**kwargs):
     return kwargs
 
 
+def fig_change(fig,**kwargs):
+    """Change the figure size and title.
+
+    Args:
+        fig (Figure): Figure object to be changed.
+        **kwargs: Keyword arguments for figure properties.
+
+    Returns:
+        Figure: Updated figure object.
+    """
+    fig.set_figheight(kwargs.get(ENUM_plotKW.figheight.value,6))
+    fig.set_figwidth(kwargs.get(ENUM_plotKW.figwidth.value,8))
+    fig.suptitle(kwargs.get(ENUM_plotKW.TITLE.value,""))
+    return fig
+
+def plot_change(ax,**kwargs):
+    """Change the plot properties.
+
+    Args:
+        ax (Axes): Axes object to be changed.
+        **kwargs: Keyword arguments for plot properties.
+
+    Returns:
+        Axes: Updated axes object.
+    """
+    if kwargs.get(ENUM_plotKW.GRID.value,False):
+        ax.grid()
+    if kwargs.get(ENUM_plotKW.XLIM.value,None) is not None:
+        ax.set_xlim(kwargs.get(ENUM_plotKW.XLIM.value,None))
+    if kwargs.get(ENUM_plotKW.YLIM.value,None) is not None:
+        ax.set_ylim(kwargs.get(ENUM_plotKW.YLIM.value,None))
+    return ax
+
 def make_plot_1x(Title:str,**kwargs):
-    grid = kwargs.get("grid",False)
-   
+    
     fig = plt.figure()
-    fig.set_figheight(5)
-    fig.set_figwidth(6)
+    fig_change(fig,**kwargs)
+    
     plt.suptitle(Title)
     fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=1.0, hspace=0.8)
     plot1 = fig.subplots()
-    if grid:
-        plt.grid()
+    plot_change(plot1,**kwargs)
+    #if kwargs.get("grid",False):
+    #    plot1.grid()
+    #if kwargs.get(ENUM_plotKW.XLIM.value,None) is not None:
+    #    plot1.set_xlim(kwargs.get(ENUM_plotKW.XLIM.value,None))
+    #if kwargs.get(ENUM_plotKW.YLIM.value,None) is not None:
+    #    plot1.set_ylim(kwargs.get(ENUM_plotKW.YLIM.value,None))
     return Figure(fig,[plot1])
 
 def make_plot_2x(Title:str,Vertical = False,**kwargs):
-    grid = kwargs.get("grid",False)
+    """Vertical?"""
     fig = plt.figure()
     fig.set_figheight(5)
     fig.set_figwidth(13)
@@ -101,11 +142,14 @@ def make_plot_2x(Title:str,Vertical = False,**kwargs):
         fig.set_figheight(5)
         fig.set_figwidth(13)
         plot1,plot2 = fig.subplots(1,2)
+    if kwargs.get(ENUM_plotKW.GRID.value,False):
+        plot1.grid()
+        plot2.grid()
     return Figure(fig,[plot1,plot2])
     #
     #return plot1, plot2
     
-def make_plot_2x_1(Title:str):
+def make_plot_2x_1(Title:str,**kwargs):
     fig = plt.figure()
     fig.set_figheight(5)
     fig.set_figwidth(13)
@@ -195,7 +239,9 @@ class plot_options:
             ENUM_plotKW.LINESTYLE.value : None,
             ENUM_plotKW.LINEWIDTH.value : None,
             ENUM_plotKW.GRID.value: False,
-            ENUM_plotKW.ALPHA.value: None
+            ENUM_plotKW.ALPHA.value: None,
+            ENUM_plotKW.XLIM.value: None,
+            ENUM_plotKW.YLIM.value: None,
             
             
         }
@@ -300,7 +346,7 @@ class plot_options:
             #fig = plt.figure()
             #  plt.subtitle(self.name)
             fig = make_plot_1x(self.options['title'],**kwargs)
-            ax = fig.plots[0]
+            # ax = fig.plots[0]
 
     def no_smooth(self):
         self.options["y_smooth"]=0
@@ -315,7 +361,7 @@ class plot_options:
             line, ax: Line and ax handlers
         """
         ax = self.options[PLOT]
-        fig = None
+        # fig = None
         if ax == NEWPLOT or ax is None:
            # fig = plt.figure()
            # plt.suptitle(self.name)

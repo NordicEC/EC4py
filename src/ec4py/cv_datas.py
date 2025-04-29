@@ -2,8 +2,8 @@
 
     This module contains the public facing API for reading TDMS files produced by EC4 DAQ.
 """
-import math
-import numpy as np
+# import math
+# import numpy as np
 from .ec_data import EC_Data
 from .ec_datas_util import EC_Datas_base,check_paths
 
@@ -11,9 +11,9 @@ from .cv_data import CV_Data,STYLE_POS_DL,STYLE_NEG_DL, POS, NEG
 
 from pathlib import Path
 import copy
-from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT
-from .util_graph import LEGEND,should_plot_be_made,update_plot_kwargs, ENUM_plotKW,ANALYSE_PLOT,DATA_PLOT
+# from .util import Quantity_Value_Unit as QV
+from .util_graph import plot_options,saveFig
+from .util_graph import LEGEND, should_plot_be_made, update_plot_kwargs, ENUM_plotKW, ANALYSE_PLOT, DATA_PLOT
 
 # from .analysis_levich import Levich
 from .analysis_ran_sev   import ran_sev
@@ -24,7 +24,7 @@ from .util_voltammetry import Voltammetry,create_Tafel_data_analysis_plot,create
 from .util_voltammetry import create_Rate_data_analysis_plot,create_Levich_data_analysis_plot,create_KouLev_data_analysis_plot
 from .lsv_datas import LSV_Datas
 
-import pandas as pd
+# import pandas as pd
 #from .analysis_tafel import Tafel as Tafel_calc
 
 
@@ -526,7 +526,10 @@ class CV_Datas(EC_Datas_base):
             analyse_kwargs = kwargs
             
             analyse_kwargs["update_label"]=True          
-            yp,yn = self.get_i_at_E(Epot,"",*args, **kwargs)
+            y = self.get_i_at_E(Epot,"",*args, **kwargs)
+           
+            yp = [x[0] for x in y]
+            yn = [x[1] for x in y]
             if plot is not None:
                 plot.plot(E, yp, STYLE_POS_DL)
                 plot.plot(E, yn, STYLE_NEG_DL)

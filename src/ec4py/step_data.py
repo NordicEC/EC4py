@@ -6,7 +6,6 @@ from __future__ import annotations
 import math
 import numpy as np
 from scipy import integrate
-from scipy.signal import savgol_filter 
 
 import copy
 
@@ -16,8 +15,7 @@ from .util_data import get_IR
 
 
 from .ec_setup import EC_Setup
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig,update_plot_kwargs
-from .util import extract_value_unit     
+from .util_graph import plot_options, make_plot_2x_1,saveFig
 from .util import Quantity_Value_Unit as QV
  
 
@@ -100,10 +98,10 @@ class Step_Data(EC_Setup):
         """
         #print("Convert:",kwargs)
         
-        ch_E ="E"
-        for a in args:
-            if a == "IR":
-                ch_E = "E-IR"
+        #ch_E ="E"
+        #for a in args:
+        #    if a == "IR":
+        #        ch_E = "E-IR"
         options = {
             'x_smooth' : 0,
             'y_smooth' : 0,
@@ -155,11 +153,16 @@ class Step_Data(EC_Setup):
         #self.name = data.name
         return
     
-    def plot(self, x_channel:str="Time", y_channel:str="i", *args, **kwargs):
+    def plot(self, *args, **kwargs):
         '''
         plots y_channel vs x_channel.\n
+        Use kw:
+        - x_channel to change x-axis channel. default Time \n
+        - y_channel to change y-axis channel. default i \n
+        
         to add to a existing plot, add the argument: \n
         "plot = subplot"\n
+        
         "x_smooth= number" - smoothing of the x-axis. \n
         "y_smooth= number" - smoothing of the y-axis. \n
         
@@ -170,17 +173,25 @@ class Step_Data(EC_Setup):
         #yunit = "wrong channel name"
         
         range = {
+            'x_channel' : "Time",
+            'y_channel' : "i",
             'limit_min' : -1,
             'limit_max' : -1   
         }
         range.update(kwargs)
+        x_channel = kwargs.get("x_channel", "Time")
+        y_channel = kwargs.get("y_channel", "i")
         #print(kwargs)
         #print(range)
         options = plot_options(**kwargs)
-       
+        #largs2 = list(args)
+        #largs2.append(x_channel)
+        #largs2.append(y_channel)
+        #args2 = tuple(largs2)
         data = copy.deepcopy(self)
         options.legend = data.legend(x_channel,y_channel,*args, **kwargs)
         #print("plotARGS",args)
+        
         data.norm(args)
         data.set_active_RE(args)
         # print("QQQQ",data.E_label)
@@ -195,6 +206,10 @@ class Step_Data(EC_Setup):
         #print("index", index_min,index_max)
         try:
             x_data, options.x_label, options.x_unit = data.Time,"t","s"
+            if x_channel =='E':
+                x_data, options.x_label, options.x_unit = data.E,data.E_label,data.E_unit
+            elif x_channel == 'i':
+                x_data, options.x_label, options.x_unit = data.i,data.i_label,data.i_unit
             options.x_data = x_data[index_min:index_max]
         except NameError:
             print(f"xchannel {x_channel} not supported")
@@ -404,7 +419,7 @@ class Step_Data(EC_Setup):
         end_norm_factor = None
         # print("argeLIST", type(norm_to))
         
-        last_Active_RE = self.setup_data.getACTIVE_RE()
+        self.setup_data.getACTIVE_RE()
         end_norm_factor = EC_Setup.set_active_RE(self, shift_to)
         baseLabel = "E"
         if self.IR_COMPENSATED:

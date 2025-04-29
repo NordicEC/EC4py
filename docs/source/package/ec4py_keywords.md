@@ -33,6 +33,8 @@ The plots are created using mathplotlib. Typical keywords associated with plotti
 | linewidth = float or [float,..]| Change the color of a line(s). | When plotting a dataset|
 | linestyle = "style" or ["style1",..]| Change the linestyle of a line(s). | When plotting a dataset|
 | alpha = float or [float,..]| Change the alpha channel of a line(s). | When plotting a dataset|
+| xlim = [float , float]| Change x-limits of the graph. | When plotting a dataset|
+| ylim = [float , float]| Change y-limits of the graph. | When plotting a dataset|
 
 
  

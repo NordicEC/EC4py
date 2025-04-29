@@ -3,22 +3,25 @@
     This module contains the public facing API for reading TDMS files produced by EC4 DAQ.
 """
 
-from nptdms import TdmsFile
+# from nptdms import TdmsFile
 import math
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.signal import savgol_filter 
-from . import util
-from .ec_data import EC_Data
-from .step_data  import Step_Data
-from .ec_setup import EC_Setup
-from .analysis_levich import Levich
-from .ec_datas_util import EC_Datas_base
 from pathlib import Path
 import copy
+#import matplotlib.pyplot as plt
+#from scipy.signal import savgol_filter 
+#from . import util
+from .ec_data import EC_Data
+from .step_data  import Step_Data
+#from .ec_setup import EC_Setup
+
+from .ec_datas_util import EC_Datas_base
+
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,make_plot_2x_1,saveFig,LEGEND,update_legend,update_plot_kwargs
+from .util_graph import plot_options,make_plot_2x_1,saveFig,LEGEND,update_plot_kwargs
+#from .util_graph import update_legend
 from .analysis_tafel import Tafel
+from .analysis_levich import Levich
 
 
 STYLE_POS_DL = "bo"
@@ -110,7 +113,7 @@ class Step_Datas(EC_Datas_base):
         #CVs = [CV_Data() for i in range(len(paths))]
         
         for index, data in enumerate(datas):
-            data_kwargs = update_plot_kwargs(index,kwargs)
+            data_kwargs = update_plot_kwargs(index,**kwargs)
             #rot.append(math.sqrt(cv.rotation))
             #for arg in args:
             #    data.norm(arg)
