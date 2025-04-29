@@ -526,7 +526,10 @@ class CV_Datas(EC_Datas_base):
             analyse_kwargs = kwargs
             
             analyse_kwargs["update_label"]=True          
-            yp,yn = self.get_i_at_E(Epot,"",*args, **kwargs)
+            y = self.get_i_at_E(Epot,"",*args, **kwargs)
+           
+            yp = [x[0] for x in y]
+            yn = [x[1] for x in y]
             if plot is not None:
                 plot.plot(E, yp, STYLE_POS_DL)
                 plot.plot(E, yn, STYLE_NEG_DL)

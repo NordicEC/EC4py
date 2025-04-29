@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.5] - 
 ### Added
-  - MathplotLib key words: xlim, ylim
+  - MathplotLib key words: xlim, ylim and title for plots.
 
 ## [0.7.3] - 
 ### Added

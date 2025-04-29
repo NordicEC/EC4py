@@ -543,6 +543,7 @@ def create_Rate_data_analysis_plot(*args, **kwargs):
     return make_analysis_plot("Rate Analysis","Data","Rate Plot",*args, **kwargs)
 
 def make_analysis_plot(fig_title:str="Fig_Title", data_plot_title:str="data",analyse_plot_title:str='analyse',*args, **kwargs):
+    fig_title = kwargs.get("title",fig_title)
     op= {DATA_PLOT: None,ANALYSE_PLOT: None}
     op.update(kwargs)
     data_plot = op[DATA_PLOT]

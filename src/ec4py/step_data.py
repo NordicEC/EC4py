@@ -156,6 +156,7 @@ class Step_Data(EC_Setup):
     def plot(self, x_channel:str="Time", y_channel:str="i", *args, **kwargs):
         '''
         plots y_channel vs x_channel.\n
+        x_channel:str="Time"
         to add to a existing plot, add the argument: \n
         "plot = subplot"\n
         "x_smooth= number" - smoothing of the x-axis. \n
@@ -175,12 +176,16 @@ class Step_Data(EC_Setup):
         #print(kwargs)
         #print(range)
         options = plot_options(**kwargs)
-       
+        largs2 = list(args)
+        largs2.append(x_channel)
+        largs2.append(y_channel)
+        args2 = tuple(largs2)
         data = copy.deepcopy(self)
-        options.legend = data.legend(x_channel,y_channel,*args, **kwargs)
+        options.legend = data.legend(x_channel,y_channel,*args2, **kwargs)
         #print("plotARGS",args)
-        data.norm(args)
-        data.set_active_RE(args)
+        
+        data.norm(args2)
+        data.set_active_RE(args2)
         # print("QQQQ",data.E_label)
         index_min = 0
         if range["limit_min"] >0:
@@ -193,6 +198,10 @@ class Step_Data(EC_Setup):
         #print("index", index_min,index_max)
         try:
             x_data, options.x_label, options.x_unit = data.Time,"t","s"
+            if x_channel =='E':
+                x_data, options.x_label, options.x_unit = data.E,data.E_label,data.E_unit
+            elif x_channel == 'i':
+                x_data, options.x_label, options.x_unit = data.i,data.i_label,data.i_unit
             options.x_data = x_data[index_min:index_max]
         except NameError:
             print(f"xchannel {x_channel} not supported")
