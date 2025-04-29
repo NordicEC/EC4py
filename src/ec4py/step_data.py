@@ -179,6 +179,8 @@ class Step_Data(EC_Setup):
             'limit_max' : -1   
         }
         range.update(kwargs)
+        x_channel = kwargs.get("x_channel", "Time")
+        y_channel = kwargs.get("y_channel", "i")
         #print(kwargs)
         #print(range)
         options = plot_options(**kwargs)
@@ -187,11 +189,11 @@ class Step_Data(EC_Setup):
         #largs2.append(y_channel)
         #args2 = tuple(largs2)
         data = copy.deepcopy(self)
-        options.legend = data.legend(range.x_channel,range.y_channel,*args, **kwargs)
+        options.legend = data.legend(x_channel,y_channel,*args, **kwargs)
         #print("plotARGS",args)
         
-        data.norm(args2)
-        data.set_active_RE(args2)
+        data.norm(args)
+        data.set_active_RE(args)
         # print("QQQQ",data.E_label)
         index_min = 0
         if range["limit_min"] >0:
