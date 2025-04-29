@@ -153,12 +153,16 @@ class Step_Data(EC_Setup):
         #self.name = data.name
         return
     
-    def plot(self, x_channel:str="Time", y_channel:str="i", *args, **kwargs):
+    def plot(self, *args, **kwargs):
         '''
         plots y_channel vs x_channel.\n
-        x_channel:str="Time"
+        Use kw:
+        - x_channel to change x-axis channel. default Time \n
+        - y_channel to change y-axis channel. default i \n
+        
         to add to a existing plot, add the argument: \n
         "plot = subplot"\n
+        
         "x_smooth= number" - smoothing of the x-axis. \n
         "y_smooth= number" - smoothing of the y-axis. \n
         
@@ -169,6 +173,8 @@ class Step_Data(EC_Setup):
         #yunit = "wrong channel name"
         
         range = {
+            'x_channel' : "Time",
+            'y_channel' : "i",
             'limit_min' : -1,
             'limit_max' : -1   
         }
@@ -176,12 +182,12 @@ class Step_Data(EC_Setup):
         #print(kwargs)
         #print(range)
         options = plot_options(**kwargs)
-        largs2 = list(args)
-        largs2.append(x_channel)
-        largs2.append(y_channel)
-        args2 = tuple(largs2)
+        #largs2 = list(args)
+        #largs2.append(x_channel)
+        #largs2.append(y_channel)
+        #args2 = tuple(largs2)
         data = copy.deepcopy(self)
-        options.legend = data.legend(x_channel,y_channel,*args2, **kwargs)
+        options.legend = data.legend(range.x_channel,range.y_channel,*args, **kwargs)
         #print("plotARGS",args)
         
         data.norm(args2)
