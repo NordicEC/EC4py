@@ -291,7 +291,9 @@ class EC_Data(EC_Setup):
             print(f"xchannel {x_channel} not supported")
         
         #print(options.options["color"])
-        return options.exe()
+        pl = options.exe()
+        options.saveFig(**kwargs)
+        return pl
 
     def plot_rawdata(self):
         fig = plt.figure()
