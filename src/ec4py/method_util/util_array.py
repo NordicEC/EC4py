@@ -1,19 +1,18 @@
-""" Python module for reading TDMS files produced by LabView and specifically form EC4 DAQ.
-
-    This module contains the public facing API for reading TDMS files produced by EC4 DAQ.
+""" 
+utility array
 """
-from __future__ import annotations
-import math
-import numpy as np
-from scipy import integrate
-from scipy.signal import savgol_filter 
+#from __future__ import annotations
+#import math
+#import numpy as np
+#from scipy import integrate
+#from scipy.signal import savgol_filter 
 
-import copy
+#import copy
 
-from .ec_setup import EC_Setup
-from .util import extract_value_unit     
-from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x, ANALYSE_PLOT, DATA_PLOT,NO_PLOT
+#from ..ec_setup import EC_Setup
+#from ..util import extract_value_unit     
+#from ..util import Quantity_Value_Unit as QV
+#from ..util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x, ANALYSE_PLOT, DATA_PLOT,NO_PLOT
 
 
 

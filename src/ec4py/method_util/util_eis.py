@@ -1,7 +1,8 @@
-from .util import extract_value_unit     
-from .util import Quantity_Value_Unit as QV
+#from ..util import extract_value_unit     
+#from ..util import Quantity_Value_Unit as QV
 
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, ENUM_legend
+from ..util_graph import plot_options, make_plot_2x
+#from ..util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, ENUM_legend
 
 
 
@@ -35,7 +36,7 @@ def make_Bode_plot(*args, **kwargs):
     bode_phase.set_y_txt("Phase", "rad")
     
     bode_phase.render_plot()
-    BODE_op= {"bode_Z": plot_Z,"bode_phase": plot_phase}
+    #BODE_op= {"bode_Z": plot_Z,"bode_phase": plot_phase}
     return plot_Z, plot_phase,bode_f,bode_phase
 
 

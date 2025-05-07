@@ -1,6 +1,6 @@
 
 
-from ec4py.analysis_levich import Levich
+from ec4py.analysis.analysis_levich import Levich
 from ec4py.util import Quantity_Value_Unit as QVU
 #"import inc_dec    # "The code to test
 import numpy as np

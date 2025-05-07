@@ -1,10 +1,10 @@
 from ec4py import EC_Data
-from ec4py.ec_data_util import EC_Channels
+from ec4py.ec_util import EC_Channels
 
 from ec4py import LSV_Data, CV_Data,RHE,POS,NEG,AVG
 
-from ec4py.util_data import get_Impedance, get_IR,calc_ir_manual,calc_ir
-from ec4py.util_data import IR_comp_R,IR_comp_Z,IR_comp_Rmed,IR_comp_Zmed
+from ec4py.method_util.util_data import get_Impedance, get_IR,calc_ir_manual,calc_ir
+from ec4py.method_util.util_data import ARG_IRCORR_R,ARG_IRCORR_Z,ARG_IRCORR_RMED,ARG_IRCORR_ZMED,ARGS_IRCORR
 
 from pathlib import Path
 import numpy as np
@@ -72,20 +72,20 @@ class test_util_data( unittest.TestCase ):
         self.assertFalse(res[0])
 
         #Absolute Impedance
-        res = calc_ir(d,ch,IR_comp_Z)
+        res = calc_ir(d,ch,ARG_IRCORR_Z)
         self.assertTrue(res[0])
         self.assertTrue(np.allclose(res[1], np.ones(dataPoints)*i*imp,  atol=1e-10, rtol=1e-10))   
         #Absolute Impedance
-        res = calc_ir(d,ch,IR_comp_Zmed)
+        res = calc_ir(d,ch,ARG_IRCORR_ZMED)
         self.assertTrue(res[0])
         self.assertTrue(np.allclose(res[1], np.ones(dataPoints)*i*imp,  atol=1e-10, rtol=1e-10))   
         #Reistance
-        res = calc_ir(d,ch,IR_comp_R)
+        res = calc_ir(d,ch,ARG_IRCORR_R)
         self.assertTrue(res[0])
         #print(res[1])
         self.assertTrue(np.allclose(res[1], np.ones(dataPoints)*i*imp*np.cos(Ph),  atol=1e-10, rtol=1e-10))
         #Reistance
-        res = calc_ir(d,ch,IR_comp_Rmed)
+        res = calc_ir(d,ch,ARG_IRCORR_RMED)
         self.assertTrue(res[0])
         #print(res[1])
         self.assertTrue(np.allclose(res[1], np.ones(dataPoints)*i*imp*np.cos(Ph),  atol=1e-10, rtol=1e-10))
@@ -118,11 +118,11 @@ class test_util_data( unittest.TestCase ):
         data.Phase_E = np.ones(len(data.Phase_E))*Ph
         ch = EC_Channels()
         #IR_comp_Zmed
-        res = calc_ir(data,ch,IR_comp_Zmed)
+        res = calc_ir(data,ch,ARG_IRCORR_ZMED)
         self.assertTrue(res[0])
         self.assertTrue(len(res[1])==dataPoints)
         self.assertTrue(np.allclose(res[1], np.ones(dataPoints)*i*imp,  atol=1e-10, rtol=1e-10))
-        res = calc_ir(data,ch,IR_comp_Rmed)
+        res = calc_ir(data,ch,ARG_IRCORR_RMED)
         #IR_comp_Rmed
         self.assertTrue(res[0])
         self.assertTrue(len(res[1])==dataPoints)
@@ -141,13 +141,13 @@ class test_util_data( unittest.TestCase ):
         data.Phase_E = np.ones(len(data.Phase_E))*Ph
         ch = EC_Channels()
         #IR_comp_Zmed
-        res = get_IR(data,ch,IR_comp_Zmed)
+        res = get_IR(data,ch,ARG_IRCORR_ZMED)
         self.assertTrue(res[0])  
-        res = get_IR(data,ch,IR_comp_Zmed)
+        res = get_IR(data,ch,ARG_IRCORR_ZMED)
         self.assertTrue(res[0])  
-        res = get_IR(data,ch,IR_comp_Zmed)
+        res = get_IR(data,ch,ARG_IRCORR_ZMED)
         self.assertTrue(res[0])  
-        res = get_IR(data,ch,IR_comp_Zmed)
+        res = get_IR(data,ch,ARG_IRCORR_ZMED)
         self.assertTrue(res[0])  
         res = get_IR(data,ch,5)
         self.assertTrue(res[0])   

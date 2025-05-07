@@ -3,7 +3,7 @@ import copy
 from ec4py.ec_setup import EC_Setup
 from ec4py.util import Quantity_Value_Unit as QVU
 from ec4py.util_graph import LEGEND
-from ec4py.ec_datas_util import EC_Datas_base
+from ec4py.method_util.ec_datas_util import EC_Datas_base
 #"import inc_dec    # "The code to test
 import unittest   # The test framework
 

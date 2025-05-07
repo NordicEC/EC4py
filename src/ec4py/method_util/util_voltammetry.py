@@ -10,10 +10,10 @@ from scipy.signal import savgol_filter
 
 # import copy
 
-from .ec_setup import EC_Setup
+from ..ec_setup import EC_Setup
 # from .util import extract_value_unit     
-from .util import Quantity_Value_Unit as QV
-from .util_graph import make_plot_2x, ANALYSE_PLOT, DATA_PLOT,NO_PLOT
+from ..util import Quantity_Value_Unit as QV
+from ..util_graph import make_plot_2x, ANALYSE_PLOT, DATA_PLOT,NO_PLOT
 
 
 OFFSET_AT_E_MIN ="offset_at_emin"
@@ -73,7 +73,7 @@ def split_rawData_into_sweeps(V:Voltammetry,x,y,vertex= None):
     if len(vertex)>0:
         sweep_i.append( V._from_xy_split_into_a_sweep(x[0:vertex[0]],y[0:vertex[0]]))
     if len(vertex)>1: # if index is 1 or more.
-        rng = range(vertex[0],vertex[1])
+        #rng = range(vertex[0],vertex[1])
         sweep_i.append( V._from_xy_split_into_a_sweep(x[vertex[0]:vertex[1]],y[vertex[0]:vertex[1]]))
     if len(vertex)>2:
         x2 = x[vertex[1]:vertex[2]]
@@ -84,7 +84,7 @@ def split_rawData_into_sweeps(V:Voltammetry,x,y,vertex= None):
             mask = x2>x[0:vertex[0]].max()
         x2b=np.array(x2[mask])
         y2b=np.array(y2[mask])
-        sweep_i.append( V._from_xy_split_into_a_sweep(x2b,x2b))
+        sweep_i.append( V._from_xy_split_into_a_sweep(x2b,y2b))
     return sweep_i
         
 
@@ -286,7 +286,7 @@ class Voltammetry(EC_Setup):
         return direction
     
         
-    def _integrate(self, start_E:float, end_E:float,current:list(float), *args, **kwargs):
+    def _integrate(self, start_E:float, end_E:float,current:list, *args, **kwargs):
         """Integrate Current between the voltage limit using cumulative_simpson
 
         Args:
@@ -313,10 +313,10 @@ class Voltammetry(EC_Setup):
         #    print(arg) 
         for arg in args:
             a = str(arg).casefold()
-            if a == "offset_at_emin".casefold():
+            if a == OFFSET_AT_E_MIN.casefold():
                 # print("OFFSET at MIN")
                 offset =np.ones(len(loc_i))*loc_i[0]
-            if a == "offset_at_emax".casefold():
+            if a == OFFSET_AT_E_MAX.casefold():
                 offset =np.ones(len(loc_i))*loc_i[len(loc_i)-1]
             if a == "line".casefold():
                 k = (loc_i[len(loc_i)-1]-loc_i[0])/ (end_E-start_E)

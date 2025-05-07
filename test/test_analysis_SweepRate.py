@@ -1,6 +1,6 @@
 
 
-from ec4py.analysis_rate import sweep_rate_analysis
+from ec4py.analysis.analysis_rate import sweep_rate_analysis
 from ec4py.util import Quantity_Value_Unit as QVU
 #"import inc_dec    # "The code to test
 import numpy as np

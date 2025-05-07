@@ -3,8 +3,6 @@ from .util_array import EC_Array_class
 import types
 
 
-
-
 class EC_Datas_base(EC_Array_class):
     """ Reads data from a TDMS file in the format of EC4 DAQ.
 

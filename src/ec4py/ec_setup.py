@@ -203,21 +203,22 @@ class EC_Setup:
         raise DeprecationWarning("area is deprecated, use set_area() instead")
         #print("use the function set_area() instead")
     
-    def set_area(self,value:float,unit:str = "m^2"):
+    #def set_area(self,value:float,unit:str = "m^2"):
         """sets the area
 
         Args:
             value (float): area value as a number
             unit (str, optional): unit of the area. Defaults to "m^2".
         """
-        
+    """    
         self.setup_data._area = QV(value,unit)
         #if unit == "":
         #    pass
         #else:
         #    self.setup_data._area_unit = unit
         return self.setup_data.get_area()
-        
+      """  
+    
     @property 
     def area_unit(self):
         return self.setup_data._area_unit

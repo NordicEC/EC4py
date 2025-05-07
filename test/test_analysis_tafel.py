@@ -1,5 +1,5 @@
 
-from ec4py.analysis_tafel import Tafel
+from ec4py.analysis.analysis_tafel import Tafel
 from ec4py.util import Quantity_Value_Unit as QVU
 #"import inc_dec    # "The code to test
 import unittest   # The test framework
