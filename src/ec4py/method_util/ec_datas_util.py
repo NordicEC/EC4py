@@ -134,6 +134,7 @@ class EC_Datas_base(EC_Array_class):
     def RE(self):
         return [x.RE for x in self.datas]
     
+
     def set_active_RE(self,*args):     
         """Set active reference electrode.
         
@@ -148,7 +149,7 @@ class EC_Datas_base(EC_Array_class):
             return
         except AttributeError:
             raise AttributeError("set_active_RE() not implemented in the data class.")
-    
+
     
 def check_paths(paths):
     if paths is not None:

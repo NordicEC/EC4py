@@ -5,7 +5,9 @@ from ..util import Quantity_Value_Unit as Q_V
 from ..util_graph import plot_options,quantity_plot_fix
 
 
+
 def Tafel(x_data, y_data, y_axis_unit, y_axis_title, plot_color, lineName="", x_data_ext=None, y_data_ext=None, datalineStyle=None,  **kwargs):
+
     """Tafel analysis
 
     Args:

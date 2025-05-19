@@ -15,7 +15,6 @@ from .method_util.util_data import get_IR
 
 from .ec_util.ec_data_util import ENUM_Channel_Names as ch_name
 
-
 from .ec_setup import EC_Setup
 from .util_graph import plot_options, make_plot_2x_1,saveFig
 from .util import Quantity_Value_Unit as QV
