@@ -11,26 +11,21 @@ from scipy.signal import savgol_filter
 import copy
 
 from .ec_data import EC_Data
-from .ec_data_util import EC_Channels
+from .ec_util import EC_Channels
 
 from .lsv_data import LSV_Data
 
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
-from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot,POS,NEG,AVG,DIF,find_vertex
-from .util_data import get_IR
+from .method_util.util_voltammetry import Voltammetry,create_Tafel_data_analysis_plot,POS,NEG,AVG,DIF,find_vertex
+#from .method_util.util_voltammetry import OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE
+
+from .method_util.util_data import get_IR
 from .util_graph import plot_options, saveFig, should_plot_be_made,ANALYSE_PLOT,DATA_PLOT
-from .analysis_levich import diffusion_limit_corr
+#from .analysis import diffusion_limit_corr
 
 STYLE_POS_DL = "bo"
 STYLE_NEG_DL = "ro"
-
-#POS = "pos"
-#NEG = "neg"
-#AVG = "avg"
-#DIF = "dif"
-
-
 
 
 class CV_Data(Voltammetry):
@@ -336,7 +331,7 @@ class CV_Data(Voltammetry):
         x= Potential_V
         y= Current_A
 
-        vertex =kwargs.get("vertex",None)
+        #vertex =kwargs.get("vertex",None)
         #if vertex is None:
         #    vertex = find_vertex(x)
         #print("Convert", len(E))

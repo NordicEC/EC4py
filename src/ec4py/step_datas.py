@@ -8,20 +8,18 @@ import math
 import numpy as np
 from pathlib import Path
 import copy
-#import matplotlib.pyplot as plt
-#from scipy.signal import savgol_filter 
-#from . import util
+
+
 from .ec_data import EC_Data
 from .step_data  import Step_Data
-#from .ec_setup import EC_Setup
 
-from .ec_datas_util import EC_Datas_base
+from .method_util.ec_datas_util import EC_Datas_base
 
 from .util import Quantity_Value_Unit as QV
 from .util_graph import plot_options,make_plot_2x_1,saveFig,LEGEND,update_plot_kwargs
 #from .util_graph import update_legend
-from .analysis_tafel import Tafel
-from .analysis_levich import Levich
+from .analysis.analysis_tafel import Tafel
+from .analysis.analysis_levich import Levich
 
 
 STYLE_POS_DL = "bo"

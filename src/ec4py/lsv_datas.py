@@ -2,28 +2,29 @@
 
     This module contains the public facing API for reading TDMS files produced by EC4 DAQ.
 """
-import math
+#import math
 import numpy as np
 import pandas as pd
 
 from .ec_data import EC_Data
 from .lsv_data import LSV_Data
-from .ec_datas_util import EC_Datas_base,check_paths
+from .method_util.ec_datas_util import EC_Datas_base
+#,check_paths
 
 
 from pathlib import Path
 import copy
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig,NEWPLOT,LEGEND,ANALYSE_PLOT,DATA_PLOT,update_legend,should_plot_be_made
+from .util_graph import plot_options, saveFig, LEGEND,ANALYSE_PLOT,DATA_PLOT,update_legend,should_plot_be_made
 from .util_graph import update_plot_kwargs
 
-from .util_voltammetry import create_Tafel_data_analysis_plot,create_RanSev_data_analysis_plot,create_Rate_data_analysis_plot,create_Levich_data_analysis_plot,create_KouLev_data_analysis_plot
-from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE
+from .method_util.util_voltammetry import create_Tafel_data_analysis_plot,create_RanSev_data_analysis_plot,create_Rate_data_analysis_plot,create_Levich_data_analysis_plot,create_KouLev_data_analysis_plot
+from .method_util.util_voltammetry import Voltammetry
 
 
-from .analysis_levich import Levich
-from .analysis_ran_sev   import ran_sev
-from .analysis_rate   import sweep_rate_analysis
+from .analysis.analysis_levich import Levich
+from .analysis.analysis_ran_sev   import ran_sev
+from .analysis.analysis_rate   import sweep_rate_analysis
 
 
 
@@ -372,7 +373,7 @@ class LSV_Datas(EC_Datas_base):
             p.set_title("LSVs")
             p.x_data= None
             line, data_plot = p.exe()
-            legend = p.legend
+            #legend = p.legend
             
             datas = copy.deepcopy(self.datas)
             #data_plot_kwargs = kwargs
@@ -500,7 +501,7 @@ class LSV_Datas(EC_Datas_base):
         # Make plot
         data_Plot_kwargs = kwargs
         data_Plot_kwargs["plot"] = data_plot
-        data_plot_kwargs = update_legend(LEGEND.ROT,*args,**data_Plot_kwargs)
+        data_Plot_kwargs = update_legend(LEGEND.ROT,*args,**data_Plot_kwargs)
 
         #only plot raw data if not called
         if fig is not None:
@@ -557,10 +558,10 @@ class LSV_Datas(EC_Datas_base):
             self.plot(LEGEND.ROT,*args,**dataPlot_kwargs)
 
         
-        y_axis_unit="AAA"
+        #y_axis_unit="AAA"
         y = self.get_i_at_E(Epot,*args,**kwargs)
-        y_axis_unit = y[0].unit
-        y_axis_title = y[0].quantity
+        #y_axis_unit = y[0].unit
+        #y_axis_title = y[0].quantity
         
         E = [Epot for x in y]
         style = self.datas[0].get_point_color()
@@ -593,8 +594,8 @@ class LSV_Datas(EC_Datas_base):
         line_style = self.datas[0].get_line_color()
 
         x_fit = np.insert(x_values, 0, 0)  
-        x_qv = QV(1, "rpm^0.5","w")
-        x_u =  QV(1, x_qv.unit,x_qv.quantity)** -0.5
+        #x_qv = QV(1, "rpm^0.5","w")
+        #x_u =  QV(1, x_qv.unit,x_qv.quantity)** -0.5
 
         # FIT pos
 

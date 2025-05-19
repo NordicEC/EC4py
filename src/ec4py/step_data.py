@@ -10,8 +10,8 @@ from scipy import integrate
 import copy
 
 from .ec_data import EC_Data,index_at_time
-from .ec_data_util import EC_Channels
-from .util_data import get_IR
+from .ec_util.ec_data_util import EC_Channels
+from .method_util.util_data import get_IR
 
 
 from .ec_setup import EC_Setup
@@ -19,7 +19,7 @@ from .util_graph import plot_options, make_plot_2x_1,saveFig
 from .util import Quantity_Value_Unit as QV
  
 
-from .analysis_tafel import Tafel
+from .analysis.analysis_tafel import Tafel
 
 
 #import ec4py.step_datas # import Step_Datas

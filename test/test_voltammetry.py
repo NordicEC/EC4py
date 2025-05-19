@@ -1,5 +1,5 @@
 
-from ec4py.util_voltammetry import Voltammetry 
+from ec4py.method_util.util_voltammetry import Voltammetry 
 from ec4py import Quantity_Value_Unit 
 
 # from pathlib import Path

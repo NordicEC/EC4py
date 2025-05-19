@@ -25,7 +25,7 @@ from .lsv_data import LSV_Data
 from .lsv_datas import LSV_Datas
 from .ec_setup import RHE,SHE,RATE,SQRT_RATE, AREA,AREA_CM,ROT,SQRT_ROT, MASS, LOADING
 from .util_graph import NO_PLOT,LEGEND
-from .util_voltammetry import POS,NEG,AVG,DIF
+from .method_util.util_voltammetry import POS,NEG,AVG,DIF
 
 
 __all__ = ["EC_Data", "EC_Datas", 

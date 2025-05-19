@@ -2,23 +2,25 @@
 
     This module contains the public facing API for reading TDMS files produced by EC4 DAQ.
 """
-from __future__ import annotations
-import math
+#from __future__ import annotations
+#import math
 import numpy as np
-from scipy import integrate
-from scipy.signal import savgol_filter 
+#from scipy import integrate
+#from scipy.signal import savgol_filter 
 
 import copy
 
 from .ec_data import EC_Data
-from .ec_data_util import EC_Channels
+from .ec_util.ec_data_util import EC_Channels
 
 from .ec_setup import EC_Setup
-from .util import extract_value_unit     
+#from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
 
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,saveFig, LEGEND
-from .util_eis import make_Bode_plot, bode_plot_phase, bode_plot_Z
+from .util_graph import plot_options, make_plot_2x
+# from .util_graph import quantity_plot_fix, make_plot_1x,saveFig, LEGEND
+
+from .method_util.util_eis import bode_plot_phase, bode_plot_Z
 
 class EIS_Data(EC_Setup):
     """## Class to analyze a single EIS dataset. 

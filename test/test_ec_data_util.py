@@ -3,7 +3,7 @@ import copy
 from ec4py.ec_setup import EC_Setup
 from ec4py.util import Quantity_Value_Unit as QVU
 from ec4py.util_graph import LEGEND
-from ec4py.ec_data_util import EC_Channels
+from ec4py.ec_util import EC_Channels
 #"import inc_dec    # "The code to test
 import unittest   # The test framework
 import numpy as np

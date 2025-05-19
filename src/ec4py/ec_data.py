@@ -7,24 +7,16 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
-from . import util
+#from . import util
 from .util_graph import plot_options
 from .ec_setup import EC_Setup
 from .util import Quantity_Value_Unit as QV
-from .ec_data_util import EC_Channels
+#from .ec_util.ec_data_util import EC_Channels
 from pathlib import Path
+from .ec_util.ec_data_base import index_at_time
+#from .ec_util.ec_data_base import EC_Data_Base
 
-
-def help_get_wf_prop(rawdata, datachannel: str):
-    if rawdata is not None:
-        unit = str(rawdata[datachannel].properties.get("unit_string", ""))
-        quantity = str(rawdata[datachannel].properties.get("Quantity", ""))
-        dT = rawdata[datachannel].properties.get("wf_increment", 1)
-    else:
-        unit = "No channel"
-        quantity = "No channel"
-        dT = 1
-    return unit, quantity, dT
+from .ec_util.ec_data_tdms import help_get_wf_prop
 
 class EC_Data(EC_Setup):
     """ Reads and stores data from a TDMS file in the format of EC4 DAQ.
@@ -37,7 +29,7 @@ class EC_Data(EC_Setup):
         # self._area_unit="cm^2"
         # self.rotation =0
         # self.rotation_unit ="/min"
-        sel_channels = EC_Channels()
+        #sel_channels = EC_Channels()
         self.Time = np.array([], dtype=np.float64)
         self.E = np.array([], dtype=np.float64)
         self.i = np.array([], dtype=np.float64)
@@ -291,7 +283,9 @@ class EC_Data(EC_Setup):
             print(f"xchannel {x_channel} not supported")
         
         #print(options.options["color"])
-        return options.exe()
+        pl = options.exe()
+        options.saveFig(**kwargs)
+        return pl
 
     def plot_rawdata(self):
         fig = plt.figure()
@@ -350,19 +344,3 @@ class EC_Data(EC_Setup):
             if comp_value is None:
                 return y*comp_value
         
-     
-
-
-def index_at_time(Time, time_s_:float):
-    max_index = len(Time)
-    index = -1
-    if time_s_ < 0:
-        index = len(Time)-1
-    else: 
-        for i in range(max_index):
-            if time_s_ <= Time[i]:
-                index = i
-                break
-    if index < 0 : 
-        index = len(Time)-1
-    return index

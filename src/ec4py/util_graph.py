@@ -20,6 +20,8 @@ NEWPLOT = "new_plot"
 
 NO_PLOT = "no_plot"
 
+SAVEFIG = "savefig"
+
 Figure = namedtuple("Figure", ["fig", "plots"])
 """Tuplet:
     - fig   : a plt.figure() object.
@@ -474,7 +476,7 @@ class plot_options:
 
 def saveFig(fig:Figure,**kwargs):
     if fig is not None:
-            name = kwargs.get("savefig",None)
+            name = kwargs.get(SAVEFIG,None)
             if name is not None:
                 fig.fig.savefig(name, dpi='figure', format=None, bbox_inches ="tight")
     else:

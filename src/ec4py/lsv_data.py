@@ -12,14 +12,14 @@ from scipy.signal import savgol_filter
 import copy
 
 from .ec_data import EC_Data
-from .ec_data_util import EC_Channels
-from .util_voltammetry import Voltammetry, OFFSET_AT_E_MIN, OFFSET_AT_E_MAX, OFFSET_LINE,create_Tafel_data_analysis_plot
-from .ec_setup import EC_Setup
+from .ec_util.ec_data_util import EC_Channels
+from .method_util.util_voltammetry import Voltammetry,create_Tafel_data_analysis_plot
+#from .ec_setup import EC_Setup
 from .util import extract_value_unit     
 from .util import Quantity_Value_Unit as QV
-from .util_graph import plot_options,quantity_plot_fix, make_plot_2x,make_plot_1x,should_plot_be_made
-from .analysis_tafel import Tafel
-from .analysis_levich import diffusion_limit_corr
+from .util_graph import plot_options,should_plot_be_made
+from .analysis.analysis_tafel import Tafel
+from .analysis.analysis_levich import diffusion_limit_corr
 
 STYLE_POS_DL = "bo"
 STYLE_NEG_DL = "ro"
@@ -323,7 +323,7 @@ class LSV_Data(Voltammetry):
     
     
     def set_active_RE(self,shift_to:str|tuple = None):
-        end_norm_factor = None
+        #end_norm_factor = None
         # print("argeLIST", type(norm_to))
         
         a = Voltammetry.set_active_RE(self,shift_to, [self.i])
@@ -502,7 +502,7 @@ class LSV_Data(Voltammetry):
         xmax = lsv.get_index_of_E(max(lims))
            
         y_data=[] 
-        if E_for_idl != None:
+        if E_for_idl is not None:
             i_dl = lsv.get_i_at_E(E_for_idl)
             y.append(lsv.get_i_at_E(E_for_idl))
             E.append(E_for_idl)

@@ -7,7 +7,7 @@ import copy
 
 from .util_graph import plot_options,update_plot_kwargs
 from .ec_data import EC_Data
-from .ec_datas_util import EC_Datas_base,check_paths
+from .method_util.ec_datas_util import EC_Datas_base,check_paths
 
 
 

@@ -5,7 +5,7 @@
 # import math
 # import numpy as np
 from .ec_data import EC_Data
-from .ec_datas_util import EC_Datas_base,check_paths
+from .method_util.ec_datas_util import EC_Datas_base,check_paths
 
 from .cv_data import CV_Data,STYLE_POS_DL,STYLE_NEG_DL, POS, NEG 
 
@@ -16,12 +16,12 @@ from .util_graph import plot_options,saveFig
 from .util_graph import LEGEND, should_plot_be_made, update_plot_kwargs, ENUM_plotKW, ANALYSE_PLOT, DATA_PLOT
 
 # from .analysis_levich import Levich
-from .analysis_ran_sev   import ran_sev
-from .analysis_rate   import sweep_rate_analysis
+from .analysis.analysis_ran_sev   import ran_sev
+from .analysis.analysis_rate   import sweep_rate_analysis
 
 
-from .util_voltammetry import Voltammetry,create_Tafel_data_analysis_plot,create_RanSev_data_analysis_plot
-from .util_voltammetry import create_Rate_data_analysis_plot,create_Levich_data_analysis_plot,create_KouLev_data_analysis_plot
+from .method_util.util_voltammetry import Voltammetry,create_Tafel_data_analysis_plot,create_RanSev_data_analysis_plot
+from .method_util.util_voltammetry import create_Rate_data_analysis_plot,create_Levich_data_analysis_plot,create_KouLev_data_analysis_plot
 from .lsv_datas import LSV_Datas
 
 # import pandas as pd
