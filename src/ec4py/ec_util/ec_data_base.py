@@ -74,6 +74,7 @@ def index_at_time(Time, time_s_:float):
     Returns:
         int: index
     """
+
     max_index = len(Time)
     index = -1
     if time_s_ < 0:
