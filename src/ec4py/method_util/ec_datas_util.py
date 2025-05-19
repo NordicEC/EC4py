@@ -134,6 +134,21 @@ class EC_Datas_base(EC_Array_class):
     def RE(self):
         return [x.RE for x in self.datas]
     
+    def set_active_RE(self,*args):     
+        """Set active reference electrode.
+        
+        - RHE    - if values is not already set, use ".set_RHE()"
+        
+        - SHE    - if values is not already set, use ".set_RHE()"
+        - None to use the exerimental 
+        """
+        try:
+            for data in self.datas:
+                data.set_active_RE(args)
+            return
+        except AttributeError:
+            raise AttributeError("set_active_RE() not implemented in the data class.")
+    
     
 def check_paths(paths):
     if paths is not None:

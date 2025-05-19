@@ -153,16 +153,21 @@ def make_plot_2x(Title:str,Vertical = False,**kwargs):
     
 def make_plot_2x_1(Title:str,**kwargs):
     fig = plt.figure()
-    fig.set_figheight(5)
-    fig.set_figwidth(13)
+    fig.set_figheight(4)
+    fig.set_figwidth(10)
     plt.suptitle(Title)
     ax_right = fig.add_subplot(122)
     ax_left_top = fig.add_subplot(221)
     ax_left_bottom = fig.add_subplot(223)
     ax_left_bottom.label_outer()
     ax_left_top.label_outer()
-    fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=1.0, hspace=0.8)
+    fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.3, hspace=0.3)
     #plot1,plot2 = fig.subplots(1,2)
+    if kwargs.get(ENUM_plotKW.GRID.value,False):
+        ax_right.grid()
+        ax_left_top.grid()
+        ax_left_bottom.grid()
+        
     return Figure(fig,[ax_left_top, ax_left_bottom, ax_right ])
     # return ax_left_top, ax_left_bottom, ax_right
 

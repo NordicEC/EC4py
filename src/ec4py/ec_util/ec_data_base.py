@@ -65,6 +65,15 @@ class EC_Data_Base(EC_Setup):
 
 
 def index_at_time(Time, time_s_:float):
+    """Find the index of a specific time
+
+    Args:
+        Time (array like): Time array
+        time_s_ (float): Time as a float
+
+    Returns:
+        int: index
+    """
     max_index = len(Time)
     index = -1
     if time_s_ < 0:

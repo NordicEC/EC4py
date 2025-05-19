@@ -13,6 +13,8 @@ from .ec_data import EC_Data,index_at_time
 from .ec_util.ec_data_util import EC_Channels
 from .method_util.util_data import get_IR
 
+from .ec_util.ec_data_util import ENUM_Channel_Names as ch_name
+
 
 from .ec_setup import EC_Setup
 from .util_graph import plot_options, make_plot_2x_1,saveFig
@@ -179,8 +181,9 @@ class Step_Data(EC_Setup):
             'limit_max' : -1   
         }
         range.update(kwargs)
-        x_channel = kwargs.get("x_channel", "Time")
-        y_channel = kwargs.get("y_channel", "i")
+        x_channel = kwargs.get("x_channel", ch_name.Time)
+        y_channel = kwargs.get("y_channel", ch_name.i)
+
         #print(kwargs)
         #print(range)
         options = plot_options(**kwargs)
@@ -232,7 +235,7 @@ class Step_Data(EC_Setup):
         """Get the current at a specific time
 
         Args:
-            time_s_ (float): _description_
+            time_s_ (float|str): Time in seconds or "last" for the last time.
             dt_s_ (float, optional): Defaults to 0. The return values is averaged if dt_s_ is not 0
 
         Returns:
@@ -242,11 +245,17 @@ class Step_Data(EC_Setup):
         current = QV(1,self.i_unit, self.i_label)
         # print("argeLIST", type(norm_to))
         norm_factor =  self.get_norm_factors(args)
+        if isinstance(time_s_,str):
+            if time_s_.casefold() == "last".casefold():
+                time_s_ = np.max(self.Time)
         if dt_s_ == 0:
             index = self.index_at_time(time_s_)
             i = self.i[index]
         else:
-            index_low = self.index_at_time(time_s_-dt_s_ /2)
+            if time_s_-dt_s_ /2>= self.Time[0]:
+                index_low = self.index_at_time(time_s_-dt_s_ /2)
+            else:
+                index_low = 0
             index_high = self.index_at_time(time_s_+ dt_s_ /2)
             i = np.average(self.i[range(index_low, index_high)])
         current = QV(i,self.i_unit, self.i_label) / norm_factor
@@ -264,11 +273,17 @@ class Step_Data(EC_Setup):
             _type_: the voltage or avg. voltage value.
         """
         v=1
+        if isinstance(time_s_,str):
+            if time_s_.casefold() == "last".casefold():
+                time_s_ = np.max(self.Time)
         if dt_s_ == 0:
             index = self.index_at_time(time_s_)
             v = self.E[index]
         else:
-            index_low = self.index_at_time(time_s_-dt_s_ /2)
+            if time_s_-dt_s_ /2>= self.Time[0]:
+                index_low = self.index_at_time(time_s_-dt_s_ /2)
+            else:
+                index_low = 0
             index_high = self.index_at_time(time_s_+ dt_s_ /2)
             v = np.average(self.E[range(index_low, index_high)])
         voltage = QV(v,self.E_unit, self.E_label)
@@ -278,6 +293,9 @@ class Step_Data(EC_Setup):
     def get_Z_at_time(self, time_s_:float, dt_s_:float = 0,*args, **data_kwargs):
         impedance = 0.0
         norm_factor =  self.get_norm_factors(args)
+        if isinstance(time_s_,str):
+            if time_s_.casefold() == "last".casefold():
+                time_s_ = np.max(self.Time)
         if dt_s_ == 0:
             index = self.index_at_time(time_s_)
             impedance = self.Z[index]
@@ -444,6 +462,8 @@ class Step_Data(EC_Setup):
                 return end_norm_factor.value
         return None
     
+
+    
     def integrate(self,t_start:float,t_end:float, step_nr:int = -1, *args, **kwargs):
         """_summary_
 
@@ -484,8 +504,8 @@ class Step_Data(EC_Setup):
         else:
                 step= copy.deepcopy(self)     
         
-        l_i, ax1 = step.plot("Time", "i", plot=data_plot_i, *args, **data_kwargs)
-        l_E, ax2 = step.plot("Time", "E", plot=data_plot_E, *args, **data_kwargs)
+        l_i, ax1 = step.plot(x_channel = ch_name.Time, y_channel = ch_name.i, plot = data_plot_i, *args, **data_kwargs)
+        l_E, ax2 = step.plot(x_channel = ch_name.Time, y_channel = ch_name.E, plot = data_plot_E, *args, **data_kwargs)
         
         #ax1.label_outer()
         #ax2.label_outer()
@@ -531,9 +551,33 @@ class Step_Data(EC_Setup):
         lsv.convert(step.Time, step.E,step.i,step.E[0],step.E[len(step.E)-1])
         return lsv
             
-    def Tafel(self, lims=[-1,1], *args, **kwargs):
-        x_data =np.empty(self.nr_of_steps)
-        y_data =np.empty(self.nr_of_steps)
+    def Tafel(self, *args, **kwargs):
+        """Perform a Tafel analysis
+    
+        Keywords:
+        
+            - t : float time at which to take the data point. defaults to "last"        
+            - dt : float time window to use for the average in seconds. defaults to 0
+            or
+            - t_min : float minimum time to use for data selection. Use this instead of "t" and "dt"
+            - t_max : float maximum time to use for data selection. Use this instead of "t" and "dt"
+            - Emax:float maximum voltage to use for fitting. defaults to 1000
+            - Emin:float minimum voltage to use for fitting. defaults to -1000
+            
+        Returns:
+            Quantity_Value_Unit  Tafel slope
+        """
+        if self.nr_of_steps <2:
+            print("Tafel analysis needs at least 2 steps")
+            print("If this is part of more steps, consider using the Step_Datas Class.")            
+            return None
+        # x_data =np.empty(self.nr_of_steps)
+        # y_data =np.empty(self.nr_of_steps)
+        datas = self.get_steps()
+        # from .step_datas import Step_Datas
+        # datas = Step_Datas()
+        return datas.Tafel(*args, **kwargs)
+        """
         for i in range(self.nr_of_steps):
             singleStep = self.get_step(i)
             maxIndex = len(singleStep.Time)-1
@@ -555,8 +599,9 @@ class Step_Data(EC_Setup):
         self.plot("Time","E", plot=data_plot_E)
             
             
-            
-        return Tafel(x_data, y_data, self.i_unit, self.i_label, "b", plot=analyse_plot, **kwargs)
+       
+        #return Tafel(x_data, y_data, self.i_unit, self.i_label, "b", plot=analyse_plot, **kwargs)
+        """ 
 ##END OF CLASS
 ########################################################################################## 
 
