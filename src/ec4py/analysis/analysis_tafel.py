@@ -5,7 +5,9 @@ from ..util import Quantity_Value_Unit as Q_V
 from ..util_graph import plot_options,quantity_plot_fix
 
 
-def Tafel(x_data, y_data, y_axis_unit, y_axis_title, plot_color, lineName="", x_data_ext=None, y_data_ext=None,  **kwargs):
+
+def Tafel(x_data, y_data, y_axis_unit, y_axis_title, plot_color, lineName="", x_data_ext=None, y_data_ext=None, datalineStyle=None,  **kwargs):
+
     """Tafel analysis
 
     Args:
@@ -41,8 +43,12 @@ def Tafel(x_data, y_data, y_axis_unit, y_axis_title, plot_color, lineName="", x_
     line, analyse_plot = p.exe()
     if x_data_ext is not None and y_data_ext is not None:
         y_data_ext = np.log10(np.abs(y_data_ext))
+        if datalineStyle is not None:
+            analyse_plot.plot(x_data_ext, y_data_ext, datalineStyle, c=plot_color)
         analyse_plot.plot(x_data_ext, y_data_ext, c=plot_color)
-    else:    
+    else: 
+        if datalineStyle is not None:
+            analyse_plot.plot(x_data, y_data, datalineStyle, c=plot_color)   
         analyse_plot.plot(x_data, y_data, c= plot_color)
     
     

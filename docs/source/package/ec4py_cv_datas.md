@@ -55,8 +55,8 @@ The arithmetic operators + (addition), - (subtraction), * (multiplication) and /
 Arithemtics operators between **CV_Datas** and another **CV_Datas** are 
 + (addition) and - (subtraction). Both objects must contain the same number of datasets. 
 ```python
-   cv1 = CV_Data()
-   cv2 = CV_Data()
+   cv1 = CV_Datas()
+   cv2 = CV_Datas()
    new_CV1 = cv1+cv2
    new_CV2 = cv1-cv2
 ```
@@ -69,7 +69,7 @@ Arithemtics operators between **CV_Datas** and another **CV_Datas** are
 
 Creates a standard plot of a CV data(s), i.e. current vs potental. Add [arguments](ec4py_args.md) and [keywords](ec4py_keywords.md) to easily modify the plot.
 ```python
-   cvs = CV_Data()
+   cvs = CV_Datas()
    cvs.plot(RHE,AREA) # plot data vs RHE and normalize the current to geometric area.
 ```
 

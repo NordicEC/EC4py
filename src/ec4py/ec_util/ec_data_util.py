@@ -3,7 +3,7 @@ from enum import StrEnum
 
 
 class ENUM_Channel_Names(StrEnum):
-    unknonw ="_"
+    unknown ="_"
     Time = "Time"
     E = "E"
     i = "i"

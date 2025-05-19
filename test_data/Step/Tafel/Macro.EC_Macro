@@ -1,0 +1,32 @@
+Gas	O2												
+Wait	00:03:00 s												
+HC	Current Range	-2	Rotation	0	Control Mode	WE	Cell Status	On					
+Steps P	dT(ms)	100	Type	h	Set_E(V)	1	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.975	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.95	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.925	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.9	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+HC	Current Range	-1	Rotation	0	Control Mode	WE	Cell Status	On					
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.875	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.85	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.825	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.8	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.775	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.75	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.725	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.7	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.675	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.65	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.625	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.6	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.575	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+HC	Current Range	0	Rotation	0	Control Mode	WE	Cell Status	On					
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.55	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.525	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.5	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.475	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.45	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.425	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Steps P	dT(ms)	100	Type	h	Set_E(V)	0.4	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+Gas	None												
+HC	Current Range	-1	Rotation	0	Control Mode	WE	Cell Status	Off					

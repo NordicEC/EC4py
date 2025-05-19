@@ -4,7 +4,8 @@ from ec4py.ec_setup import EC_Setup
 from ec4py.util import Quantity_Value_Unit as QVU
 from ec4py.util_graph import LEGEND
 from ec4py.ec_util import EC_Data_Base
-from ec4py.ec_util.ec_data_txt import load_txt,_parse_data,_parse_data_header,_parse_category,_category_to_dict,_parse_data_header
+from ec4py.ec_util.ec_data_txt import _parse_data,_parse_data_header,_parse_category,_category_to_dict
+from ec4py.ec_util.ec_data_txt import _s_load_txt
 #"import inc_dec    # "The code to test
 import unittest   # The test framework
 import numpy as np
@@ -85,7 +86,7 @@ class test_EC_Data_TXT(unittest.TestCase):
 
     def test_LoadTXT_CV_all(self):
         obj = EC_Data_Base()
-        load_txt(obj,txt_CV_Data)
+        _s_load_txt(obj,txt_CV_Data)
 
         self.assertTrue(np.allclose(obj.Time, [0.0,.1,.2],  atol=1e-10, rtol=1e-10))
         self.assertTrue(np.allclose(obj.E, [1,1,2],  atol=1e-10, rtol=1e-10))

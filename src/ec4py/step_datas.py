@@ -15,6 +15,10 @@ from .step_data  import Step_Data
 
 from .method_util.ec_datas_util import EC_Datas_base
 
+from .ec_util.ec_data_util import ENUM_Channel_Names
+from .method_util.util_step import step_time_range
+
+
 from .util import Quantity_Value_Unit as QV
 from .util_graph import plot_options,make_plot_2x_1,saveFig,LEGEND,update_plot_kwargs
 #from .util_graph import update_legend
@@ -86,7 +90,7 @@ class Step_Datas(EC_Datas_base):
   
 ################################################################    
     def plot(self, *args, **kwargs):
-        """Plot Stepss.
+        """Plot Steps.
             use args to normalize the data
             - area or area_cm
             - rotation
@@ -173,7 +177,7 @@ class Step_Datas(EC_Datas_base):
         data_kwargs["plot_i"] = data_plot_i
         data_kwargs["plot_E"] = data_plot_E
         data_kwargs["analyse_plot"] = analyse_plot
-        p = plot_options(kwargs)
+        p = plot_options(**kwargs)
         charge = [QV()] * len(self.datas)
         #print(data_kwargs)
         for i in range(len(self.datas)):
@@ -189,23 +193,54 @@ class Step_Datas(EC_Datas_base):
     
     ##################################################################################################################
 
-    def Tafel(self, t_lim, E_lims=[-1,1], step_nr:int = -1, *args, **kwargs):
-        """_summary_
-
-        Args:
-            t_lim (_type_): time at which to take the data point, 
-            E_lims (list, optional): _description_. Defaults to [-1,1].
-            step_nr (int, optional): _description_. Defaults to -1.
-        """
+    def Tafel(self, *args, **kwargs):
+        """Perform a Tafel analysis
+    
+        Keywords:
         
-        if not isinstance(t_lim, list):
-            t_lim =[t_lim]
+            - t : float time at which to take the data point. defaults to "last"     
+            - dt : float time window to use for the average in seconds. defaults to 0
+            or
+            - t_min : float minimum time to use for data selection. Use this instead of "t" and "dt"
+            - t_max : float maximum time to use for data selection. Use this instead of "t" and "dt"
+            
+            - Emax:float maximum voltage to use for fitting. defaults to 1000
+            - Emin:float minimum voltage to use for fitting. defaults to -1000
+            - step_nr (int, optional): _description_. Defaults to -1.
+            
+        Returns:
+            Quantity_Value_Unit Tafel: slope
+        """
+        #t_lim = kwargs.get("t", "last")
+        step_nr = kwargs.get("step_nr", -1)
+        E_fit_max = kwargs.get("Emax", 1000)
+        E_fit_min = kwargs.get("Emin", -1000)
+        #t_lim_max = kwargs.get("t_max", None)
+        #t_lim_min = kwargs.get("t_min", None)
+        #d_t_s_ = kwargs.get("dt", 0.0)
+        t_lims = step_time_range(self.datas,**kwargs)
+        #if t_lim_max is not None and t_lim_min is not None:
+        #    t_lim = (t_lim_max+t_lim_min)/2.0
+        #    d_t_s_ = abs(t_lim_max-t_lim_min)
+            
+            
+        
+        #if isinstance(t_lim, str):
+        #    if t_lim == "end" or t_lim == "last":
+        #        t_lim = max([x.Time[-1] for x in self.datas])-d_t_s_/2.0
+        #t_lim_min =  max( t_lim - d_t_s_/2.0,0)
+        #t_lim_max =  min(t_lim + d_t_s_/2.0,self.datas[0].Time[-1])
+        
+        
+        #if not isinstance(t_lim, list):
+        #    t_lim =[t_lim]
+  
             
         s = "Tafel Analysis"
         if(step_nr>-1):
             s = s + f" of step #{step_nr}"
 
-        fig = make_plot_2x_1(s)
+        fig = make_plot_2x_1(s, **kwargs)
         data_plot_i = fig.plots[0]
         data_plot_E = fig.plots[1]
         analyse_plot =  fig.plots[2]
@@ -214,26 +249,38 @@ class Step_Datas(EC_Datas_base):
         #data_plot_E.title.set_text('')
         analyse_plot.title.set_text('Tafel Plot')
 
-         #########################################################
+        #########################################################
         # Make plot
         data_kwargs = kwargs
         data_kwargs["plot_i"] = data_plot_i
         data_kwargs["plot_E"] = data_plot_E
         
-        self.plot("Time","i", LEGEND.NONE, *args, plot=data_plot_i,**kwargs)
-        self.plot("Time","E", plot=data_plot_E)
+        self.plot(LEGEND.NONE, x_channel=ENUM_Channel_Names.Time, y_channel=ENUM_Channel_Names.i , *args, plot=data_plot_i,**kwargs)
+        self.plot(x_channel=ENUM_Channel_Names.Time,y_channel=ENUM_Channel_Names.E, plot=data_plot_E)
 
-        current = self.get_current_at_time(t_lim[0], 0, 0, LEGEND.NONE, *args, **kwargs)
-        voltage = self.get_voltage_at_time(t_lim[0], 0, 0, *args, **kwargs)
-        
-        Tafel(voltage, current, current[0].unit, current[0].quantity, "b", "",plot=analyse_plot, **kwargs)
-            
+        # Span where data is taken
+        data_plot_i.axvspan(t_lims.min, t_lims.max, color='C0', alpha=0.2)
+        data_plot_E.axvspan(t_lims.min, t_lims.max, color='C0', alpha=0.2)
 
-        
-        return
+        #axvspan_for_steps(data_plot_i, self.datas[0].Time, 0, len(self.datas[0].Time), *args, **kwargs)
+        #axvspan_for_steps(data_plot_E, self.datas[0].Time, 0, len(self.datas[0].Time), *args, **kwargs)
+
+        current = self.get_current_at_time(t_lims.t, t_lims.dt, *args, **kwargs)
+        voltage = self.get_voltage_at_time(t_lims.t, t_lims.dt, *args, **kwargs)
+        x_data_ext=[i.value for i in voltage]
+        y_data_ext=[i.value for i in current]
+
+        v_select = []
+        i_select = []
+        for i in range(len(voltage)):
+            # print("voltage", voltage[i].value, "current", current[i].value)
+            if voltage[i].value <= E_fit_max and voltage[i].value >= E_fit_min:
+                v_select.append(voltage[i])
+                i_select.append(current[i])
+        return Tafel(v_select, i_select, current[0].unit, current[0].quantity, "b", "",x_data_ext,y_data_ext,"o-", plot=analyse_plot, **kwargs)
     
     
-    def Levich(self, Time_s_:float=-1, step_nr:int = -1, *args, **kwargs):
+    def Levich(self, *args, **kwargs):
         """_summary_
 
         Args:
@@ -244,13 +291,13 @@ class Step_Datas(EC_Datas_base):
             _type_: _description_
         """
         
-
-        
+        t_lims = step_time_range(self.datas,**kwargs)
+        step_nr = kwargs.get("step_nr", -1)
         s = "Levich Analysis"
         if(step_nr>-1):
             s = s + f" of step #{step_nr}"
         
-        fig = make_plot_2x_1(s)
+        fig = make_plot_2x_1(s, **kwargs)
         data_plot_i = fig.plots[0]
         data_plot_E = fig.plots[1]
         analyse_plot =  fig.plots[2]
@@ -265,7 +312,12 @@ class Step_Datas(EC_Datas_base):
         data_kwargs["plot_i"] = data_plot_i
         data_kwargs["plot_E"] = data_plot_E
         
-        rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas, Time_s_, step_nr, *args, **data_kwargs)
+        
+        # Span where data is taken
+        data_plot_i.axvspan(t_lims.min, t_lims.max, color='C0', alpha=0.2)
+        data_plot_E.axvspan(t_lims.min, t_lims.max, color='C0', alpha=0.2)
+        
+        rot, y, E, y_axis_title, y_axis_unit  = plots_for_rotations(self.datas, t_lims.t, step_nr, *args, **data_kwargs)
   
         # Levich analysis
         B_factor = Levich(rot, y, y_axis_unit, y_axis_title, STYLE_POS_DL, "steps", plot=analyse_plot )
@@ -278,8 +330,7 @@ class Step_Datas(EC_Datas_base):
         saveFig(fig,**kwargs)
         return B_factor
  
- 
- 
+
 def plots_for_rotations(step_datas: Step_Datas, time_s_: float,step_nr: int =-1, *args, **kwargs):
     rot = []
     y = []
@@ -309,9 +360,9 @@ def plots_for_rotations(step_datas: Step_Datas, time_s_: float,step_nr: int =-1,
         if step_nr>-1:
             data = data[step_nr]
         # l, ax = data.plot(**data_kwargs)
-        l_i, ax1 = data.plot("Time", "i", plot=plot_i, *args, **data_kwargs)
+        l_i, ax1 = data.plot(ENUM_Channel_Names.Time, ENUM_Channel_Names.i, plot=plot_i, *args, **data_kwargs)
         ax1.label_outer()
-        l_E, ax2 = data.plot("Time", "E", plot=plot_E, *args, **data_kwargs)
+        l_E, ax2 = data.plot(ENUM_Channel_Names.Time, ENUM_Channel_Names.E, plot=plot_E, *args, **data_kwargs)
         ax2.label_outer()
         line.append([l_i,l_E])
         index = data.index_at_time(time_s_)

@@ -1,0 +1,66 @@
+2025-05-08 09:47:01	MacroStartTime
+00:00:00	Gas	O2												
+00:00:03	Complete	Port: 6	O2
+00:00:03	Wait	00:03:00 s												
+00:03:03	Complete	Full
+00:03:03	HC	Current Range	-2	Rotation	0	Control Mode	WE	Cell Status	On					
+00:03:03	Complete	Done
+00:03:03	Steps P	dT(ms)	100	Type	h	Set_E(V)	1	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:04:04	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 1.000;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:04:04	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.975	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:05:04	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.975;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:05:04	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.95	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:06:05	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.950;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:06:05	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.925	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:07:05	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.925;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:07:05	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.9	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:08:06	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.900;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:08:06	HC	Current Range	-1	Rotation	0	Control Mode	WE	Cell Status	On					
+00:08:06	Complete	Done
+00:08:06	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.875	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:09:07	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.875;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:09:07	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.85	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:10:08	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.850;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:10:08	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.825	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:11:08	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.825;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:11:08	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.8	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:12:09	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.800;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:12:09	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.775	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:13:09	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.775;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:13:09	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.75	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:14:10	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.750;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:14:10	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.725	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:15:11	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.725;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:15:11	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.7	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:16:11	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.700;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:16:11	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.675	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:17:12	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.675;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:17:12	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.65	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:18:13	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.650;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:18:13	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.625	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:19:13	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.625;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:19:13	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.6	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:20:14	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.600;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:20:14	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.575	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:21:14	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.575;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:21:14	HC	Current Range	0	Rotation	0	Control Mode	WE	Cell Status	On					
+00:21:15	Complete	Done
+00:21:15	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.55	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:22:15	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.550;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:22:15	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.525	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:23:16	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.525;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:23:16	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.5	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:24:16	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.500;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:24:16	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.475	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:25:17	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.475;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:25:17	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.45	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:26:18	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.450;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:26:18	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.425	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:27:18	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.425;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:27:18	Steps P	dT(ms)	100	Type	h	Set_E(V)	0.4	Time	60	Sin	AC_Freq(Hz)	5000	AC_Amp(mV)	15
+00:28:19	File ref in memoryApply Periodic: Task Done	Step.Type: h;  | Step.E: 0.400;  | Step.Time: 60.000;  | Repetitions: 0 | 
+00:28:19	Gas	None												
+00:28:22	Complete	Port: 3	None
+00:28:22	HC	Current Range	-1	Rotation	0	Control Mode	WE	Cell Status	Off					
+00:28:22	Complete	Done
+28.23.152	MacroDuration
