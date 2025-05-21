@@ -29,7 +29,7 @@ Load data set:
 
 ## Initialization
 
-### class ec4py.cv_data.CV_Data(Paths=None, args, kwargs)
+### class ec4py.Step_Datas(Paths=None, args, kwargs)
 ```python
    data = Step_Datas() # empty object
    data = Step_Datas(["PATHs"]) # import the data from a file.
