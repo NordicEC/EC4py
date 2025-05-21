@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 
 ### Changed
 
+## [0.7.6] - 
+### Added
+  - Step_Datas and Step_Data: Tafel functions added.
+
 ## [0.7.5] - 
 ### Added
   - MathplotLib key words: xlim, ylim and title for plots.
