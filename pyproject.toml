@@ -37,10 +37,7 @@ Changelog = "https://github.com/NordicEC/EC4py/blob/main/CHANGELOG.md"
 [tool.pytest.ini_options]
 pythonpath = "src"
 addopts = [ "--import-mode=importlib",]
-testpaths = [
-    "test"
-]
-
+testpaths = [ "test",]
 
 [tool.setuptools.packages.find]
 where = [ "src",]
