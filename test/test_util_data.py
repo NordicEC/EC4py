@@ -34,10 +34,10 @@ class test_util_data( unittest.TestCase ):
     
     def test_get_Impedance(self):
         d = EC_Data()
-        d.E = np.linspace(-0.5, 0.5, 10)
-        d.i = np.linspace(-0.5, 0.5, 10)
-        d.Z_E = np.linspace(-0.5, 0.5, 10)
-        d.Phase_E = np.linspace(-0.5, 0.5, 10)
+        d.E = np.asarray(np.linspace(-0.5, 0.5, 10),dtype=np.float64)
+        d.i = np.asarray(np.linspace(-0.5, 0.5, 10),dtype=np.float64)
+        d.Z_E = np.asarray(np.linspace(-0.5, 0.5, 10),dtype=np.float64)
+        d.Phase_E = np.asarray(np.linspace(-0.5, 0.5, 10),dtype=np.float64)
         ch = EC_Channels()
         imp, Phase = get_Impedance(d,ch)
         self.assertTrue(np.allclose(d.Z_E, imp,  atol=1e-10, rtol=1e-10))
@@ -48,7 +48,7 @@ class test_util_data( unittest.TestCase ):
     def test_calc_ir_manual(self):
         d = EC_Data()
         dataPoints =10
-        d.E = np.linspace(-0.5, 0.5, dataPoints)
+        d.E = np.asarray(np.linspace(-0.5, 0.5, dataPoints),dtype=np.float64)
         d.i = np.ones(dataPoints)*0.5
         ch = EC_Channels()
         r=123
@@ -62,7 +62,7 @@ class test_util_data( unittest.TestCase ):
         
         d = EC_Data()
         dataPoints =10
-        d.E = np.linspace(-0.5, 0.5, dataPoints)
+        d.E = np.asarray(np.linspace(-0.5, 0.5, dataPoints),dtype=np.float64)
         d.i = np.ones(dataPoints)*i
         d.Z_E = np.ones(dataPoints)*imp
         d.Phase_E = np.ones(dataPoints)*Ph

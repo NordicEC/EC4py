@@ -2,7 +2,7 @@ import numpy as np
 import warnings
 
 from ..ec_util.ec_data_util import EC_Channels
-from ..ec_data   import EC_Data
+from ..ec_data.ec_data   import EC_Data
 
 KW_IRCORR = "IRCORR"
 ARG_IRCORR_Z = "Z"
@@ -55,8 +55,9 @@ def calc_ir_manual(ec_data:EC_Data,sel_channels:EC_Channels,comp,**kwargs):
 
 def calc_ir(ec_data:EC_Data,sel_channels:EC_Channels,s_comp,**kwargs):
     ir_comp = False
-    data_IR = None
+    data_IR = np.array([],dtype=np.float64)
     data_i,_,_,_ = ec_data.get_channel(sel_channels.Current)
+
     s_comp=str(s_comp).casefold()
     data_Z,data_phase = get_Impedance(ec_data,sel_channels)
     if  s_comp == ARG_IRCORR_Z.casefold():
@@ -84,7 +85,7 @@ def calc_ir(ec_data:EC_Data,sel_channels:EC_Channels,s_comp,**kwargs):
     return ir_comp, data_IR
 
 def get_IR(ec_data:EC_Data,sel_channels:EC_Channels,comp:float|str, **kwargs):
-    data_IR = None
+    data_IR = np.array([],dtype=np.float64)
     ir_corr = False
     #comp = kwargs.get("IRCORR",None)
     s_comp=str(comp).casefold()
@@ -140,6 +141,7 @@ def get_IR(ec_data:EC_Data,sel_channels:EC_Channels,comp:float|str, **kwargs):
 def get_data_for_convert(ec_data:EC_Data,sel_channels:EC_Channels,*args, **kwargs):
     
     ir_comp = False
+    IR_data = np.array([], dtype=np.float64)
     try:
         data_E,q,u,dt_x = ec_data.get_channel(sel_channels.Voltage)
         data_i,q,u,dt_y = ec_data.get_channel(sel_channels.Current)

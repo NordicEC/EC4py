@@ -1,6 +1,6 @@
 
 import numpy as np
-from ..util import Quantity_Value_Unit as Q_V
+from ..util import Quantity_Value_Unit as QV
 from ..util_graph import plot_options, quantity_plot_fix
 
 
@@ -31,19 +31,19 @@ def Levich(rot, y_data, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str
         y_data = np.array([float(val) for val in y_data])
 
         # analyse_plot.plot(rot_sqrt, y_data, STYLE_DL_plot)
-        x_qv = Q_V(1, rot_unit, "w")
+        x_qv = QV(1, rot_unit, "w")
         x_qv = x_qv**0.5
         x_qv.value = 1
-        x_rot = Q_V(1, x_qv.unit, x_qv.quantity)
+        x_rot = QV(1, x_qv.unit, x_qv.quantity)
         ##print("aa", x_qv.unit)
-        y_qv = Q_V(1, y_axis_unit.strip(), y_axis_title.strip())
+        y_qv = QV(1, y_axis_unit.strip(), y_axis_title.strip())
         
         x_plot = np.insert(rot_sqrt, 0, 0)
         m , b = np.polyfit(rot_sqrt, y_data, 1)
         y_pos= m * x_plot + b
         ##print("AAA",x_rot, "BBB", x_rot.quantity)
 
-        B_factor = Q_V(m , y_axis_unit, y_axis_title) / x_rot
+        B_factor = QV(m , y_axis_unit, y_axis_title) / x_rot
         ##print("AAA",B_factor_pos, "BBB", B_factor_pos.quantity)
         
         #Levich Plot
@@ -69,7 +69,7 @@ def Levich(rot, y_data, y_axis_unit:str="A", y_axis_title:str="i", STYLE_DL: str
 
         return B_factor
 
-def diffusion_limit_corr(current, idl:float):
+def diffusion_limit_corr(current, idl:float|QV):
     if idl is not None:
         idl = float(idl)
         with np.errstate(divide='ignore'):

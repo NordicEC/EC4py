@@ -3,14 +3,22 @@
     This module contains the public facing API for reading TDMS files produced by EC4 DAQ.
 """
 from __future__ import annotations
+from typing import Self
+
+
 import math
 import numpy as np
+import numpy.typing as npt
+import copy
+
+
+
 from scipy import integrate
 from scipy.signal import savgol_filter 
 
 # import copy
 
-from ..ec_setup import EC_Setup
+from ..ec_setup.ec_setup import EC_Setup
 # from .util import extract_value_unit     
 from ..util import Quantity_Value_Unit as QV
 from ..util_graph import make_plot_2x, ANALYSE_PLOT, DATA_PLOT,NO_PLOT
@@ -40,7 +48,7 @@ STYLE_DIF_L = "g-"
 
 
 
-def find_vertex(E:np.array):
+def find_vertex(E:npt.NDArray[np.float64]):
     #array of dx
     x_div = np.gradient(savgol_filter(E, 10, 1))
     
@@ -111,14 +119,14 @@ def assemble_as_CV(x,y,x_nonIR= None):
 
 class Voltammetry(EC_Setup):
     def __init__(self,*args, **kwargs):
-        super().__init__(args,kwargs)
-        self.E=[]
+        super().__init__(*args,**kwargs)
+        self.E=np.array([], dtype=np.float64)
         
-        self.E_label = "E" # Potential label
-        self.E_unit = "V"
+        self.E_label:str = "E" # Potential label
+        self.E_unit:str = "V"
         #self.rate_V_s = 1
-        self.i_label = "i"
-        self.i_unit = "A"
+        self.i_label:str = "i"
+        self.i_unit:str = "A"
 
         self.E_axis = {
                     "E_min" : -2.5,
@@ -126,25 +134,35 @@ class Voltammetry(EC_Setup):
                     }
         self.xmin = -2.5 # View range
         self.xmax = 2.5  # view renage
-        self.dir ="Direction"
+        self.dir:str ="Direction"
         
         self.E_axis.update(kwargs)
         self.E = self.make_E_axis()
         self.E_shifted_by = None
         self.IR_COMPENSATED = False
         self.R_COMP = None
+
+    def __eq__(self, other):
+        
+        equal = True
+        equal = equal and np.array_equal(self.E, other.E)
+        equal = equal and (self.E_axis == other.E_axis)
+        equal = equal and (self.rate == other.rate)
+        equal = equal and self.i_label == other.i_label
+        equal = equal and self.i_unit == other.i_unit
+        return equal
        
     
     #def copy(self):
     #    return copy.deepcopy(self)
     
-    def copy_from(self, source:Voltammetry):
+    def copy_from(self, source):
         """Voltammetry copy from source voltammetry
 
         Args:
             source (Voltammetry): Any voltammetry class
         """
-        self.E              = source.E
+        self.E              = copy.deepcopy(source.E)
         self.E_label        = source.E_label
         self.E_unit         = source.E_unit
         self.E_axis         = source.E_axis
@@ -154,6 +172,7 @@ class Voltammetry(EC_Setup):
         self.xmax = source.xmax
         self.i_label = source.i_label
         self.i_unit = source.i_unit
+        self._log = copy.deepcopy(source._log)
         EC_Setup.copy_from(self,source)
         
     
@@ -167,7 +186,7 @@ class Voltammetry(EC_Setup):
         minE = self.E_axis["E_min"]    
         dE_range = int((maxE - minE)*1000)
         E_sweep = np.linspace(minE, maxE, dE_range+1)
-        return E_sweep
+        return np.asarray(E_sweep,dtype=np.float64)
 
 ####################################################################################################
     def get_index_of_E(self, E:float):
@@ -215,11 +234,15 @@ class Voltammetry(EC_Setup):
         return m+k*i_threashold
 
     #####################################################################################################    
-    def _smooth(self, current, smooth_width:int):
+    def _smooth(self, current:npt.ArrayLike, smooth_width:int):
         try:
             smoothed_current = savgol_filter(current, smooth_width+1, 1)
+            return np.asarray(smoothed_current, dtype=np.float64)
+
         finally:
-            return smoothed_current
+            pass
+        return np.asarray([], dtype=np.float64)
+
     
     
     def _from_xy_get_dir(self,E_data):
@@ -241,9 +264,9 @@ class Voltammetry(EC_Setup):
         return LSV_i, dir
     
     
-    def interpolate(self, E_data, y_data ):
+    def interpolate(self, E_data:npt.NDArray[np.float64], y_data:npt.NDArray[np.float64] ):
         if len(E_data)==0 or len(y_data) == 0:
-            return np.zeros(len(self.E))
+            return np.asarray(np.zeros(len(self.E)),dtype = np.float64)
         else:
             data = np.interp(self.E, E_data, y_data)
             index_min = self.get_index_of_E(np.min(E_data))
@@ -255,7 +278,10 @@ class Voltammetry(EC_Setup):
             return data
     
     def _offset(self, offset:float):
-        return np.ones(self.E)*offset
+        data_len =len(self.E)
+        data =  np.ones( data_len)*offset
+        return np.asarray(data, dtype=np.float64)
+
     
     def _line(self, k:float, m:float):
         """Generate a line y=k*E+m
@@ -267,7 +293,8 @@ class Voltammetry(EC_Setup):
         Returns:
             NDArray: slope
         """
-        return self.E*k+ m
+        return np.asarray(self.E*k+ m, dtype=np.float64)
+
     
     def _direction(self,*args, **kwargs):
         direction = ""
@@ -283,10 +310,10 @@ class Voltammetry(EC_Setup):
             if test == DIF.casefold():
                 direction = DIF 
         direction = kwargs.get("dir",direction)
-        return direction
+        return str(direction)
     
         
-    def _integrate(self, start_E:float, end_E:float,current:list, *args, **kwargs):
+    def _integrate(self, start_E:float, end_E:float,current:npt.NDArray, *args, **kwargs):
         """Integrate Current between the voltage limit using cumulative_simpson
 
         Args:
@@ -357,7 +384,7 @@ class Voltammetry(EC_Setup):
     
     
     
-    def clean_up_edges(self, current,toValue = math.nan):
+    def clean_up_edges(self, current:npt.NDArray[np.float64],toValue = math.nan):
         lower_edgeValue = current[0]
         for i in range(0,current.size):
             if lower_edgeValue == current[i]:
@@ -370,9 +397,11 @@ class Voltammetry(EC_Setup):
                 current[i] = toValue
             else :
                 break
-        return current
+        return np.asarray(current, dtype=np.float64)
+
+
     
-    def set_active_RE(self,shift_to:str|tuple, current: list=None):
+    def _set_active_RE(self,shift_to:str|tuple, current: list[npt.NDArray[np.float64]]|None=None):
         """_summary_
 
         Args:
@@ -386,7 +415,7 @@ class Voltammetry(EC_Setup):
         # print("argeLIST", type(norm_to))
         # print(shift_to)
         #last_Active_RE = self.setup_data.getACTIVE_RE()
-        end_norm_factor = EC_Setup.set_active_RE(self, shift_to)
+        end_norm_factor = self.setup_set_active_RE(shift_to)
         E_label = "E"
         if self.IR_COMPENSATED:
             E_label ="E-iR"
@@ -405,7 +434,7 @@ class Voltammetry(EC_Setup):
                     #shift back to original.
                     # self.E = self.E + self.E_shifted_by
                     self.E_label = "E vs "+ self.RE
-                    self.E_unit = self.E_unit = "V" 
+                    self.E_unit = "V" 
                     self.E_shifted_by = None   
             #self.E = self.E + end_norm_factor.value
             # self.E_label = end_norm_factor.quantity
@@ -419,28 +448,18 @@ class Voltammetry(EC_Setup):
                             i_shifted[i] = self._shift_Current_Array(current[i],end_norm_factor.value)
                     else:
                         i_shifted = self._shift_Current_Array(current,end_norm_factor.value)
-                return end_norm_factor.value, i_shifted
+                    return end_norm_factor.value, i_shifted
         return None
     
     
 
-    
-    
-    def norm(self, norm_to:str|tuple, current:list):
-        
+
+    def _norm_single(self, norm_to:str|tuple, current:npt.NDArray[np.float64]):
         norm_factor = self.get_norm_factors(norm_to)
-        i_shifted = None
+        i_shifted = current.copy()
         qv = QV(0,"","")
         if norm_factor is not None:
-            i_shifted = current.copy()
-            if isinstance(current, list):
-                i_shifted = current.copy()
-                for i in range(len(current)):
-                    # print("aaaa-shifting",i)
-                    
-                    i_shifted[i] = current[i] / float(norm_factor)
-            else:
-                i_shifted = current / float(norm_factor)
+            i_shifted = current / float(norm_factor)
         #norm_factor_inv = norm_factor ** -1
             qv = QV(1, self.i_unit, self.i_label) / norm_factor
             self.i_unit = qv.unit
@@ -448,8 +467,23 @@ class Voltammetry(EC_Setup):
             # print("aaaa-shifting",self.i_unit)
         return i_shifted, qv
     
+
     
-    def _shift_Current_Array(self, array, shift_Voltage):
+    def _norm_list(self, norm_to:str|tuple, current:list[npt.NDArray[np.float64]]):
+        
+        norm_factor = self.get_norm_factors(norm_to)
+        i_shifted = []
+        qv = QV(0,"","")
+        if norm_factor is not None:
+            i_shifted=[np.array([],dtype=np.float64) for x in range(len(current))]
+            for i in range(len(current)):
+                # print("aaaa-shifting",i)
+                i_shifted[i],qv =self._norm_single(norm_to,current[i])
+           
+        return i_shifted, qv
+    
+    
+    def _shift_Current_Array(self, array, shift_Voltage:float):
         """_summary_
 
         Args:
@@ -489,8 +523,8 @@ class Voltammetry(EC_Setup):
         
     def update_E_label(self,shift_to):
         if self.E_shifted_by is None :
-            self.E_label = shift_to.quantity
-            self.E_unit = shift_to.unit
+            self.E_label = str(shift_to.quantity)
+            self.E_unit = str(shift_to.unit)
                 # print("SHIFT:",end_norm_factor)
         else:
             #shift back to original.

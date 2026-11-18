@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
  
 #from test_ec_datas_util import pop_and_len
 #from help_fx import test_quantities_add
-from help_fx import pop_and_len,unithelp_quantities_add
+from .help_fx import pop_and_len,unithelp_quantities_add
 
 
 
@@ -39,7 +39,14 @@ class test_Array_Classes(unittest.TestCase):
         unithelp_quantities_add(self, a)
         
     def test_LSV_Datas1(self):
-        pop_and_len(self, LSV_Datas(), LSV_Data(),LSV_Data())
+        a = LSV_Data()
+        print(a.__repr__())
+        b = LSV_Data()
+        print(b.__repr__())
+        print(a==b)
+        pop_and_len(self, LSV_Datas(),a,b)
+
+
     def test_LSV_Datas2(self):
         a = LSV_Datas()
         a.append(LSV_Data()) 

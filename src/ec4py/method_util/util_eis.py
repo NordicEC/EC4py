@@ -22,7 +22,7 @@ def make_Bode_plot(*args, **kwargs):
     bode_f_args["xscale"]="log"
     bode_f_args["style"]="o"
     
-    bode_f = plot_options(bode_f_args )
+    bode_f = plot_options(**bode_f_args )
     bode_f.set_x_txt("Freq", "Hz")
     bode_f.set_y_txt("Z", "Ohm")
     bode_f.render_plot()
@@ -31,7 +31,7 @@ def make_Bode_plot(*args, **kwargs):
     bode_A_args["plot"]=plot_phase
     bode_A_args["xscale"]="log"
     bode_A_args["style"]="o"
-    bode_phase = plot_options(bode_A_args )
+    bode_phase = plot_options(**bode_A_args )
     bode_phase.set_x_txt("Freq", "Hz")
     bode_phase.set_y_txt("Phase", "rad")
     
@@ -47,7 +47,7 @@ def bode_plot_Z(plot_Z:None,**kwargs):
     bode_f_args["xscale"]="log"
     bode_f_args["style"]="o"
     
-    bode_f = plot_options(bode_f_args )
+    bode_f = plot_options(**bode_f_args )
     bode_f.set_x_txt("Freq", "Hz")
     bode_f.set_y_txt("Z", "Ohm")
     bode_f.render_plot()
@@ -67,7 +67,7 @@ def bode_plot_phase(plot_phase:None):
         bode_A_args["plot"]=plot_phase
     bode_A_args["xscale"]="log"
     bode_A_args["style"]="o"
-    bode_phase = plot_options(bode_A_args )
+    bode_phase = plot_options(**bode_A_args )
     bode_phase.set_x_txt("Freq", "Hz")
     bode_phase.set_y_txt("Phase", "rad")
     bode_phase.render_plot()

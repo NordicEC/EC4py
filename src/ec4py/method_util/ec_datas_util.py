@@ -2,6 +2,8 @@
 from .util_array import EC_Array_class
 import types
 
+from pathlib import Path
+
 
 class EC_Datas_base(EC_Array_class):
     """ Reads data from a TDMS file in the format of EC4 DAQ.
@@ -10,8 +12,8 @@ class EC_Datas_base(EC_Array_class):
      
     """
     def __init__(self,*args, **kwargs):
-        EC_Array_class.__init__(self,*args, **kwargs)
-        
+        super().__init__(*args, **kwargs)
+        #print('ECBASE INI')
         #############################################################################
     
     #def __setitem__(self, item_index:int, new_data):
@@ -52,6 +54,7 @@ class EC_Datas_base(EC_Array_class):
         
         
     def _check_paths(self,paths):
+        path_list=[]
         if paths is not None:
             # paths = args[0]
             
@@ -145,21 +148,22 @@ class EC_Datas_base(EC_Array_class):
         """
         try:
             for data in self.datas:
-                data.set_active_RE(args)
+                data.set_active_RE(*args)
             return
         except AttributeError:
             raise AttributeError("set_active_RE() not implemented in the data class.")
 
     
-def check_paths(paths):
+def check_paths(paths:list[Path]|Path):
+    path_list = [Path]
     if paths is not None:
         # paths = args[0]
         
         if isinstance(paths,types.GeneratorType):
             #generates a pathlist from a generator object.
-            path_list = [p for p in paths]
+            path_list = [Path(p) for p in paths]
         elif not isinstance(paths,list ):
-            path_list = [paths]
+            path_list = [Path(paths)]
         else:
             path_list = paths
         

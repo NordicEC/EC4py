@@ -8,11 +8,14 @@
         "-v",
         "-s",
         "./test",
+        "-t",
+        ".",
         "-p",
         "test_*.py"
     ],
     "cSpell.words": [
         "dtype",
         "gdata"
-    ]
+    ],
+    "python.terminal.useEnvFile": true
 }

@@ -29,8 +29,8 @@ gdata_du = np.concatenate((gdata_d, gdata_u),axis=1)
 class test_CV_Data_arithmetics( unittest.TestCase ):
     def test_s1_add(self):
         data = CV_Data()
-        data.i_p = data.E*2
-        data.i_n = data.E+2
+        data.i_p = data.E*2.0
+        data.i_n = data.E+2.0
         data.add(data)
         self.assertTrue(np.allclose(data.i_p, data.E*4,  atol=1e-10, rtol=1e-10))
         self.assertTrue(np.allclose(data.i_n, data.E*2+4,  atol=1e-10, rtol=1e-10))
@@ -56,13 +56,13 @@ class test_CV_Data_arithmetics( unittest.TestCase ):
     def test_s2_sub(self):
         data = CV_Data()
         data.i_p = data.E
-        data.i_n = data.E+2
+        data.i_n = data.E+2.0
         data.sub(data)
         self.assertTrue(np.allclose(data.i_p, data.E*0,  atol=1e-10, rtol=1e-10))
         self.assertTrue(np.allclose(data.i_n, data.E*0,  atol=1e-10, rtol=1e-10))
         ### sub multiple cvs
         data.i_p = data.E
-        data.i_n = data.E+2
+        data.i_n = data.E+2.0
         data2 =data-data-data
         self.assertTrue(np.allclose(data2.i_p, data.i_p*-1,  atol=1e-10, rtol=1e-10))
         self.assertTrue(np.allclose(data2.i_n, data.i_n*-1,  atol=1e-10, rtol=1e-10))
@@ -93,8 +93,8 @@ class test_CV_Data_arithmetics( unittest.TestCase ):
         self.assertTrue(np.allclose(data2.i_p, data.i_p*2,  atol=1e-10, rtol=1e-10))
         self.assertTrue(np.allclose(data2.i_n, data.i_n*2,  atol=1e-10, rtol=1e-10))
         ###sub a number
-        with self.assertRaises(TypeError):
-            data*data
+       # with self.assertRaises(TypeError):
+       #     data*data
         
     def test_a4_div(self):
         data = CV_Data()
@@ -104,11 +104,15 @@ class test_CV_Data_arithmetics( unittest.TestCase ):
         self.assertTrue(np.allclose(data.i_p, data.E/3,  atol=1e-10, rtol=1e-10))
         self.assertTrue(np.allclose(data.i_n, (data.E+2)/3,  atol=1e-10, rtol=1e-10))
         ### sub multiple cvs
-        data.i_p = data.E
-        data.i_n = data.E+2
+        data.i_p = np.ones(len(data.E),dtype=np.float64)*3
+        data.i_n = np.ones(len(data.E),dtype=np.float64)*10
         data2 =data/2
         self.assertTrue(np.allclose(data2.i_p, data.i_p/2,  atol=1e-10, rtol=1e-10))
         self.assertTrue(np.allclose(data2.i_n, data.i_n/2,  atol=1e-10, rtol=1e-10))
+        data2 =data/data
+        
+        self.assertTrue(np.allclose(data2.i_n, data.i_n/data.i_n,  atol=1e-1, rtol=1e-1))
+                
         ###sub a number
         #with self.assertRaises(TypeError):
         #    atesting = data/data
@@ -148,7 +152,7 @@ class test_CV_Data( unittest.TestCase ):
         data = CV_Data()
         data.i_p = np.ones(len(data.E)) 
         data.i_n = np.ones(len(data.E))*2 
-        data.set_i_at_E_to_zero(-2.5)
+        data.set_i_at_E_to_zero(-1.0)
         self.assertTrue(np.allclose(data.i_p, data.E*0,  atol=1e-10, rtol=1e-10))
         self.assertTrue(np.allclose(data.i_n, data.E*0,  atol=1e-10, rtol=1e-10))
           

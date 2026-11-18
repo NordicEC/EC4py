@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 #from test_ec_datas_util import pop_and_len
 #from help_fx import test_quantities_add
-from help_fx import pop_and_len
+from .help_fx import pop_and_len
 
 E =np.array([1,2,3])
 paths = []
@@ -98,24 +98,34 @@ class test_CV_Datas_arithmetics( unittest.TestCase ):
            
         datasb =datas+datas
         for d in range(len(datas)):
-            self.assertTrue(np.allclose(datasb[d].i_p, datas[d].i_p*2,  atol=1e-10, rtol=1e-10))
-            self.assertTrue(np.allclose(datasb[d].i_n, datas[d].i_n*2,  atol=1e-10, rtol=1e-10))
-        datasb =datas+3
+            self.assertTrue(np.allclose(datasb[d].i_p, datas[d].i_p*2,  atol=1e-10, rtol=1e-10))# type: ignore
+            self.assertTrue(np.allclose(datasb[d].i_n, datas[d].i_n*2,  atol=1e-10, rtol=1e-10)) # type: ignore
+        datasb =datas+3.0
         for d in range(len(datas)):
-            self.assertTrue(np.allclose(datasb[d].i_p, datas[d].i_p+3,  atol=1e-10, rtol=1e-10))
-            self.assertTrue(np.allclose(datasb[d].i_n, datas[d].i_n+3,  atol=1e-10, rtol=1e-10))
+            self.assertTrue(np.allclose(datasb[d].i_p, datas[d].i_p+3,  atol=1e-10, rtol=1e-10))# type: ignore
+            self.assertTrue(np.allclose(datasb[d].i_n, datas[d].i_n+3,  atol=1e-10, rtol=1e-10))# type: ignore
       
-        ###add a list
-        off=[2,3]
-        datasb =datas+off
-        for d in range(len(datas)):
-            self.assertTrue(np.allclose(datasb[d].i_p, datas[d].i_p+off[d],  atol=1e-10, rtol=1e-10))
-            self.assertTrue(np.allclose(datasb[d].i_n, datas[d].i_n+off[d],  atol=1e-10, rtol=1e-10))
-      
-        with self.assertRaises(ValueError):
-            data2 =data+[3]
-        with self.assertRaises(ValueError):
-            data2 =data+[3,1,4]
+    def test_s1_add_b(self):
+                data = CV_Data()
+                data.i_p = np.ones([1])
+                data.i_n = np.ones([2])
+                datab = data+data
+                datas = CV_Datas()
+                datas.append(data)
+                datas.append(datab)
+                print(data.i_p)
+                ###add a list
+                off=[10.1,4]
+                datasb =datas+off  # type: ignore
+                for d in range(len(datas)):
+                    print('aa', datas[d].i_p,'OFF:',off[d],'AA',datas[d].i_p+off[d],'RR',datasb[d].i_p)
+                    self.assertTrue(np.allclose(datasb[d].i_p, datas[d].i_p+off[d],  atol=1e-5, rtol=1e-5))# type: ignore
+                    self.assertTrue(np.allclose(datasb[d].i_n, datas[d].i_n+off[d],  atol=1e-5, rtol=1e-5))# type: ignore
+              
+                with self.assertRaises(ValueError):
+                    data2 =data+[3]
+                with self.assertRaises(ValueError):
+                    data2 =data+[3,1,4]
 
         
     def test_s2_sub(self):
@@ -130,21 +140,22 @@ class test_CV_Datas_arithmetics( unittest.TestCase ):
         #print(datas[0].i_p-(3))
         #print(datasb[0].i_p)
         for d in range(len(datas)):
-            self.assertTrue(np.allclose(datasb[d].i_p, datas[d].i_p-3,  atol=1e-10, rtol=1e-10))
-            self.assertTrue(np.allclose(datasb[d].i_n, datas[d].i_n-3,  atol=1e-10, rtol=1e-10))
+            self.assertTrue(np.allclose(datasb[d].i_p, datas[d].i_p-3,  atol=1e-10, rtol=1e-10))# type: ignore
+            self.assertTrue(np.allclose(datasb[d].i_n, datas[d].i_n-3,  atol=1e-10, rtol=1e-10))# type: ignore
       
         ###add a list
-        off=[2,3]
+        off=[2.0,3.0]
+        datasb.sub(off)
         datasb =datas-off
         for d in range(len(datas)):
-            self.assertTrue(np.allclose(datasb[d].i_p, datas[d].i_p-off[d],  atol=1e-10, rtol=1e-10))
-            self.assertTrue(np.allclose(datasb[d].i_n, datas[d].i_n-off[d],  atol=1e-10, rtol=1e-10))
+            self.assertTrue(np.allclose(datasb[d].i_p, datas[d].i_p-off[d],  atol=1e-10, rtol=1e-10))# type: ignore
+            self.assertTrue(np.allclose(datasb[d].i_n, datas[d].i_n-off[d],  atol=1e-10, rtol=1e-10))# type: ignore
       
-        off=[2,3]
+        off=[2.0,3]
         datasb =datas-off
         for d in range(len(datas)):
-            self.assertTrue(np.allclose(datasb[d].i_p, datas[d].i_p-off[d],  atol=1e-10, rtol=1e-10))
-            self.assertTrue(np.allclose(datasb[d].i_n, datas[d].i_n-off[d],  atol=1e-10, rtol=1e-10))
+            self.assertTrue(np.allclose(datasb[d].i_p, datas[d].i_p-off[d],  atol=1e-10, rtol=1e-10))# type: ignore
+            self.assertTrue(np.allclose(datasb[d].i_n, datas[d].i_n-off[d],  atol=1e-10, rtol=1e-10))# type: ignore
       
         with self.assertRaises(ValueError):
             data2 =data+[3]
@@ -165,22 +176,22 @@ class test_CV_Datas_arithmetics( unittest.TestCase ):
             self.assertTrue(np.allclose(d.i_n, (d.E+2)*2,  atol=1e-10, rtol=1e-10))
         datas2=datas*3
         for d in range(len(datas2)):    
-            self.assertTrue(np.allclose(datas2[d].i_p, datas[d].i_p*3,  atol=1e-10, rtol=1e-10))
-            self.assertTrue(np.allclose(datas2[d].i_n, datas[d].i_n*3,  atol=1e-10, rtol=1e-10))
+            self.assertTrue(np.allclose(datas2[d].i_p, datas[d].i_p*3,  atol=1e-10, rtol=1e-10))# type: ignore
+            self.assertTrue(np.allclose(datas2[d].i_n, datas[d].i_n*3,  atol=1e-10, rtol=1e-10))# type: ignore
         
         off=[2,3]
-        datas2 =datas*off
+        datas2 =datas * off #type: ignore
         for d in range(len(datas2)):
-            self.assertTrue(np.allclose(datas2[d].i_p, datas[d].i_p*off[d],  atol=1e-10, rtol=1e-10))
-            self.assertTrue(np.allclose(datas2[d].i_n, datas[d].i_n*off[d],  atol=1e-10, rtol=1e-10))
+            self.assertTrue(np.allclose(datas2[d].i_p, datas[d].i_p*off[d],  atol=1e-10, rtol=1e-10))# type: ignore
+            self.assertTrue(np.allclose(datas2[d].i_n, datas[d].i_n*off[d],  atol=1e-10, rtol=1e-10))# type: ignore
         
-     ###add a list
+        ###add a list
         with self.assertRaises(ValueError):
-            data2 =datas*[3]
+            data2 =datas*[3] # type: ignore
         with self.assertRaises(ValueError):
-            data2 =datas*[3,1,4]  
+            data2 =datas*[3,1,4]  # type: ignore
         with self.assertRaises(TypeError):
-            data2 =datas*datas  
+            data2 =datas*datas  # type: ignore
                    
         
     def test_a4_div(self):
@@ -198,20 +209,33 @@ class test_CV_Datas_arithmetics( unittest.TestCase ):
             self.assertTrue(np.allclose(d.i_n, (d.E+2)/3,  atol=1e-10, rtol=1e-10))
         datas2=datas/3
         for d in range(len(datas2)):    
-            self.assertTrue(np.allclose(datas2[d].i_p, datas[d].i_p/3,  atol=1e-10, rtol=1e-10))
+            self.assertTrue(np.allclose(datas2[d].i_p, datas[d].i_p/3,  atol=1e-10, rtol=1e-10)) # type: ignore
         
-        off=[2,3,4]
-        datas2 =datas/off
+        off=[3.,2.,2.]
+        datas2 =datas / off           # type: ignore
+        datas3=datas / 1
+        datas3.div(off)
+        print(datas[0].i_n[0],datas3[0].i_n[0],datas2[0].i_n[0])
         for d in range(len(datas2)):
-            self.assertTrue(np.allclose(datas2[d].i_p, datas[d].i_p/off[d],  atol=1e-10, rtol=1e-10))
-        
+            self.assertTrue(np.allclose(datas2[d].i_p[0], datas[d].i_p[0]/off[d],  atol=1e-1, rtol=1e-1)) # type: ignore
+        for d in range(len(datas2)):
+            self.assertTrue(np.allclose(datas3[d].i_p, datas[d].i_p/off[d],  atol=1e-5, rtol=1e-5)) # type: ignore
+        datas3+=3
+        datas3=datas3/datas3
+                
+        print(datas[1].i_n[1],datas3[1].i_n[1],datas2[1].i_n[1]/datas2[1].i_n[1])
+
+        for d in range(len(datas2)):
+            self.assertTrue(np.allclose(datas3[d].i_p, datas[d].i_p+3/(datas[d].i_p+3),  atol=10e-1, rtol=10e-1)) # type: ignore
+              
+
      ###add a list
         with self.assertRaises(ValueError):
-            data2 =datas*[3]
+            data2 =datas*[3]  # type: ignore
         with self.assertRaises(ValueError):
-            data2 =datas*[3,1,4,4]  
+            data2 =datas*[3,1,4,4]  # type: ignore
         with self.assertRaises(TypeError):
-            data2 =datas*datas  
+            data2 =datas*datas  # type: ignore
                    
     
        

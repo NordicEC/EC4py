@@ -52,10 +52,11 @@ class Test_Quantity_Value_Unit(unittest.TestCase):
         self.assertEqual(q.value, 12.0)
         self.assertEqual(q.unit, "m^2 s")
         with self.assertRaises(Exception):
-            a*dict
+            a*dict # type: ignore
             
     def test_div(self):
         q = a/b
+        print(q,a,b)
         self.assertEqual(q.value, 2.5)
         self.assertEqual(q.unit, "")
         q = q / 5
@@ -64,6 +65,11 @@ class Test_Quantity_Value_Unit(unittest.TestCase):
         q = q/c
         self.assertEqual(q.value, 0.5 / c.value)
         self.assertEqual(q.unit, "s^-1")
+        q = q/c/c/c
+       # self.assertEqual(q.value, 0.5 / c.value)
+        self.assertEqual(q.unit, "s^-4")
+        i = QVU("1 A")
+        print(i/a)
     
     def test_pow(self):
         q = a**3
@@ -74,7 +80,7 @@ class Test_Quantity_Value_Unit(unittest.TestCase):
         self.assertEqual(q.value, 1/25.0)
         self.assertEqual(q.unit, "m^-2")
         with self.assertRaises(Exception):
-            a**dict
+            a**dict # type: ignore
         
         
 if __name__ == '__main__':

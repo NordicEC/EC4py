@@ -2,8 +2,10 @@
 Utility module.
 
 """
-
+from __future__ import annotations
+from typing import Self
 import math
+
 #from scipy.signal import savgol_filter, medfilt
 #from scipy import ndimage, datasets
 #import matplotlib.pyplot as plt
@@ -26,6 +28,7 @@ def extract_value_unit(s:str):
     if  s == "":
         return value, unit
     else:
+        lista =[]
         try:
             lista = s.strip().split(" ",1)
             if len(lista) > 0:
@@ -57,9 +60,13 @@ class symbol_string:
 
 
 class symbols:
-    def __init__(self ,s:str = None):
+    def __init__(self ,s:symbols|str|None = None):
         self._sym = {}
-        if s:
+        if s is None:
+            return
+        elif isinstance(s,symbols):
+            self._sym = s._sym
+        elif isinstance(s,str):
             list_of_quantities = (s.strip()).split(" ", 100)
             if len(list_of_quantities) > 0:
                 k={}
@@ -68,6 +75,8 @@ class symbols:
                     val = float(k.get(nyckel, 0)) 
                     k[nyckel] = val + exponent
                 self._sym = k.copy()
+        else:
+            return
         # print(k)
        
     def __str__(self) -> str:
@@ -125,24 +134,32 @@ class Quantity_Value_Unit:
     """A class for quantity calculation.
     
     """
-    def __init__(self, value: float | str =0.0 , unit="", quantity=""):
-        
-        if isinstance(value, str):
-            v,u = extract_value_unit(value)
-            q = ""
+    def __init__(self, value: Quantity_Value_Unit | float | str | None =0.0 , unit:symbols|str="", quantity:symbols|str=""):
+
+        if isinstance(value, (Quantity_Value_Unit)):
+            self.value = value.value
+            self._quantity = value._quantity
+            self._unit = value._unit
         else:
-            v = value
-            if isinstance(unit, symbols):
-                u = str(unit).strip()
+            if isinstance(value, str):
+                v,u = extract_value_unit(value)
+                q = ""
             else:
-                u=unit.strip()
-            if isinstance(unit, symbols):
-                q = str(quantity)
-            else:
-                q=quantity
-        self._unit =symbols(u)
-        self._quantity =symbols(q)
-        self.value = float(v)
+                if value is None:
+                    v   =1
+                else:
+                    v = value
+                if isinstance(unit, symbols):
+                    u = str(unit).strip()
+                else:
+                    u=unit.strip()
+                if isinstance(unit, symbols):
+                    q = str(quantity)
+                else:
+                    q=quantity
+            self._unit =symbols(u)
+            self._quantity =symbols(q)
+            self.value = float(v)
         
     def __str__(self) -> str:
         s = str(f'{self.value:.3e} {self._unit}')
@@ -176,36 +193,45 @@ class Quantity_Value_Unit:
             raise TypeError("Must be of the same type")
         return v
     
-    def __mul__(self, other):
+    def __mul__(self, other:Quantity_Value_Unit|float):
         if isinstance(other, Quantity_Value_Unit):
             v= Quantity_Value_Unit(self.value * other.value, (self._unit + other._unit), self._quantity + other._quantity)
         else:
             v= Quantity_Value_Unit(self.value * float(other), self._unit, self._quantity)
         return v
     
-    def __div__(self, other):
+    def __div__(self, other:Quantity_Value_Unit|float):
         if isinstance(other, Quantity_Value_Unit):
             v = Quantity_Value_Unit(self.value / other.value, self._unit - other._unit, self._quantity - other._quantity)
         else: 
             v = Quantity_Value_Unit(self.value / float(other), self._unit, self._quantity)    
         return v
     
-    def __truediv__(self, other: object):
-        
-        if isinstance(other, Quantity_Value_Unit):
+    def __truediv__(self, other: Quantity_Value_Unit|float):
+        print("trudiv",type(other).__name__,other)
+        if isinstance(other,Quantity_Value_Unit):
+            #if hasattr(other,'value') and hasattr(other,'_unit') and hasattr(other,'_quantity'):
+            #    other = Quantity_Value_Unit(other.value,other._unit,other._quantity)
+            #other = Quantity_Value_Unit(other)
+            #print("trudiv22",str(other),type(other).__name__,other.unit)
             v = Quantity_Value_Unit(self.value / other.value, self._unit - other._unit, self._quantity - other._quantity)
         else:
             v = Quantity_Value_Unit(self.value / float(other), self._unit, self._quantity) 
         return v
     
-    def __pow__(self, other:int|float):
-        if isinstance(other, float) or isinstance(other, int):
+    def __pow__(self, other:float):
+        if isinstance(other, (float|int)):
             return Quantity_Value_Unit( self.value ** float(other), self._unit*other, self._quantity*other)
         else:
-            raise TypeError("Must be a number, i.e. float or int")
+            raise TypeError(f"Must be a number, i.e. float or int, not a {type(other)}")
             return
-        
 
+
+    def __eq__(self, other):
+        if not isinstance(other, Quantity_Value_Unit):
+            return False
+        return self.__repr__() == other.__repr__()
+        
         
     def set_quantity(self, new_quantity_label:str):
         """Set the quantity of label.

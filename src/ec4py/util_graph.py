@@ -6,6 +6,8 @@ Utility module.
 #import math
 from scipy.signal import savgol_filter, medfilt
 import numpy as np
+import numpy.typing as npt
+
 #from scipy import ndimage, datasets
 import matplotlib.pyplot as plt
 from collections import namedtuple
@@ -219,14 +221,15 @@ def update_plot_kwargs(index, **kwargs):
 
 class plot_options:
     def __init__(self, **kwargs):
-        self.fig = None
+
+        self.figure = Figure("",["", ""])
         self.name = NEWPLOT
         self.x_label="x"
         self.x_unit = "xunit"
         self.y_label = "y"
         self.y_unit = "y_unit"
-        self.x_data = []
-        self.y_data =[]
+        self.x_data = np.array([], dtype=np.float64)
+        self.y_data = np.array([], dtype=np.float64)
         #self.x = tuple(self.x_data,self.x_label,self.x_unit)
         self.options = {
             'x_smooth' : 0,
@@ -255,9 +258,11 @@ class plot_options:
 
         self.options.update(kwargs)
         return
+
+ #   def get_plot(self):
     
-    def set_title(self,title:str = "", override: bool=False):
-        if self.options['title'] == "" or override:
+    def set_title(self,title:str = "", override: bool|int=False):
+        if self.options['title'] == "" or bool(override):
             self.options['title'] = title
     
     def set_y_txt(self, label, unit):
@@ -285,7 +290,7 @@ class plot_options:
         return self.get_legend()
 
     @legend.setter
-    def legend(self, value:str) -> str:
+    def legend(self, value:str):
         self.options['legend'] = value
         #return self.get_legend()
     
@@ -303,7 +308,7 @@ class plot_options:
         
         return self.options[PLOT]
     
-    def smooth_y(self, ydata =[]):
+    def smooth_y(self, ydata:npt.NDArray[np.float64]):
         #try:
         y_smooth = self.get_y_smooth()
         # print("SA VALUE")
@@ -321,9 +326,9 @@ class plot_options:
             # print("SA FITER")
     #except:
         #    pass
-        return ydata
+        return np.asarray(ydata, dtype=np.float64)
     
-    def median_y(self, ydata =[]):
+    def median_y(self, ydata:npt.NDArray[np.float64]):
         try:
             y_median = self.options["y_median"]
             if(y_median>0): 
@@ -332,15 +337,20 @@ class plot_options:
                 ydata_s = medfilt(ydata, y_median)
             else:
                 ydata_s = ydata
+                return  np.asarray(ydata_s, dtype=np.float64)
+                    
         except:
             pass
-        return ydata_s
-    
-    def smooth_x(self, xdata):
+        return  ydata
+            
+      
+    def smooth_x(self, xdata:npt.NDArray[np.float64]):
         try:
             x_smooth = self.get_x_smooth()
             if(x_smooth > 0):
                 xdata = savgol_filter(xdata, x_smooth, 1)
+            return  np.asarray(xdata, dtype=np.float64)
+
         except:
             pass
         return xdata
@@ -349,10 +359,10 @@ class plot_options:
     def fig(self, **kwargs):
         try:
             ax = kwargs[PLOT]
-        except KeyError("plot keyword was not found"):
+        except KeyError:
             #fig = plt.figure()
             #  plt.subtitle(self.name)
-            fig = make_plot_1x(self.options['title'],**kwargs)
+            self.Figure = make_plot_1x(self.options['title'],**kwargs)
             # ax = fig.plots[0]
 
     def no_smooth(self):
@@ -372,13 +382,13 @@ class plot_options:
         if ax == NEWPLOT or ax is None:
            # fig = plt.figure()
            # plt.suptitle(self.name)
-            self.fig = make_plot_1x(self.options['title'],**self.options)
-            ax = self.fig.plots[0]
+            self.figure = make_plot_1x(self.options['title'],**self.options)
+            ax = self.figure.plots[0]
             if self.options['yscale']:
                 ax.set_yscale(self.options['yscale'])
             if self.options['xscale']:
                 ax.set_xscale(self.options['xscale'])
-        
+        y_data =self.y_data
         
         try:
             y_median = int(self.options['y_median'])
@@ -386,25 +396,26 @@ class plot_options:
                 if y_median % 2 ==0:
                     y_median +=1 
                 #print("median filter Y", y_median)
-                self.y_data = medfilt(self.y_data, y_median)
+                y_data = np.asarray(medfilt(y_data, y_median), dtype = np.float64)
         except:
             pass
-        self.y_data = self.smooth_y(self.y_data)
+        y_data = self.smooth_y(y_data)
         try:
             yscale = ax.get_yscale()
             if yscale == "log":
-                self.y_data=abs(self.y_data)
+                y_data=np.abs(y_data)
         except:
             pass
+        self.y_data = y_data
        
         
         try:
             x_smooth = int(self.options['x_smooth'])
             if x_smooth > 0:
-                self.x_data = savgol_filter(self.x_data, x_smooth, 1)
+                self.x_data = np.asarray(savgol_filter(self.x_data, x_smooth, 1), dtype =np.float64)
             xscale = ax.get_xscale()
             if xscale == "log":
-                self.x_data=abs(self.x_data)
+                self.x_data=np.abs(self.x_data)
         except:
             pass
         line = None
@@ -475,11 +486,11 @@ class plot_options:
     
     def saveFig(self,**kwargs):
         #print("fig")
-        saveFig(self.fig,**kwargs)
+        saveFig(self.figure,**kwargs)
             
 
 
-def saveFig(fig:Figure,**kwargs):
+def saveFig(fig:Figure|None,**kwargs):
     if fig is not None:
             name = kwargs.get(SAVEFIG,None)
             if name is not None:

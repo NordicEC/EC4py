@@ -111,10 +111,10 @@ class test_util_voltammetry( unittest.TestCase ):
 
     def test_norm(self):
         data = Voltammetry(E_min=-2,E_max=2)
-        data.set_area(2)
+        data.set_area("2 m^2")
         print(data.area)
         testdata = np.array([10])
-        r = data.norm("AREA_CM",testdata)
+        r = data._norm_single("AREA_CM",testdata)
         print(r)
         self.assertIsInstance(r,tuple)
         self.assertEqual((r[0])[0],[5/10000]) #should return the data-
@@ -127,7 +127,7 @@ class test_util_voltammetry( unittest.TestCase ):
 
         data.set_area("5 m^2")
         print(data.area)
-        r = data.norm("AREA",testdata)
+        r = data._norm_single("AREA",testdata)
         self.assertIsInstance(r,tuple)
         self.assertEqual((r[0])[0],[2]) #should return the data-
         q=r[1]
@@ -148,7 +148,7 @@ class test_util_voltammetry( unittest.TestCase ):
         #r = data.set_active_RE("RHE",testdata)
         #test single data set.
         data.set_RHE(0.0)
-        r1 = data.set_active_RE("RHE",testdata)
+        r1 = data._set_active_RE("RHE",testdata)
         self.assertIsInstance(r1,tuple)
         self.assertIsInstance(r1[0],float)
         current = r1[1]
@@ -158,20 +158,20 @@ class test_util_voltammetry( unittest.TestCase ):
         ####List of test data
         data = Voltammetry(E_min=-2,E_max=2)
         data.set_RHE(1.0)
-        rQVU, current = data.set_active_RE("RHE",[testdata])
+        rQVU, current = data._set_active_RE("RHE",[testdata])
         #print("List", rQVU)
         print(current)
         self.assertIsInstance(current,list)
         #self.assertTrue(np.allclose(current[0],testdata-1,  atol=1e-10, rtol=1e-10,equal_nan =True))
         #self.assertEqual(r1,[data.E])
         #self.assertIsInstance(r1,tuple)
-        r1 = data.set_active_RE("RE",[testdata,testdata])
+        r1 = data._set_active_RE("RE",[testdata,testdata])
         print(r1)
         self.assertIsInstance(r1,tuple)
         self.assertIsInstance(r1[0],float)
         self.assertIsInstance(r1[1],list)
         self.assertEqual(len(r1[1]),2)
-        r1 = data.set_active_RE("RHE",[testdata,testdata])
+        r1 = data._set_active_RE("RHE",[testdata,testdata])
         self.assertIsNotNone(r1) #cannot shift twice.
 
         print(r1)

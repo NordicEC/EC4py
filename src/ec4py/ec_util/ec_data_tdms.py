@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def help_get_wf_prop(rawdata, datachannel: str):
-    if rawdata is not None:
+    if rawdata is not None and datachannel in rawdata:
         unit = str(rawdata[datachannel].properties.get("unit_string", ""))
         quantity = str(rawdata[datachannel].properties.get("Quantity", ""))
         dT = rawdata[datachannel].properties.get("wf_increment", 1)
@@ -40,7 +40,7 @@ def load_EC_file_TDMS(ec_data:EC_Data_Base,path:Path):
             pass
         
         ec_data.E = tdms_file['EC']['E'].data
-        ec_data.setup_data.name = tdms_file.properties['name']
+        ec_data.setup_data.name = str(tdms_file.properties['name'])
         ec_data.setup_data.dateTime = tdms_file.properties['dateTime']
         try:
             ec_data.Z_E = tdms_file['EC']['Z_E'].data  # not all data file contains U channel

@@ -1,9 +1,10 @@
 import numpy as np
+import numbers
 #import matplotlib.pyplot as plt
 
 #from .ec_data_util import EC_Channels
 
-from ..ec_setup import EC_Setup
+from ..ec_setup.ec_setup import EC_Setup
 
 
 class EC_Data_Base(EC_Setup):
@@ -76,6 +77,7 @@ def index_at_time(Time, time_s_:float):
     """
 
     max_index = len(Time)
+    print('AA',max_index,time_s_)
     index = -1
     if time_s_ < 0:
         index = len(Time)-1
@@ -84,6 +86,7 @@ def index_at_time(Time, time_s_:float):
             if time_s_ <= Time[i]:
                 index = i
                 break
+    print('BB',index)
     if index < 0 : 
         index = len(Time)-1
     return index

@@ -1,0 +1,236 @@
+""" Python module for reading TDMS files produced by LabView and specifically form EC4 DAQ.
+
+    This module contains the public facing API for reading TDMS files produced by EC4 DAQ.
+"""
+# import math
+# import numpy as np
+from __future__ import annotations
+
+import copy
+import numbers
+from pathlib import Path
+from typing import Self
+
+
+from ..ec_data.ec_data import EC_Data
+from ..lsv.lsv_data import LSV_Data
+from ..lsv.lsv_datas import LSV_Datas
+from ..method_util.ec_datas_util import EC_Datas_base, check_paths
+
+from ..util import Quantity_Value_Unit as QV
+
+
+from .cv_data import NEG, POS, STYLE_NEG_DL, STYLE_POS_DL, CV_Data
+
+# import pandas as pd
+#from .analysis_tafel import Tafel as Tafel_calc
+
+
+# STYLE_POS_DL = "bo"
+# STYLE_NEG_DL = "ro"
+
+class CV_Datas_Base(EC_Datas_base):
+    """# Class to analyze CV datas. 
+    Class Functions:
+    
+    ### Options args:
+    "area" - to normalize to area
+    
+    ### Options keywords:
+    legend = "name"
+    """
+    def __init__(self,paths:list[Path]|Path = [],*args, **kwargs):
+        
+        EC_Datas_base().__init__(self,*args, **kwargs)
+        
+        if paths is not None:
+            path_list = check_paths(paths)
+            # paths = args[0]
+            """
+            if not isinstance(paths,list ):
+                path_list = [paths]
+            #if isinstance(paths,Path ):
+            #    path_list = [paths]
+            else:
+                path_list = paths
+            """
+            self.datas = [CV_Data() for i in range(len(path_list))]
+            index=0
+            for path in path_list:
+                ec = EC_Data(path)
+                #print([x for x in args])
+                try:
+                    
+                    self.datas[index].conv(ec,*args,**kwargs)
+                finally:
+                    index=index+1 
+            #print(index)
+    #############################################################################
+    
+  #  def __repr__(self):
+        """CV Datas
+        """
+   #     delimiter = "','"
+    #    r =delimiter.join([x.setup_data.fileName for x in self.datas])
+     #   return f"{CV_Datas}(['{r}'])"
+    
+        
+
+        ########################################
+    
+    def __setitem__(self, item_index:int, new_CV:CV_Data):
+        if not isinstance(item_index, int):
+            raise TypeError("key must be an integer")
+        self.datas[item_index] = new_CV
+    #############################################################################
+    
+    def __add__(self, other: Self | LSV_Datas| list[CV_Data]|list[LSV_Data]|list[QV]|list[float] | CV_Data | LSV_Data | QV | float):
+        """add
+
+        Args:
+            other (CV_Data): CV_Data to be added 
+
+        Returns:
+            CV_Datas: returns a copy of the initial dataset. 
+        """
+        new_CVs = copy.deepcopy(self)
+        new_CVs.add(other)
+        return new_CVs
+    
+    def __sub__(self, other: Self  | LSV_Datas| list[CV_Data]|list[LSV_Data]|list[QV]|list[float] | CV_Data | LSV_Data | QV | float):
+        """sub
+
+        Args:
+            other (CV_Data): CV_Data to be added 
+
+        Returns:
+            CV_Datas: returns a copy of the initial dataset. 
+        """
+        new_CVs = copy.deepcopy(self)
+        new_CVs.sub(other)
+        return new_CVs
+    
+    def __mul__(self, other: float):
+        """multiply
+
+        Args:
+            other (float): CV_Data to be added 
+
+        Returns:
+            CV_Datas: returns a copy of the initial dataset. 
+        """
+        new_CVs = copy.deepcopy(self)
+        new_CVs.mul(other)
+        return new_CVs
+    
+    def __truediv__(self, other: float):
+        """divide
+
+        Args:
+            other (float): CV_Data to be added 
+
+        Returns:
+            CV_Datas: returns a copy of the initial dataset. 
+        """
+        new_CVs = copy.deepcopy(self)
+        new_CVs.div(other)
+        return new_CVs
+
+    #def __len__(self):
+    #    return len(self.datas)
+
+    #############################################################################
+    
+    
+    def add(self,other: Self | LSV_Datas| list[CV_Data]|list[LSV_Data]|list[QV]|list[float] | CV_Data | LSV_Data | QV | float):
+        """add
+
+        Args:
+            other (_type_, optional): _description_. Defaults to CV_Data.
+        """
+        if isinstance(other, (Self,list,LSV_Datas)):
+            #print('Qa',type(other))
+            if len(other) == len(self):
+                for i in range(len(self.datas)):
+                    item = other[i]
+                    if isinstance(item,(CV_Data | LSV_Data | QV | numbers.Real)):
+                        #print('QER',item,'a',type(item))
+                        self.datas[i].add(item)
+            
+            else:
+                raise ValueError('The data sets are not of the same length.')
+        else:
+            for cv in self.datas:
+                cv.add(other)  
+        ##########################################        
+    def sub(self,other: Self | LSV_Datas| list[CV_Data] |list[LSV_Data] | list[QV] | list[float] | CV_Data | LSV_Data | QV | float):
+        """sub
+        Args:
+            other (_type_, optional): _description_. Defaults to CV_Data.
+        """
+        if isinstance(other, (Self, LSV_Datas, list)):
+            if len(other) == len(self.datas):
+                for i in range(len(self.datas)):
+                    item = other[i]
+                    if isinstance(item,(CV_Data | LSV_Data | QV | numbers.Real)):
+                        self.datas[i].sub(item)
+            else:
+                raise ValueError('The data sets are not of the same length.')
+            
+        else:
+            for cv in self.datas:
+                cv.sub(other)
+                
+    def mul(self,other):
+        """multiply the current by a number or a list of numbers.
+
+        Args:
+            other (_type_, optional): _description_. Defaults to CV_Data.
+        """
+        if isinstance(other, list):
+            if len(other) == len(self.datas):
+                for i in range(0,len(self.datas)):
+                    self.datas[i].mul(other[i])
+            else:
+                raise ValueError('The data sets are not of the same length.')
+        else:
+            for cv in self.datas:
+                cv.mul(other)
+            
+    def div(self,other:Self | LSV_Datas| list[CV_Data] |list[LSV_Data] | list[QV] | list[float] | CV_Data | LSV_Data | QV | float):
+        """divide the current by a number.
+
+        Args:
+            other (_type_, optional): _description_. Defaults to CV_Data.
+        """
+        if isinstance(other, (Self,LSV_Datas, list)):
+            if len(other) == len(self.datas):
+                for i in range(len(self.datas)):
+                    temp = other[i]
+                    if isinstance(temp,(QV,numbers.Real,CV_Data,LSV_Data,LSV_Data)):
+                        self.datas[i].div(temp) 
+                    #if:
+                    #    self.datas[i].div(temp) 
+
+            else:
+                raise ValueError('The data sets are not of the same length.')
+        else:
+            for cv in self.datas:
+                cv.div(other)   
+        
+    
+    def append(self,item : Self | CV_Data):
+        """append
+
+        Args:
+            other (_type_, optional): _description_. Defaults to CV_Data.
+        """
+        if isinstance(item, CV_Data):
+            self.datas.append(item)
+        elif isinstance(item, Self):
+            for cv in item:
+                self.datas.append(cv)
+    
+    #def pop(self,index):
+    #    self.datas.pop(index)
+    
