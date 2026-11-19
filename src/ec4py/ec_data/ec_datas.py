@@ -2,6 +2,9 @@
 
     This module contains the public facing API for reading TDMS files produced by EC4 DAQ.
 """
+from __future__ import annotations
+
+from typing import Self, SupportsIndex, overload
 from pathlib import Path
 import copy
 
@@ -61,23 +64,15 @@ class EC_Datas(EC_Datas_base):
         return
         """
     
-    '''    
-    def __getitem__(self, item_index:slice|int) -> EC_Data: 
+    @overload
+    def __getitem__(self, i: SupportsIndex| str, /) -> EC_Data: ...
+    
+    @overload
+    def __getitem__(self, s: slice| list[str], /) -> EC_Datas: ...
+    
+    def __getitem__(self,  index_or_str: SupportsIndex|slice | int | list[str] | str) -> EC_Datas|EC_Data: 
+        return EC_Datas_base.__getitem__(self,index_or_str) # type: ignore
 
-        if isinstance(item_index, slice):
-            step = 1
-            start = 0
-            stop = len(self.datas)
-            if item_index.step:
-                step =  item_index.step
-    #        if item_index.start:
-    #            start = item_index.start
-    #        if item_index.stop:
-    #            stop = item_index.stop    
-    #        return [self.datas[i] for i in range(start,stop,step)  ]
-    #    else:
-    #        return self.datas[item_index]
-    '''
     
     def __setitem__(self, item_index:int, new_data:EC_Data):
         if not isinstance(item_index, int):

@@ -2,6 +2,7 @@
 utility array
 """
 from __future__ import annotations
+from typing import SupportsIndex, overload
 #import math
 #import numpy as np
 #from scipy import integrate
@@ -32,6 +33,8 @@ class EC_Array_class:
         
     def __len__(self):
         return len(self.datas)
+
+ 
     
     def __getitem__(self, index_or_str:slice|int|list[str]|str):
         index = -1

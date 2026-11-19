@@ -4,6 +4,10 @@
 """
 
 # from nptdms import TdmsFile
+
+from __future__ import annotations
+
+from typing import Self, SupportsIndex, overload
 import math
 import numpy as np
 from pathlib import Path
@@ -86,6 +90,17 @@ class Step_Datas(EC_Datas_base):
         else:
             return self.datas[item_index]
     """
+
+    @overload
+    def __getitem__(self, i: SupportsIndex| str, /) -> Step_Data: ...
+
+    @overload
+    def __getitem__(self, s: slice, /) -> Step_Datas: ...
+
+    def __getitem__(self,  index_or_str: slice | int | list[str] | str | SupportsIndex) -> Step_Datas|Step_Data: 
+        return EC_Datas_base.__getitem__(self,index_or_str) # type: ignore
+        
+
     #############################################################################
     def __setitem__(self, item_index:int, new_Step):
         if not isinstance(item_index, int):

@@ -66,8 +66,8 @@ class LSV_Data(LSV_Data_Analysis):
             if str(type(args[0]).__name__)=='LSV_Data':
                 #print('recreate')
                 self.setup_data = copy.deepcopy(args[0].setup_data)
-                self.E = copy.deepcopy(args[0].E)
-                self.i = copy.deepcopy(args[0].i)
+                self.E = np.asarray(copy.deepcopy(args[0].E),dtype=np.float64)
+                self.i = np.asarray(copy.deepcopy(args[0].i),dtype=np.float64)
                 self.copy_from(args[0])
                
 

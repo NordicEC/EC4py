@@ -1,6 +1,6 @@
 
 import copy
-from ec_setup.ec_setup import EC_Setup
+from ec4py.ec_setup import EC_Setup
 from ec4py.util import Quantity_Value_Unit as QVU
 from ec4py.util_graph import LEGEND
 from ec4py.ec_util import EC_Channels

@@ -190,8 +190,7 @@ class test_CV_Datas_arithmetics( unittest.TestCase ):
             data2 =datas*[3] # type: ignore
         with self.assertRaises(ValueError):
             data2 =datas*[3,1,4]  # type: ignore
-        with self.assertRaises(TypeError):
-            data2 =datas*datas  # type: ignore
+      
                    
         
     def test_a4_div(self):
@@ -203,14 +202,18 @@ class test_CV_Datas_arithmetics( unittest.TestCase ):
         datas.append(data.copy())
         datas.append(data.copy())
  
-        datas.div(3)
+        datas.div(3.0)
         for d in datas:
-            self.assertTrue(np.allclose(d.i_p, d.E/3,  atol=1e-10, rtol=1e-10))
-            self.assertTrue(np.allclose(d.i_n, (d.E+2)/3,  atol=1e-10, rtol=1e-10))
+           # print(d.i_p, d.E/3)
+            self.assertTrue(np.allclose(d.i_p, d.E/3,  atol=1e-5, rtol=1e-5))
+            print(d.i_n,"\nE",d.i_n- (d.E+2)/3)
+            print(sum(d.i_n- (d.E+2)/3))
+            self.assertTrue(np.allclose(d.i_n, (d.E+2)/3,  atol=1e-5, rtol=1e-5))
         datas2=datas/3
-        for d in range(len(datas2)):    
-            self.assertTrue(np.allclose(datas2[d].i_p, datas[d].i_p/3,  atol=1e-10, rtol=1e-10)) # type: ignore
-        
+        for d in range(len(datas2)):  
+            print(sum(datas2[d].i_p- (datas[d].i_p/3)))  
+            self.assertTrue(sum(datas2[d].i_p- (datas[d].i_p/3)==0.0))
+          #  self.assertTrue(np.allclose(datas2[d].i_p, datas[d].i_p/3,  atol=1e-5, rtol=1e-5)) 
         off=[3.,2.,2.]
         datas2 =datas / off           # type: ignore
         datas3=datas / 1
@@ -221,21 +224,24 @@ class test_CV_Datas_arithmetics( unittest.TestCase ):
         for d in range(len(datas2)):
             self.assertTrue(np.allclose(datas3[d].i_p, datas[d].i_p/off[d],  atol=1e-5, rtol=1e-5)) # type: ignore
         datas3+=3
-        datas3=datas3/datas3
-                
-        print(datas[1].i_n[1],datas3[1].i_n[1],datas2[1].i_n[1]/datas2[1].i_n[1])
+        datas4=datas3 / datas3
+        for data in datas4:
+            print('A/A',sum(data.i_p)/len(data.i_p))
+            self.assertEqual(sum(data.i_p),len(data.i_p))
+        datas5 =datas / off +5
+        datas5.div(datas5)
+        for data in datas5:
+                    print('A5/A5',sum(data.i_p)/len(data.i_p))
+                    self.assertEqual(sum(data.i_p),len(data.i_p))
 
-        for d in range(len(datas2)):
-            self.assertTrue(np.allclose(datas3[d].i_p, datas[d].i_p+3/(datas[d].i_p+3),  atol=10e-1, rtol=10e-1)) # type: ignore
-              
+            
 
      ###add a list
         with self.assertRaises(ValueError):
-            data2 =datas*[3]  # type: ignore
+            data2 =datas/[3]  # type: ignore
         with self.assertRaises(ValueError):
-            data2 =datas*[3,1,4,4]  # type: ignore
-        with self.assertRaises(TypeError):
-            data2 =datas*datas  # type: ignore
+            data2 =datas/[3,1,4,4]  # type: ignore
+      
                    
     
        

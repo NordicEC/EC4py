@@ -2,7 +2,9 @@
 
     This module contains the public facing API for reading TDMS files produced by EC4 DAQ.
 """
+from __future__ import annotations
 
+from typing import Self, SupportsIndex, overload
 from pathlib import Path
 
 import copy
@@ -43,6 +45,16 @@ class EIS_Datas(EC_Datas_base):
                 index=index+1 
         #print(index)
         return
+
+    @overload
+    def __getitem__(self, i: SupportsIndex| str, /) -> EIS_Data: ...
+
+    @overload
+    def __getitem__(self, s: slice, /) -> EIS_Datas: ...
+
+    def __getitem__(self,  index_or_str: slice | int | list[str] | str | SupportsIndex) -> EIS_Datas|EIS_Data: 
+        return EC_Datas_base.__getitem__(self,index_or_str) # type: ignore
+    
     
     def pop(self,index):
         self.datas.pop(index)
@@ -65,8 +77,11 @@ class EIS_Datas(EC_Datas_base):
 
             EIS_kwargs["plot"] = EIS_plot
             EIS_kwargs["name"] = eis.setup_data.name
-
-            line, ax = eis.nq(*args, **EIS_kwargs)
+            tp = eis.nq(*args, **EIS_kwargs)
+            if isinstance(tp,tuple):
+                line    = tp[0]
+                ax      = tp[1]
+            #line, ax = eis.nq(*args, **EIS_kwargs)
             lines.append(line)
         for line in lines:
             if line.get_label() != "_":

@@ -183,22 +183,23 @@ class test_lsv_datas_basic( unittest.TestCase ):
         for d in datas:
             self.assertTrue(np.allclose(d.i, d.E,  atol=1e-10, rtol=1e-10))
         datas2=datas/(3.2)
-        for d in range(len(datas2)):    
+        for d in range(len(datas2)): 
+               
             self.assertTrue(np.allclose(datas2[d].i, datas[d].i/3.2,  atol=1e-10, rtol=1e-10))
         datas2=datas/(3)
         for d in range(len(datas2)):    
             self.assertTrue(np.allclose(datas2[d].i, datas[d].i/3,  atol=1e-10, rtol=1e-10))
         
-        off=[2,3]
-        datas2 =datas/off
+        off=[2.0,3.0]
+        datas2 =datas / off
         for d in range(len(datas2)):
             self.assertTrue(np.allclose(datas2[d].i, datas[d].i/off[d],  atol=1e-10, rtol=1e-10))
         
      ###add a list
         with self.assertRaises(ValueError):
-            data2 =datas*[3]
+            data2 =datas*[3] # type: ignore
         with self.assertRaises(ValueError):
-            data2 =datas*[3,1,4]  
+            data2 =datas*[3,1,4]  # type: ignore
        # with self.assertRaises(TypeError):
        #     data2 =datas*datas  
         

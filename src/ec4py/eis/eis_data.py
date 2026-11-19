@@ -4,6 +4,8 @@
 """
 #from __future__ import annotations
 #import math
+
+
 import numpy as np
 #from scipy import integrate
 #from scipy.signal import savgol_filter 
@@ -37,11 +39,11 @@ class EIS_Data(EC_Setup):
             - channel: Cell, i0, P0 etc.
         """
         EC_Setup().__init__(self,*args, **kwargs)
-        self.freq=[]
-        self.Z=[]
+        self.freq   =   np.array([], dtype=np.float64)
+        self.Z      =   np.array([], dtype=np.float64)
         self.Z_unit=""
         self.Z_label=""
-        self.angle=[]
+        self.angle  =   np.array([], dtype=np.float64)
        
         if not args:
             return
@@ -85,7 +87,7 @@ class EIS_Data(EC_Setup):
         data = copy.deepcopy(self)
         r = data.norm( args, data.Z)
         if r is not None:
-            data.Z= r[0]
+            data.Z= np.asarray([0],dtype=np.float64)
         kwargs["style"]="o"
         options = plot_options(**kwargs)
         # print(options.get_legend(),self.legend(**kwargs))
@@ -130,7 +132,7 @@ class EIS_Data(EC_Setup):
         data = copy.deepcopy(self)
         r = data.norm( args, data.Z)
         if r is not None:
-            data.Z= r[0]
+            data.Z= np.asarray(r[0],dtype=np.float64)
         kwargs["style"]="o"
         BODE_op= {"bode_Z": None,"bode_phase": None}
         BODE_op.update(kwargs)

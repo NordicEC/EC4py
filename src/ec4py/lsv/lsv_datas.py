@@ -6,6 +6,8 @@
 from __future__ import annotations
 import numbers
 from typing import Self
+from typing import SupportsIndex, overload
+
 
 import numpy as np
 import pandas as pd
@@ -57,6 +59,7 @@ class LSV_Datas(EC_Datas_base):
         EC_Datas_base().__init__(self,*args, **kwargs)
         self.datas:list[LSV_Data] = []
         self.dir =""
+        
         if paths is None:
             return
         if not isinstance(paths,list ):
@@ -76,25 +79,16 @@ class LSV_Datas(EC_Datas_base):
         #print(index)
         return
     #############################################################################
-    def __getitem__(self,  index_or_str: slice | int | list[str] | str) -> LSV_Datas|LSV_Data: 
-        return EC_Datas_base.__getitem__(self,index_or_str) # type: ignore
-    '''    
-    def __getitem__(self, item_index:slice | int): 
 
-        if isinstance(item_index, slice):
-            step = 1
-            start = 0
-            stop = len(self.datas)
-            if item_index.step:
-                step =  item_index.step
-            if item_index.start:
-                start = item_index.start
-            if item_index.stop:
-                stop = item_index.stop    
-            return [self.datas[i] for i in range(start, stop, step)  ]
-        else:
-            return self.datas[item_index]
-    '''
+    @overload
+    def __getitem__(self, i: SupportsIndex| str, /) -> LSV_Data: ...
+
+    @overload
+    def __getitem__(self, s: slice, /) -> LSV_Datas: ...
+
+    def __getitem__(self,  index_or_str: slice | int | list[str] | str | SupportsIndex) -> LSV_Datas|LSV_Data: 
+        return EC_Datas_base.__getitem__(self,index_or_str) # type: ignore
+    
     #############################################################################
     
     def __setitem__(self, item_index:int, new_LSV:LSV_Data):
@@ -105,7 +99,7 @@ class LSV_Datas(EC_Datas_base):
     
 
     
-    def __add__(self, other: LSV_Datas|list[LSV_Data|QV|float]|LSV_Data|float|QV|int):
+    def __add__(self, other: LSV_Datas|list[LSV_Data]|list[QV]|list[float]|LSV_Data|float|QV|int):
         
         """Add to the current
 
@@ -149,7 +143,7 @@ class LSV_Datas(EC_Datas_base):
         new_LSVs.mul(other)
         return new_LSVs
     
-    def __truediv__(self, other: list[float|QV]|float|QV):
+    def __truediv__(self, other: LSV_Datas|list[LSV_Data] | list[float]|list[QV]|LSV_Data|float|QV):
         """divide the current by a number.
 
         Args:
@@ -165,7 +159,7 @@ class LSV_Datas(EC_Datas_base):
 
     
     
-    def add(self,other: LSV_Datas|list[LSV_Data|QV|float|int]|LSV_Data|QV|float|int):
+    def add(self,other: LSV_Datas|list[LSV_Data]|list[QV]|list[float]|LSV_Data|QV|float):
         """add
 
         Args:
@@ -224,16 +218,18 @@ class LSV_Datas(EC_Datas_base):
             for data in self.datas:
                 data.mul(other)
             
-    def div(self,other:list[float|QV]| float | QV):
+    def div(self,other:LSV_Datas|list[LSV_Data]|list[QV]|list[float]|LSV_Data| float | QV):
         """divide the current by a number.
 
         Args:
             other (_type_, optional): _description_. Defaults to CV_Data.
         """
-        if isinstance(other, list):
+        if isinstance(other, (list,LSV_Datas)):
             if len(other) == len(self.datas):
                 for i in range(len(self.datas)):
-                    self.datas[i].div(other[i])
+                    temp = other[i]
+                    if not isinstance(temp,LSV_Datas):
+                        self.datas[i].div(temp)
             else:
                 raise ValueError('The data sets are not of the same length.')
         else:
@@ -654,7 +650,7 @@ class LSV_Datas(EC_Datas_base):
         Tafel_pos =[]
         for index, data in enumerate(self.datas):
             data_plot_kwargs2 = update_plot_kwargs(index, **dataPlot_kwargs)
-            a = data.Tafel(lims, E_for_idl, **data_plot_kwargs2)
+            a = data.Tafel(lims, E_for_idl, *args,**data_plot_kwargs2)
             Tafel_pos.append(a)
         return Tafel_pos
 ##################################################################################################################

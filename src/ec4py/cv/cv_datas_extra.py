@@ -7,12 +7,9 @@ from ..lsv.lsv_datas import LSV_Datas
 from typing import TYPE_CHECKING
 
 
-if TYPE_CHECKING:
-    # Gives Pylance/Pyright full autocomplete without circular imports
-    from .cv_datas import CV_Datas
-    _Base = CV_Datas
-else:
-    _Base = object
+
+from .cv_datas_base import CV_Datas_Base
+
 
 # import pandas as pd
 #from .analysis_tafel import Tafel as Tafel_calc
@@ -21,8 +18,11 @@ else:
 # STYLE_POS_DL = "bo"
 # STYLE_NEG_DL = "ro"
 
-class CV_Datas_Extra(_Base):
-
+class CV_Datas_Extra(CV_Datas_Base):
+    
+    def __init__(self,*args, **kwargs):
+        
+        super().__init__( *args, **kwargs)
 
     def set_i_at_E_to_zero(self, E:float, *args, **kwargs):
         """Set the current at a specific voltage to zero.

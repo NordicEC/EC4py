@@ -40,13 +40,6 @@ from ..util_graph import (
 from .cv_data import NEG, POS, STYLE_NEG_DL, STYLE_POS_DL, CV_Data
 from .cv_datas_extra import CV_Datas_Extra
 
-if TYPE_CHECKING:
-    # Gives Pylance/Pyright full autocomplete without circular imports
-    from .cv_datas import CV_Datas
-    _Base = CV_Datas
-else:
-    _Base = object
-
 # import pandas as pd
 #from .analysis_tafel import Tafel as Tafel_calc
 
@@ -54,7 +47,7 @@ else:
 # STYLE_POS_DL = "bo"
 # STYLE_NEG_DL = "ro"
 
-class CV_Datas_Anlysis(CV_Datas_Extra,_Base):
+class CV_Datas_Analysis(CV_Datas_Extra):
     """# Class to analyze CV datas. 
     Class Functions:
     - .plot() - plot data    
